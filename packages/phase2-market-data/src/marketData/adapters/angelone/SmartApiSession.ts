@@ -77,7 +77,7 @@ export class SmartApiSession {
       data:    { jwtToken: string; refreshToken: string; feedToken: string } | null;
     }>(LOGIN_PATH, body);
 
-    if (!result.ok) return result;
+    if (!result.ok) return result as any;
 
     const resp = result.value;
     if (!resp.status || !resp.data) {
@@ -120,7 +120,7 @@ export class SmartApiSession {
       data:    { jwtToken: string; refreshToken: string; feedToken: string } | null;
     }>(REFRESH_PATH, body, this._tokens.jwtToken);
 
-    if (!result.ok) return result;
+    if (!result.ok) return result as any;
 
     const resp = result.value;
     if (!resp.status || !resp.data) {

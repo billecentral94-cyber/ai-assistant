@@ -1,8 +1,35 @@
 /**
- * Phase 10 — Copilot Intelligence Layer
- * Package-level barrel export.
+ * packages/phase10-copilot-intelligence/src/index.ts
+ * Artha AI — Phase 10 Public Exports
  */
-export * from './contracts';
-export * from './conviction/ConvictionEngine';
-export * from './explanation/ExplanationGenerator';
-export * from './Portfolio/PortfolioAnalyzer';
+
+// Engine
+export { CopilotEngine }     from './engine/CopilotEngine';
+export type { CopilotEngineConfig } from './engine/CopilotEngine';
+export { OpportunityScorer } from './engine/OpportunityScorer';
+
+// Composer
+export { BriefComposer }     from './composer/BriefComposer';
+export type { DailyBriefData, WeeklyDigestData } from './composer/BriefComposer';
+
+// Notifications
+export { NotificationBus }   from './notifications/NotificationBus';
+export { ConsoleChannel }    from './notifications/ConsoleChannel';
+export { ToastChannel }      from './notifications/ToastChannel';
+
+// Conversation
+export { ConversationContext } from './conversation/ConversationContext';
+export { QueryHandler }        from './conversation/QueryHandler';
+export type { IQueryDataSource } from './conversation/QueryHandler';
+
+// Watchlist & Guards
+export { WatchlistManager }     from './watchlist/WatchlistManager';
+export { MarketHoursGuard }     from './guards/MarketHoursGuard';
+export { AlertCooldownGuard }   from './guards/AlertCooldownGuard';
+export { NewsEventGuard }       from './guards/NewsEventGuard';
+export type { CorporateEvent, CorporateEventType } from './guards/NewsEventGuard';
+export { SmallCapUniverseLoader } from './universe/SmallCapUniverseLoader';
+export type { SmallCapIndex, CircuitCategory, UniverseEntry } from './universe/SmallCapUniverseLoader';
+
+// Types
+export * from './types';

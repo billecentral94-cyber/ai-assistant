@@ -98,7 +98,7 @@ export class AngelOneAdapter implements IMarketDataAdapter {
 
     // 1. Authenticate
     const loginResult = await this.session.login();
-    if (!loginResult.ok) return loginResult;
+    if (!loginResult.ok) return loginResult as any;
 
     const { feedToken } = loginResult.value;
 
@@ -192,7 +192,7 @@ export class AngelOneAdapter implements IMarketDataAdapter {
       data:    Array<[string, number, number, number, number, number]> | null;
     }>(CANDLE_PATH, body, jwt);
 
-    if (!result.ok) return result;
+    if (!result.ok) return result as any;
 
     const resp = result.value;
     if (!resp.status || !resp.data) {
@@ -257,7 +257,7 @@ export class AngelOneAdapter implements IMarketDataAdapter {
       }> | null;
     }>(SEARCH_PATH, { exchange: 'NSE', searchscrip: query }, jwt);
 
-    if (!result.ok) return result;
+    if (!result.ok) return result as any;
 
     const resp = result.value;
     if (!resp.status || !resp.data) {

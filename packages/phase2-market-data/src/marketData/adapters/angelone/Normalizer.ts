@@ -19,10 +19,22 @@ import type { RawTick, RawCandle, RawSymbol }                        from '../IM
 import type { INormalizer }                                           from '../../normalizer';
 import type { Result }                                                from '../../../utils/errors';
 import { ok, err }                                                    from '../../../utils/errors';
-import {
-  SMARTAPI_EXCHANGE_TYPE_MAP,
-  SMARTAPI_INSTRUMENT_TYPE_MAP,
-}                                                                     from '../../normalizer';
+const SMARTAPI_EXCHANGE_TYPE_MAP: Record<number, Exchange> = {
+  1: 'NSE',
+  2: 'NFO',
+  3: 'BSE',
+  4: 'BFO',
+  5: 'MCX',
+  13: 'CDS',
+};
+
+const SMARTAPI_INSTRUMENT_TYPE_MAP: Record<string, AssetType> = {
+  EQ: 'equity',
+  FUTSTK: 'futures',
+  FUTIDX: 'futures',
+  OPTSTK: 'options',
+  OPTIDX: 'options',
+};
 
 // ─── Normalizer ───────────────────────────────────────────────────────────────
 
@@ -33,15 +45,15 @@ export class Normalizer implements INormalizer {
   normalizeTick(raw: RawTick, symbol: string): Result<Tick> {
     // Paise validation
     const priceResult = this.paiseToRupees(raw.lastTradedPrice);
-    if (!priceResult.ok) return priceResult;
+    if (!priceResult.ok) return priceResult as any;
 
     // Exchange
     const exchResult = this.normalizeExchange(raw.exchangeType);
-    if (!exchResult.ok) return exchResult;
+    if (!exchResult.ok) return exchResult as any;
 
     // Timestamp
     const tsResult = this.validateTimestamp(raw.exchangeTimestamp, 'tick');
-    if (!tsResult.ok) return tsResult;
+    if (!tsResult.ok) return tsResult as any;
 
     // Volume
     if (!isFinite(raw.volume) || raw.volume < 0) {
@@ -74,7 +86,7 @@ export class Normalizer implements INormalizer {
   normalizeCandle(raw: RawCandle, symbol: string, timeframe: Timeframe): Result<Candle> {
     // Timestamp (IST string → unix ms UTC)
     const tsResult = this.istStringToUnixMs(raw.timestamp);
-    if (!tsResult.ok) return tsResult;
+    if (!tsResult.ok) return tsResult as any;
 
     // OHLCV validation (REST prices already in rupees)
     const fields: Array<[string, number]> = [
@@ -154,14 +166,12 @@ export class Normalizer implements INormalizer {
     return ok(candle);
   }
 
-  // ─── normalizeSymbol ────────────────────────────────────────────────────────
-
   normalizeSymbol(raw: RawSymbol): Result<Symbol> {
     const exchResult  = this.normalizeExchangeString(raw.exchange);
-    if (!exchResult.ok) return exchResult;
+    if (!exchResult.ok) return exchResult as any;
 
     const assetResult = this.normalizeAssetType(raw.instrumentType);
-    if (!assetResult.ok) return assetResult;
+    if (!assetResult.ok) return assetResult as any;
 
     const lotSize  = Number(raw.lotSize);
     const tickSize = Number(raw.tickSize);
