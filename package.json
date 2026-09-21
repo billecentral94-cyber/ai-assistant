@@ -1,14 +1,14 @@
 {
-  "name": "artha-ai-phase8",
+  "name": "artha-ai-copilot",
   "version": "1.0.0",
   "private": true,
-  "description": "Artha AI — Phase 8 (Learning Engine) implementation",
+  "description": "Artha AI Copilot — Multi-asset Intelligence & F&O Engine",
   "scripts": {
-    "build": "tsc --noEmit false -p tsconfig.json",
+    "postinstall": "cd apps/api && npm install && cd ../web && npm install",
+    "build": "cd apps/web && npm run build && cd ../api && npm run build",
+    "start": "cd apps/api && npm run start",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test": "jest"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
