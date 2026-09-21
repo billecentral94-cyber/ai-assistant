@@ -1,0 +1,29 @@
+[project]
+name = "fo-data-service"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "harshad more", email = "billecentral94@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "curl-cffi>=0.16.2",
+    "nsepython>=2.97",
+    "psycopg2-binary>=2.9.12",
+    "pydantic>=2.13.5",
+    "pydantic-settings>=2.15.0",
+    "pyotp>=2.10.0",
+    "pytest>=9.1.1",
+    "python-dotenv>=1.2.3",
+    "pytz>=2026.3.post1",
+    "requests>=2.34.2",
+    "sqlalchemy>=2.0.52",
+]
+
+[project.scripts]
+fo-data-service = "fo_data_service:main"
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"

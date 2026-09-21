@@ -281,7 +281,178 @@ foRouter.get('/signals', async (req: Request, res: Response) => {
   });
 });
 
-// ─── 8. TinyFish Live Market News & Sentiment ────────────────────────────────
+// ─── 8. Trade Execution Panel (IN/OUT Positions) ─────────────────────────────
+foRouter.get('/trade-panel', async (req: Request, res: Response) => {
+  const symbol = (req.query.symbol as string || 'NIFTY').toUpperCase();
+  const baseSpot = symbol === 'NIFTY' ? 24520.0 : 52400.0;
+  const step = symbol === 'NIFTY' ? 50.0 : 100.0;
+  const lotSize = symbol === 'NIFTY' ? 25 : 15;
+
+  // Nearest round strike for ATM
+  const atmStrike = Math.round(baseSpot / step) * step;
+  const otmStrike = atmStrike + step * 2;
+  const otmPutStrike = atmStrike - step * 2;
+
+  // Determine market status
+  const now = new Date();
+  const istHour = (now.getUTCHours() + 5) + (now.getUTCMinutes() + 30 >= 60 ? 1 : 0);
+  const istMin = (now.getUTCMinutes() + 30) % 60;
+  const marketTime = istHour * 100 + istMin;
+  const isMarketOpen = marketTime >= 915 && marketTime <= 1530;
+  const isSquareOffTime = marketTime >= 1515;
+  const dayOfWeek = now.getDay(); // 0=Sun, 6=Sat
+  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+  // Current regime detection (simplified from analytics)
+  const confluenceScore = 4;
+  const direction = 'BULLISH';
+  const hasActiveSetup = confluenceScore >= 3 && isMarketOpen && !isWeekend;
+
+  // Build execution instructions
+  const entryLegs = direction === 'BULLISH' ? [
+    {
+      leg: 1,
+      action: 'BUY',
+      instrument: `${symbol} ${atmStrike} CE`,
+      strike: atmStrike,
+      option_type: 'CE',
+      lots: 2,
+      quantity: 2 * lotSize,
+      estimated_premium: Math.round(step * 3.2),
+      order_type: 'LIMIT',
+      instruction: `Place BUY order for ${symbol} ${atmStrike} CE × ${2 * lotSize} qty at market or limit ₹${Math.round(step * 3.2)}`
+    },
+    {
+      leg: 2,
+      action: 'SELL',
+      instrument: `${symbol} ${otmStrike} CE`,
+      strike: otmStrike,
+      option_type: 'CE',
+      lots: 2,
+      quantity: 2 * lotSize,
+      estimated_premium: Math.round(step * 1.6),
+      order_type: 'LIMIT',
+      instruction: `Place SELL order for ${symbol} ${otmStrike} CE × ${2 * lotSize} qty at market or limit ₹${Math.round(step * 1.6)}`
+    }
+  ] : [
+    {
+      leg: 1,
+      action: 'BUY',
+      instrument: `${symbol} ${atmStrike} PE`,
+      strike: atmStrike,
+      option_type: 'PE',
+      lots: 2,
+      quantity: 2 * lotSize,
+      estimated_premium: Math.round(step * 3.2),
+      order_type: 'LIMIT',
+      instruction: `Place BUY order for ${symbol} ${atmStrike} PE × ${2 * lotSize} qty at market or limit ₹${Math.round(step * 3.2)}`
+    },
+    {
+      leg: 2,
+      action: 'SELL',
+      instrument: `${symbol} ${otmPutStrike} PE`,
+      strike: otmPutStrike,
+      option_type: 'PE',
+      lots: 2,
+      quantity: 2 * lotSize,
+      estimated_premium: Math.round(step * 1.6),
+      order_type: 'LIMIT',
+      instruction: `Place SELL order for ${symbol} ${otmPutStrike} PE × ${2 * lotSize} qty at market or limit ₹${Math.round(step * 1.6)}`
+    }
+  ];
+
+  const netDebit = entryLegs[0].estimated_premium - entryLegs[1].estimated_premium;
+  const maxLoss = netDebit * entryLegs[0].quantity;
+  const spreadWidth = Math.abs(entryLegs[0].strike - entryLegs[1].strike);
+  const maxProfit = (spreadWidth - netDebit) * entryLegs[0].quantity;
+
+  const exitRules = [
+    {
+      rule: 'TARGET HIT',
+      icon: '🎯',
+      condition: `Spot ${direction === 'BULLISH' ? 'rises above' : 'falls below'} ₹${direction === 'BULLISH' ? atmStrike + step * 3 : atmStrike - step * 3}`,
+      action: 'EXIT BOTH LEGS — Square off the entire spread. Book profit.',
+      priority: 1
+    },
+    {
+      rule: 'STOP LOSS HIT',
+      icon: '🛑',
+      condition: `Spot ${direction === 'BULLISH' ? 'falls below' : 'rises above'} ₹${direction === 'BULLISH' ? atmStrike - step * 2 : atmStrike + step * 2}`,
+      action: 'EXIT BOTH LEGS — Square off immediately. Cut the loss.',
+      priority: 2
+    },
+    {
+      rule: 'EOD SQUARE-OFF',
+      icon: '⏰',
+      condition: 'Time reaches 15:15 IST (mandatory)',
+      action: 'EXIT BOTH LEGS — Close all open positions before 15:30 close.',
+      priority: 3
+    },
+    {
+      rule: 'SPREAD DECAY',
+      icon: '📉',
+      condition: 'If spread value drops to 30% of entry debit',
+      action: 'EXIT BOTH LEGS — Premium has eroded, close to limit loss.',
+      priority: 4
+    }
+  ];
+
+  const statusLabel = isWeekend ? 'MARKET CLOSED (Weekend)' :
+    !isMarketOpen ? 'MARKET CLOSED (After Hours)' :
+    isSquareOffTime ? 'SQUARE-OFF WINDOW (Exit All Positions)' :
+    hasActiveSetup ? 'ACTIVE SETUP — READY TO ENTER' : 'NO CONFLUENCE — STAY CASH';
+
+  const statusColor = hasActiveSetup ? 'green' :
+    isSquareOffTime ? 'orange' : 'gray';
+
+  res.json({
+    success: true,
+    symbol,
+    market_status: {
+      is_open: isMarketOpen && !isWeekend,
+      is_square_off_time: isSquareOffTime,
+      is_weekend: isWeekend,
+      status_label: statusLabel,
+      status_color: statusColor,
+      current_time_ist: `${String(istHour).padStart(2, '0')}:${String(istMin).padStart(2, '0')} IST`
+    },
+    position_action: hasActiveSetup ? 'ENTER' : (isSquareOffTime ? 'EXIT_ALL' : 'NO_TRADE'),
+    trade_setup: hasActiveSetup ? {
+      direction,
+      strategy_name: direction === 'BULLISH' ? 'Bull Call Spread' : 'Bear Put Spread',
+      strategy_type: 'Debit Spread (Defined Risk)',
+      confluence_score: `${confluenceScore}/5`,
+      spot_price: baseSpot,
+
+      entry: {
+        heading: '📥 ENTRY POSITION (What to BUY & SELL)',
+        legs: entryLegs,
+        net_debit_per_lot: netDebit,
+        total_debit: netDebit * entryLegs[0].quantity,
+        execute_as: 'Execute Leg 1 first (BUY), then Leg 2 (SELL) immediately after fill.'
+      },
+
+      exit: {
+        heading: '📤 EXIT RULES (When & How to GET OUT)',
+        target_price: direction === 'BULLISH' ? atmStrike + step * 3 : atmStrike - step * 3,
+        stop_loss_price: direction === 'BULLISH' ? atmStrike - step * 2 : atmStrike + step * 2,
+        eod_deadline: '15:15 IST',
+        rules: exitRules,
+        exit_instruction: 'To exit: Place opposite orders on BOTH legs simultaneously (Sell what you bought, Buy back what you sold).'
+      },
+
+      risk_profile: {
+        max_loss_rupees: maxLoss,
+        max_profit_rupees: maxProfit,
+        risk_reward_ratio: `1 : ${(maxProfit / maxLoss).toFixed(1)}`,
+        risk_as_pct_of_capital: `${((maxLoss / 500000) * 100).toFixed(2)}%`,
+        breakeven: atmStrike + netDebit
+      }
+    } : null
+  });
+});
+
+// ─── 9. TinyFish Live Market News & Sentiment ────────────────────────────────
 foRouter.get('/news', async (req: Request, res: Response) => {
   const query = (req.query.q as string || 'NSE Nifty F&O market news').trim();
   const news = await searchMarketNews(query);

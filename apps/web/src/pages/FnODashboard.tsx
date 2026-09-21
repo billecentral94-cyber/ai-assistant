@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   getFoOiWalls,
   getFoPcr,
@@ -6,6 +6,7 @@ import {
   getFoIv,
   getFoMaxPain,
   getFoSignals,
+  getFoTradePanel,
   getFoNews
 } from '../services/api';
 
@@ -20,18 +21,20 @@ export default function FnODashboard() {
   const [iv, setIv] = useState<any>({});
   const [maxPain, setMaxPain] = useState<any>({});
   const [signal, setSignal] = useState<any>(null);
+  const [tradePanel, setTradePanel] = useState<any>(null);
   const [news, setNews] = useState<any[]>([]);
 
-  const fetchAllData = async (sym: 'NIFTY' | 'BANKNIFTY') => {
+  const fetchAllData = useCallback(async (sym: 'NIFTY' | 'BANKNIFTY') => {
     setLoading(true);
     try {
-      const [wRes, pRes, bRes, ivRes, mpRes, sRes, nRes] = await Promise.all([
+      const [wRes, pRes, bRes, ivRes, mpRes, sRes, tpRes, nRes] = await Promise.all([
         getFoOiWalls(sym),
         getFoPcr(sym),
         getFoFuturesBuildup(sym),
         getFoIv(sym),
         getFoMaxPain(sym),
         getFoSignals(sym),
+        getFoTradePanel(sym),
         getFoNews(`${sym} derivatives market news`)
       ]);
 
@@ -41,22 +44,35 @@ export default function FnODashboard() {
       setIv(ivRes || {});
       setMaxPain(mpRes || {});
       setSignal(sRes?.signal || null);
+      setTradePanel(tpRes || null);
       setNews(nRes?.results || []);
     } catch (e) {
       console.error('Error loading F&O data:', e);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAllData(symbol);
-  }, [symbol]);
+    // Auto-refresh every 60s during market hours
+    const interval = setInterval(() => fetchAllData(symbol), 60000);
+    return () => clearInterval(interval);
+  }, [symbol, fetchAllData]);
 
   const pcrColor =
     pcr.overall_pcr >= 1.2 ? 'var(--green)'
     : pcr.overall_pcr <= 0.8 ? 'var(--red)'
     : '#f59e0b';
+
+  const ms = tradePanel?.market_status;
+  const ts = tradePanel?.trade_setup;
+  const posAction = tradePanel?.position_action;
+
+  const statusBg = ms?.status_color === 'green' ? 'rgba(16,185,129,0.12)' :
+    ms?.status_color === 'orange' ? 'rgba(251,146,60,0.12)' : 'rgba(100,116,139,0.12)';
+  const statusBorder = ms?.status_color === 'green' ? '#10b981' :
+    ms?.status_color === 'orange' ? '#fb923c' : '#64748b';
 
   return (
     <div>
@@ -90,6 +106,265 @@ export default function FnODashboard() {
       </div>
 
       {loading && <div style={{ padding: '20px 0', color: 'var(--muted)' }}>Refreshing institutional analytics...</div>}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* TRADE EXECUTION PANEL — The main IN/OUT position panel              */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {tradePanel && (
+        <div style={{
+          marginBottom: 28,
+          border: `2px solid ${statusBorder}`,
+          borderRadius: 12,
+          overflow: 'hidden'
+        }}>
+          {/* Market Status Bar */}
+          <div style={{
+            background: statusBg,
+            padding: '14px 20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderBottom: `1px solid ${statusBorder}`
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{
+                width: 14, height: 14, borderRadius: '50%',
+                background: statusBorder,
+                boxShadow: ms?.is_open ? `0 0 8px ${statusBorder}` : 'none',
+                animation: ms?.is_open ? 'pulse 2s infinite' : 'none'
+              }} />
+              <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: 0.5 }}>
+                {ms?.status_label}
+              </span>
+            </div>
+            <span style={{ fontSize: 13, color: 'var(--muted)' }}>
+              {ms?.current_time_ist} • Auto-refreshes every 60s
+            </span>
+          </div>
+
+          {/* ── POSITION ACTION: ENTER ── */}
+          {posAction === 'ENTER' && ts && (
+            <div style={{ padding: 20 }}>
+              {/* Direction + Strategy Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{
+                    fontSize: 28, fontWeight: 900,
+                    color: ts.direction === 'BULLISH' ? '#10b981' : '#ef4444'
+                  }}>
+                    {ts.direction === 'BULLISH' ? '▲' : '▼'} {ts.direction}
+                  </span>
+                  <span className="badge" style={{
+                    background: ts.direction === 'BULLISH' ? '#10b981' : '#ef4444',
+                    color: '#000', fontWeight: 700, fontSize: 13, padding: '4px 12px'
+                  }}>
+                    {ts.strategy_name}
+                  </span>
+                  <span style={{ fontSize: 14, color: 'var(--muted)' }}>
+                    Confluence: {ts.confluence_score} • Spot: ₹{ts.spot_price?.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Two Column: ENTRY (Left) + EXIT (Right) */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                {/* ── LEFT: ENTRY POSITION ── */}
+                <div style={{
+                  background: 'rgba(16,185,129,0.06)',
+                  border: '1px solid rgba(16,185,129,0.25)',
+                  borderRadius: 10,
+                  padding: 18
+                }}>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: '#10b981', marginBottom: 14 }}>
+                    {ts.entry?.heading}
+                  </div>
+
+                  {ts.entry?.legs?.map((leg: any) => (
+                    <div key={leg.leg} style={{
+                      background: leg.action === 'BUY' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
+                      border: `1px solid ${leg.action === 'BUY' ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                      borderRadius: 8,
+                      padding: '12px 16px',
+                      marginBottom: 10
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <span style={{
+                            display: 'inline-block',
+                            padding: '2px 10px',
+                            borderRadius: 4,
+                            fontWeight: 800,
+                            fontSize: 13,
+                            background: leg.action === 'BUY' ? '#10b981' : '#ef4444',
+                            color: '#000',
+                            marginRight: 10
+                          }}>
+                            LEG {leg.leg}: {leg.action}
+                          </span>
+                          <span style={{ fontSize: 18, fontWeight: 700 }}>
+                            {leg.instrument}
+                          </span>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: 20, fontWeight: 800 }}>₹{leg.estimated_premium}</div>
+                          <div style={{ fontSize: 11, color: 'var(--muted)' }}>{leg.quantity} qty ({leg.lots} lots)</div>
+                        </div>
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8, fontStyle: 'italic' }}>
+                        {leg.instruction}
+                      </div>
+                    </div>
+                  ))}
+
+                  <div style={{
+                    background: 'rgba(56,189,248,0.08)',
+                    borderRadius: 6,
+                    padding: '10px 14px',
+                    fontSize: 12,
+                    marginTop: 6,
+                    color: '#38bdf8'
+                  }}>
+                    <strong>Execution Order:</strong> {ts.entry?.execute_as}
+                  </div>
+
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: 8,
+                    marginTop: 12,
+                    fontSize: 13
+                  }}>
+                    <div>Net Debit / Lot: <strong>₹{ts.entry?.net_debit_per_lot}</strong></div>
+                    <div>Total Debit: <strong>₹{ts.entry?.total_debit?.toLocaleString()}</strong></div>
+                  </div>
+                </div>
+
+                {/* ── RIGHT: EXIT RULES ── */}
+                <div style={{
+                  background: 'rgba(239,68,68,0.06)',
+                  border: '1px solid rgba(239,68,68,0.25)',
+                  borderRadius: 10,
+                  padding: 18
+                }}>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: '#ef4444', marginBottom: 14 }}>
+                    {ts.exit?.heading}
+                  </div>
+
+                  {ts.exit?.rules?.map((rule: any) => (
+                    <div key={rule.rule} style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 10,
+                      marginBottom: 12,
+                      padding: '10px 14px',
+                      background: 'rgba(255,255,255,0.03)',
+                      borderRadius: 8,
+                      border: '1px solid rgba(255,255,255,0.06)'
+                    }}>
+                      <span style={{ fontSize: 22 }}>{rule.icon}</span>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 14 }}>{rule.rule}</div>
+                        <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
+                          <strong>When:</strong> {rule.condition}
+                        </div>
+                        <div style={{ fontSize: 12, color: '#fb923c', marginTop: 2 }}>
+                          <strong>Action:</strong> {rule.action}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div style={{
+                    background: 'rgba(251,146,60,0.1)',
+                    borderRadius: 6,
+                    padding: '10px 14px',
+                    fontSize: 12,
+                    color: '#fb923c',
+                    marginTop: 4
+                  }}>
+                    <strong>How to Exit:</strong> {ts.exit?.exit_instruction}
+                  </div>
+                </div>
+              </div>
+
+              {/* Risk Profile Summary Bar */}
+              {ts.risk_profile && (
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(5, 1fr)',
+                  gap: 12,
+                  marginTop: 16,
+                  padding: '14px 18px',
+                  background: 'rgba(255,255,255,0.03)',
+                  borderRadius: 8,
+                  border: '1px solid rgba(255,255,255,0.06)'
+                }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase' }}>Max Loss</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: '#ef4444' }}>
+                      ₹{ts.risk_profile.max_loss_rupees?.toLocaleString()}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase' }}>Max Profit</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: '#10b981' }}>
+                      ₹{ts.risk_profile.max_profit_rupees?.toLocaleString()}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase' }}>Risk:Reward</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: '#38bdf8' }}>
+                      {ts.risk_profile.risk_reward_ratio}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase' }}>Capital at Risk</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: '#f59e0b' }}>
+                      {ts.risk_profile.risk_as_pct_of_capital}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase' }}>Breakeven</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: '#e2e8f0' }}>
+                      ₹{ts.risk_profile.breakeven?.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── POSITION ACTION: EXIT ALL ── */}
+          {posAction === 'EXIT_ALL' && (
+            <div style={{ padding: 24, textAlign: 'center' }}>
+              <div style={{ fontSize: 40 }}>⏰</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: '#fb923c', marginTop: 8 }}>
+                SQUARE-OFF WINDOW — EXIT ALL OPEN POSITIONS NOW
+              </div>
+              <div style={{ fontSize: 14, color: 'var(--muted)', marginTop: 8 }}>
+                Market closes at 15:30 IST. Close all spread legs immediately to avoid overnight risk.
+              </div>
+            </div>
+          )}
+
+          {/* ── POSITION ACTION: NO TRADE ── */}
+          {posAction === 'NO_TRADE' && (
+            <div style={{ padding: 24, textAlign: 'center' }}>
+              <div style={{ fontSize: 40 }}>⏸️</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: '#64748b', marginTop: 8 }}>
+                NO ACTIVE SETUP — STAY IN CASH
+              </div>
+              <div style={{ fontSize: 14, color: 'var(--muted)', marginTop: 8 }}>
+                {ms?.is_weekend
+                  ? 'Market is closed for the weekend. Signals will resume on Monday 9:15 AM IST.'
+                  : !ms?.is_open
+                    ? 'Market is closed. Signals generate during trading hours (9:15 AM – 3:30 PM IST).'
+                    : 'Confluence score is below threshold. Wait for ≥3/5 confirmations before entering.'}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Top Metric Cards */}
       <div className="grid-3" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>

@@ -211,6 +211,11 @@ export async function getFoSignals(symbol: string = 'NIFTY') {
   return res.json();
 }
 
+export async function getFoTradePanel(symbol: string = 'NIFTY') {
+  const res = await fetch(`${BASE}/fo/trade-panel?symbol=${symbol}`);
+  return res.json();
+}
+
 export async function getFoNews(query: string = 'NSE Nifty F&O news') {
   const res = await fetch(`${BASE}/fo/news?q=${encodeURIComponent(query)}`);
   return res.json();
