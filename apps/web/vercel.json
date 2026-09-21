@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm --prefix apps/web run build",
-  "outputDirectory": "apps/web/dist",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
