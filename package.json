@@ -4,21 +4,22 @@
   "private": true,
   "description": "Artha AI Copilot — Multi-asset Intelligence & F&O Engine",
   "scripts": {
-    "postinstall": "cd apps/api && npm install && cd ../web && npm install",
-    "build": "cd apps/web && npm run build && cd ../api && npm run build",
+    "postinstall": "cd apps/web && npm install --include=dev && cd ../api && npm install",
+    "build": "cd apps/web && npm run build",
     "start": "cd apps/api && npm run start",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "jest"
+  },
+  "dependencies": {
+    "@google/genai": "^2.10.0",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^20.14.9",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.5",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.5.3"
-  },
-  "dependencies": {
-    "@google/genai": "^2.10.0"
+    "ts-node": "^10.9.2"
   }
 }
