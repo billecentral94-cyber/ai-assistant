@@ -1,4 +1,6 @@
 {
+  "buildCommand": "test -d apps/web && cd apps/web; npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
