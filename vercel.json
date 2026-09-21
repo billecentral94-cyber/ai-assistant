@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx vite build apps/web --outDir dist && node -e \"const fs=require('fs'); fs.cpSync('dist', 'apps/web/dist', {recursive: true});\"",
+  "buildCommand": "npx vite build apps/web --outDir apps/web/dist; node -e \"const fs=require('fs'); fs.cpSync('apps/web/dist', 'dist', {recursive: true});\"",
   "outputDirectory": "dist",
   "rewrites": [
     {
