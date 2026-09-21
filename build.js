@@ -2,14 +2,21 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Building Vite Web Application...');
-execSync('npx vite build apps/web --outDir apps/web/dist', { stdio: 'inherit' });
+console.log('🚀 Starting Artha AI Web Build...');
+const rootDir = __dirname;
+const webDir = path.resolve(rootDir, 'apps/web');
+const webDist = path.resolve(webDir, 'dist');
+const rootDist = path.resolve(rootDir, 'dist');
 
-console.log('📦 Syncing dist to root directory for Vercel...');
-const webDist = path.resolve(__dirname, 'apps/web/dist');
-const rootDist = path.resolve(__dirname, 'dist');
+// Run vite build inside apps/web
+console.log(`📁 Building in ${webDir}...`);
+execSync('npx vite build', { cwd: webDir, stdio: 'inherit' });
 
+// Copy dist to root ./dist so Vercel finds dist regardless of root settings
+console.log('📦 Copying compiled dist to root...');
 fs.mkdirSync(rootDist, { recursive: true });
-fs.cpSync(webDist, rootDist, { recursive: true });
+if (fs.existsSync(webDist)) {
+  fs.cpSync(webDist, rootDist, { recursive: true });
+}
 
-console.log('✅ Build completed successfully!');
+console.log('✅ Build succeeded! Production dist folders synchronized.');
