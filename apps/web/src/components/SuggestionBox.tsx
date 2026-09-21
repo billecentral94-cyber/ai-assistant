@@ -1,4 +1,5 @@
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { IconSparkles, IconTrendingUp, IconActivity } from './Icons';
 
 export interface AgentSuggestion {
   symbol: string;
@@ -19,7 +20,6 @@ interface SuggestionBoxProps {
 
 const API_BASE = 'http://localhost:4000/api';
 
-// Request browser notification permission
 async function requestNotificationPermission(): Promise<boolean> {
   if (!('Notification' in window)) return false;
   if (Notification.permission === 'granted') return true;
@@ -28,7 +28,6 @@ async function requestNotificationPermission(): Promise<boolean> {
   return permission === 'granted';
 }
 
-// Send browser push notification
 function sendNotification(suggestion: AgentSuggestion) {
   if (Notification.permission !== 'granted') return;
 
@@ -45,7 +44,6 @@ function sendNotification(suggestion: AgentSuggestion) {
     n.close();
   };
 
-  // Auto-close after 8 seconds
   setTimeout(() => n.close(), 8000);
 }
 
@@ -57,7 +55,6 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [notifiedSymbols] = useState(new Set<string>());
 
-  // Check notification permission on mount
   useEffect(() => {
     if ('Notification' in window) {
       setNotifEnabled(Notification.permission === 'granted');
@@ -74,7 +71,6 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
         setSuggestions(newSuggestions);
         setLastUpdated(data.lastScreenedAt);
 
-        // Send notifications for new high-confidence suggestions
         if (notifEnabled) {
           newSuggestions
             .filter(s => s.confidence >= 70 && !notifiedSymbols.has(s.symbol))
@@ -91,7 +87,6 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
     }
   }, [notifEnabled, notifiedSymbols]);
 
-  // Poll for suggestions every 60 seconds
   useEffect(() => {
     fetchSuggestions();
     const interval = setInterval(fetchSuggestions, 60_000);
@@ -102,7 +97,7 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
     const granted = await requestNotificationPermission();
     setNotifEnabled(granted);
     if (granted) {
-      fetchSuggestions(); // refetch to send any pending notifications
+      fetchSuggestions();
     }
   };
 
@@ -132,115 +127,82 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
   };
 
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 80) return '#10b981'; // green
-    if (confidence >= 70) return '#a78bfa'; // purple
-    if (confidence >= 60) return '#f59e0b'; // amber
-    return '#6b7280'; // gray
-  };
-
-  const getRatingBadge = (rating?: string) => {
-    if (!rating) return null;
-    const colors: Record<string, string> = {
-      STRONG_BUY: '#10b981',
-      BUY: '#34d399',
-      HOLD: '#f59e0b',
-      SELL: '#f87171',
-      STRONG_SELL: '#ef4444',
-    };
-    return (
-      <span style={{
-        fontSize: 10,
-        padding: '2px 6px',
-        borderRadius: 4,
-        background: `${colors[rating] ?? '#6b7280'}22`,
-        color: colors[rating] ?? '#6b7280',
-        border: `1px solid ${colors[rating] ?? '#6b7280'}44`,
-        fontWeight: 700,
-        letterSpacing: 0.5,
-      }}>
-        {rating.replace('_', ' ')}
-      </span>
-    );
+    if (confidence >= 80) return 'var(--green)';
+    if (confidence >= 70) return '#818cf8';
+    if (confidence >= 60) return '#fbbf24';
+    return '#64748b';
   };
 
   return (
-    <div style={{
-      background: 'rgba(255,255,255,0.03)',
-      border: '1px solid rgba(167, 139, 250, 0.2)',
-      borderRadius: 16,
-      padding: 20,
-      marginBottom: 24,
+    <div className="card" style={{
+      background: 'linear-gradient(180deg, rgba(17, 24, 39, 0.75) 0%, rgba(13, 18, 29, 0.9) 100%)',
+      border: '1px solid rgba(99, 102, 241, 0.22)',
+      borderRadius: 14,
+      padding: '22px 24px',
+      marginBottom: 28,
     }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div>
-          <h3 style={{ margin: 0, fontSize: 16, color: '#fff', display: 'flex', alignItems: 'center', gap: 8 }}>
-            🤖 AI Suggestion Box
-            {suggestions.length > 0 && (
-              <span style={{
-                background: 'linear-gradient(135deg, #a78bfa, #7c3aed)',
-                color: '#fff',
-                borderRadius: 12,
-                padding: '2px 8px',
-                fontSize: 11,
-                fontWeight: 700,
-              }}>
-                {suggestions.length} active
-              </span>
-            )}
-          </h3>
-          {lastUpdated && (
-            <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
-              Last screened: {new Date(lastUpdated).toLocaleTimeString('en-IN')}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            background: 'rgba(139, 92, 246, 0.15)',
+            border: '1px solid rgba(139, 92, 246, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <IconSparkles size={16} color="#c084fc" />
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#ffffff' }}>
+                AI Quantitative Radar
+              </h3>
+              {suggestions.length > 0 && (
+                <span className="badge success">
+                  {suggestions.length} OPPORTUNITIES
+                </span>
+              )}
             </div>
-          )}
+            <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
+              {lastUpdated ? `Last screened: ${new Date(lastUpdated).toLocaleTimeString('en-IN')}` : 'Multi-timeframe algorithmic signals'}
+            </div>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {!notifEnabled && (
             <button
               onClick={handleEnableNotifications}
-              style={{
-                padding: '6px 12px',
-                fontSize: 11,
-                background: 'rgba(245, 158, 11, 0.15)',
-                border: '1px solid rgba(245, 158, 11, 0.4)',
-                borderRadius: 8,
-                color: '#f59e0b',
-                cursor: 'pointer',
-              }}
+              className="secondary"
+              style={{ padding: '6px 12px', fontSize: 11 }}
             >
-              🔔 Enable Alerts
+              🔔 Enable Push Alerts
             </button>
           )}
           {notifEnabled && (
-            <span style={{ fontSize: 11, color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>
-              🔔 Alerts ON
+            <span style={{ fontSize: 11, color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
+              <span className="status-dot-pulse" style={{ width: 6, height: 6 }} /> Alerts Active
             </span>
           )}
           <button
             onClick={handleScreen}
             disabled={screening}
-            style={{
-              padding: '6px 14px',
-              fontSize: 12,
-              background: 'linear-gradient(135deg, #a78bfa22, #7c3aed22)',
-              border: '1px solid rgba(167, 139, 250, 0.4)',
-              borderRadius: 8,
-              color: '#a78bfa',
-              cursor: screening ? 'not-allowed' : 'pointer',
-              opacity: screening ? 0.6 : 1,
-            }}
+            className="primary"
+            style={{ padding: '6px 14px', fontSize: 12 }}
           >
-            {screening ? '⏳ Screening…' : '🔍 Screen Now'}
+            {screening ? '⏳ Running AI Screener…' : '⚡ Screen Live Setups'}
           </button>
         </div>
       </div>
 
       {/* Loading State */}
       {loading && suggestions.length === 0 && (
-        <div style={{ textAlign: 'center', color: 'var(--muted)', fontSize: 13, padding: '20px 0' }}>
-          ⏳ Loading suggestions…
+        <div style={{ textAlign: 'center', color: 'var(--muted)', fontSize: 13, padding: '24px 0' }}>
+          Scanning equity & derivative order flows…
         </div>
       )}
 
@@ -248,83 +210,91 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
       {!loading && suggestions.length === 0 && (
         <div style={{
           textAlign: 'center',
-          padding: '24px 0',
+          padding: '28px 0',
           color: 'var(--muted)',
           fontSize: 13,
+          background: 'rgba(255, 255, 255, 0.01)',
+          borderRadius: 10,
+          border: '1px dashed var(--border-subtle)'
         }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>🎯</div>
-          <div>No active suggestions. Click <strong>"Screen Now"</strong> to run AI analysis.</div>
+          <div style={{ fontSize: 24, marginBottom: 8 }}>🎯</div>
+          <div>No pending signals. Click <strong>"Screen Live Setups"</strong> to initiate quantitative scanning.</div>
         </div>
       )}
 
-      {/* Suggestion Cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Suggestion Cards Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
         {suggestions.map(s => (
           <div
             key={s.symbol}
             onClick={() => onSuggestionClick?.(s)}
             style={{
               background: s.direction === 'LONG'
-                ? 'rgba(16, 185, 129, 0.05)'
-                : 'rgba(239, 68, 68, 0.05)',
-              border: `1px solid ${s.direction === 'LONG' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-              borderRadius: 12,
+                ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(13, 18, 29, 0.6) 100%)'
+                : 'linear-gradient(135deg, rgba(244, 63, 94, 0.08) 0%, rgba(13, 18, 29, 0.6) 100%)',
+              border: `1px solid ${s.direction === 'LONG' ? 'rgba(16, 185, 129, 0.25)' : 'rgba(244, 63, 94, 0.25)'}`,
+              borderRadius: 10,
               padding: '14px 16px',
               cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              position: 'relative',
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLDivElement).style.transform = 'translateX(4px)';
-              (e.currentTarget as HTMLDivElement).style.borderColor = s.direction === 'LONG' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)';
+              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+              (e.currentTarget as HTMLDivElement).style.borderColor = s.direction === 'LONG' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(244, 63, 94, 0.5)';
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLDivElement).style.transform = 'translateX(0)';
-              (e.currentTarget as HTMLDivElement).style.borderColor = s.direction === 'LONG' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)';
+              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)';
+              (e.currentTarget as HTMLDivElement).style.borderColor = s.direction === 'LONG' ? 'rgba(16, 185, 129, 0.25)' : 'rgba(244, 63, 94, 0.25)';
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              {/* Left: symbol + direction */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div>
-                  <div style={{
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{
                     fontSize: 16,
-                    fontWeight: 700,
-                    color: s.direction === 'LONG' ? '#10b981' : '#ef4444',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
+                    fontWeight: 800,
+                    fontFamily: 'JetBrains Mono, monospace',
+                    color: '#ffffff'
                   }}>
-                    {s.direction === 'LONG' ? '▲' : '▼'} {s.symbol}
-                  </div>
-                  <div style={{ display: 'flex', gap: 6, marginTop: 4, alignItems: 'center' }}>
-                    <span style={{
-                      fontSize: 10,
-                      padding: '2px 6px',
-                      borderRadius: 4,
-                      background: 'rgba(167, 139, 250, 0.15)',
-                      color: '#a78bfa',
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                    }}>
-                      {s.strategy}
+                    {s.symbol}
+                  </span>
+                  <span className={`badge ${s.direction === 'LONG' ? 'success' : 'danger'}`}>
+                    {s.direction === 'LONG' ? '▲ LONG' : '▼ SHORT'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: 6, marginTop: 6, alignItems: 'center' }}>
+                  <span style={{
+                    fontSize: 10,
+                    padding: '2px 6px',
+                    borderRadius: 4,
+                    background: 'rgba(99, 102, 241, 0.15)',
+                    color: '#a78bfa',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: 0.4
+                  }}>
+                    {s.strategy}
+                  </span>
+                  {s.fundamentalRating && (
+                    <span className="badge warning" style={{ fontSize: 9.5 }}>
+                      {s.fundamentalRating}
                     </span>
-                    {getRatingBadge(s.fundamentalRating)}
-                  </div>
+                  )}
                 </div>
               </div>
 
-              {/* Right: confidence + dismiss */}
+              {/* Confidence Meter */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: 800,
+                    fontFamily: 'JetBrains Mono, monospace',
                     color: getConfidenceColor(s.confidence),
                   }}>
                     {s.confidence}%
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--muted)' }}>confidence</div>
+                  <div style={{ fontSize: 9.5, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Confidence</div>
                 </div>
                 <button
                   onClick={e => { e.stopPropagation(); handleDismiss(s.symbol); }}
@@ -333,13 +303,10 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
                     border: 'none',
                     color: 'var(--muted)',
                     cursor: 'pointer',
-                    fontSize: 16,
+                    fontSize: 14,
                     padding: 4,
-                    borderRadius: 4,
-                    transition: 'color 0.2s',
+                    boxShadow: 'none'
                   }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#ef4444'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--muted)'; }}
                   title="Dismiss"
                 >
                   ✕
@@ -347,52 +314,48 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
               </div>
             </div>
 
-            {/* Confidence bar */}
-            <div style={{ marginTop: 10, background: 'rgba(255,255,255,0.05)', borderRadius: 4, height: 4, overflow: 'hidden' }}>
+            {/* Confidence Progress Bar */}
+            <div style={{ marginTop: 12, background: 'rgba(255,255,255,0.05)', borderRadius: 999, height: 4, overflow: 'hidden' }}>
               <div style={{
                 width: `${s.confidence}%`,
                 height: '100%',
-                background: `linear-gradient(90deg, ${getConfidenceColor(s.confidence)}, ${getConfidenceColor(s.confidence)}aa)`,
-                borderRadius: 4,
-                transition: 'width 0.5s ease',
+                background: getConfidenceColor(s.confidence),
+                borderRadius: 999,
+                transition: 'width 0.6s ease',
               }} />
             </div>
 
-            {/* Reasoning preview */}
+            {/* Reasoning Preview */}
             {s.reasoning && (
               <div style={{
-                marginTop: 8,
-                fontSize: 11,
-                color: 'var(--muted)',
+                marginTop: 10,
+                fontSize: 12,
+                color: 'var(--text-secondary)',
+                lineHeight: 1.4,
                 overflow: 'hidden',
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical' as any,
               }}>
-                {s.reasoning.slice(0, 120)}…
+                {s.reasoning}
               </div>
             )}
 
-            {/* Target / Stop */}
+            {/* Target & Stop Loss Levels */}
             {(s.target || s.stopLoss) && (
-              <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
+              <div style={{ display: 'flex', gap: 14, marginTop: 10, fontSize: 11, fontFamily: 'JetBrains Mono, monospace' }}>
                 {s.target && (
-                  <span style={{ fontSize: 11, color: '#10b981' }}>
-                    🎯 Target: ₹{s.target}
+                  <span style={{ color: 'var(--green)' }}>
+                    🎯 Target: ₹{s.target.toLocaleString('en-IN')}
                   </span>
                 )}
                 {s.stopLoss && (
-                  <span style={{ fontSize: 11, color: '#ef4444' }}>
-                    🛑 Stop: ₹{s.stopLoss}
+                  <span style={{ color: 'var(--red)' }}>
+                    🛑 SL: ₹{s.stopLoss.toLocaleString('en-IN')}
                   </span>
                 )}
               </div>
             )}
-
-            {/* Time */}
-            <div style={{ marginTop: 6, fontSize: 10, color: 'var(--muted)' }}>
-              Generated {new Date(s.generatedAt).toLocaleTimeString('en-IN')}
-            </div>
           </div>
         ))}
       </div>

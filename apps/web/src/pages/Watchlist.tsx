@@ -396,13 +396,15 @@ export default function Watchlist() {
         </div>
       </div>
 
-      {/* Visual Debugger Block */}
-      <div style={{ marginTop: 30, padding: 15, background: 'rgba(255, 255, 255, 0.02)', border: '1px dashed var(--border)', borderRadius: 8 }}>
-        <h4 style={{ color: '#fff', fontSize: 13, marginBottom: 8 }}>🔍 Recharts Shape Diagnostics</h4>
-        <pre style={{ fontSize: 11, color: '#a78bfa', fontFamily: 'monospace', whiteSpace: 'pre-wrap', margin: 0 }}>
+      {/* Optional Diagnostics Toggle */}
+      <details style={{ marginTop: 24, padding: '10px 14px', background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-subtle)', borderRadius: 8 }}>
+        <summary style={{ color: 'var(--muted)', fontSize: 12, cursor: 'pointer', userSelect: 'none' }}>
+          🔧 Developer Diagnostics
+        </summary>
+        <pre style={{ fontSize: 11, color: '#a78bfa', fontFamily: 'monospace', whiteSpace: 'pre-wrap', marginTop: 10 }}>
           {debugText}
         </pre>
-      </div>
+      </details>
     </div>
   );
 }
