@@ -4,7 +4,7 @@
   "private": true,
   "description": "Artha AI Copilot — Multi-asset Intelligence & F&O Engine",
   "scripts": {
-    "build": "npx vite build apps/web --outDir apps/web/dist; node -e \"const fs=require('fs'); fs.cpSync('apps/web/dist', 'dist', {recursive: true});\"",
+    "build": "node build.js",
     "start": "cd apps/api && npm run start",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "jest"
