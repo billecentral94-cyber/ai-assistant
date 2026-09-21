@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd apps/web && npm run build",
+  "buildCommand": "npx vite build apps/web --outDir apps/web/dist",
   "outputDirectory": "apps/web/dist",
   "rewrites": [
     {
