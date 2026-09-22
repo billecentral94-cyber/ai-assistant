@@ -1,0 +1,33 @@
+{
+  "engine_status": "ACTIVE",
+  "initial_capital": 500000.0,
+  "current_capital": 500000.0,
+  "daily_pnl": 0.0,
+  "open_positions": [],
+  "closed_trades": [],
+  "readiness_gates": {
+    "total_trades": 0,
+    "wins": 0,
+    "losses": 0,
+    "win_rate_pct": 0.0,
+    "profit_factor": 0.0,
+    "max_drawdown_pct": 0.0,
+    "gate_1_win_rate": {
+      "value": 0.0,
+      "threshold": 55.0,
+      "passed": false
+    },
+    "gate_2_profit_factor": {
+      "value": 0.0,
+      "threshold": 1.5,
+      "passed": false
+    },
+    "gate_3_max_drawdown": {
+      "value": 0.0,
+      "threshold": 4.0,
+      "passed": false
+    },
+    "all_gates_passed": false
+  },
+  "last_updated": "2026-09-22T20:43:02.204776+05:30"
+}

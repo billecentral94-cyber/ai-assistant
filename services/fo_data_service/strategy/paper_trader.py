@@ -2,10 +2,13 @@
 Live Paper Trading Execution Engine.
 Simulates real-world order execution against live market snapshots with trailing stops,
 risk guardrails, and automated EOD square-offs.
+Includes 3 Live Readiness Gates evaluation and atomic state persistence.
 """
 
+import json
 from typing import List, Dict, Any, Optional
 from datetime import datetime
+from pathlib import Path
 import pytz
 import logging
 
@@ -159,3 +162,107 @@ class PaperTrader:
             "closed_trades_count": len(self.closed_trades),
             "events": events
         }
+
+    # ── State Persistence ─────────────────────────────────────────────────
+
+    STATE_FILE = Path(__file__).resolve().parent.parent / "live_trading_state.json"
+
+    def save_state(self) -> None:
+        """Persist current trading state to JSON for API consumption."""
+        state = {
+            "engine_status": "ACTIVE",
+            "initial_capital": self.initial_capital,
+            "current_capital": round(self.current_capital, 2),
+            "daily_pnl": round(self.daily_pnl, 2),
+            "open_positions": self.open_positions,
+            "closed_trades": self.closed_trades,
+            "readiness_gates": self.get_readiness_metrics(),
+            "last_updated": datetime.now(IST).isoformat()
+        }
+        try:
+            self.STATE_FILE.write_text(json.dumps(state, indent=2, default=str))
+        except Exception as e:
+            logger.error(f"Failed to save trading state: {e}")
+
+    def load_state(self) -> bool:
+        """Load persisted state if available. Returns True if loaded."""
+        if self.STATE_FILE.exists():
+            try:
+                state = json.loads(self.STATE_FILE.read_text())
+                self.current_capital = state.get("current_capital", self.initial_capital)
+                self.daily_pnl = state.get("daily_pnl", 0.0)
+                self.open_positions = state.get("open_positions", [])
+                self.closed_trades = state.get("closed_trades", [])
+                logger.info(f"Loaded persisted state from {self.STATE_FILE.name}")
+                return True
+            except Exception as e:
+                logger.warning(f"Could not load persisted state: {e}")
+                return False
+        return False
+
+    def reset_daily(self) -> None:
+        """Reset daily PnL counter for a new trading session."""
+        self.daily_pnl = 0.0
+
+    # ── 3 Live Readiness Gates ────────────────────────────────────────────
+
+    def get_readiness_metrics(self) -> Dict[str, Any]:
+        """
+        Compute the 3 Live Readiness Gates from closed trades:
+          Gate 1: Win Rate >= 55%
+          Gate 2: Profit Factor >= 1.5
+          Gate 3: Max Drawdown <= 4.0%
+        """
+        total = len(self.closed_trades)
+        if total == 0:
+            return {
+                "total_trades": 0,
+                "wins": 0,
+                "losses": 0,
+                "win_rate_pct": 0.0,
+                "profit_factor": 0.0,
+                "max_drawdown_pct": 0.0,
+                "gate_1_win_rate": {"value": 0.0, "threshold": 55.0, "passed": False},
+                "gate_2_profit_factor": {"value": 0.0, "threshold": 1.5, "passed": False},
+                "gate_3_max_drawdown": {"value": 0.0, "threshold": 4.0, "passed": False},
+                "all_gates_passed": False
+            }
+
+        wins = [t for t in self.closed_trades if t["net_pnl"] > 0]
+        losses = [t for t in self.closed_trades if t["net_pnl"] <= 0]
+
+        win_rate = (len(wins) / total) * 100.0
+
+        gross_profit = sum(t["net_pnl"] for t in wins)
+        gross_loss = abs(sum(t["net_pnl"] for t in losses))
+        profit_factor = round(gross_profit / gross_loss, 2) if gross_loss > 0 else (
+            999.0 if gross_profit > 0 else 0.0
+        )
+
+        # Max drawdown: walk the equity curve
+        peak = self.initial_capital
+        max_dd = 0.0
+        running = self.initial_capital
+        for trade in self.closed_trades:
+            running += trade["net_pnl"]
+            peak = max(peak, running)
+            dd = ((peak - running) / peak) * 100.0 if peak > 0 else 0.0
+            max_dd = max(max_dd, dd)
+
+        g1 = win_rate >= 55.0
+        g2 = profit_factor >= 1.5
+        g3 = max_dd <= 4.0
+
+        return {
+            "total_trades": total,
+            "wins": len(wins),
+            "losses": len(losses),
+            "win_rate_pct": round(win_rate, 2),
+            "profit_factor": profit_factor,
+            "max_drawdown_pct": round(max_dd, 2),
+            "gate_1_win_rate": {"value": round(win_rate, 2), "threshold": 55.0, "passed": g1},
+            "gate_2_profit_factor": {"value": profit_factor, "threshold": 1.5, "passed": g2},
+            "gate_3_max_drawdown": {"value": round(max_dd, 2), "threshold": 4.0, "passed": g3},
+            "all_gates_passed": g1 and g2 and g3
+        }
+

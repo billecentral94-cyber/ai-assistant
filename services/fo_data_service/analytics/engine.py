@@ -155,3 +155,103 @@ class AnalyticsEngine:
 
         logger.info(f"Analytics computed and persisted for {underlying} at {captured_at}")
         return results
+
+    def get_latest_analytics(self, underlying: str) -> Dict[str, Any]:
+        """
+        Query DB for the latest computed analytics for signal generation.
+        Returns a dict with oi_walls, pcr_data, buildup_data, iv_data, max_pain_data, spot_price.
+        """
+        result: Dict[str, Any] = {
+            "oi_walls": [],
+            "pcr_data": {},
+            "buildup_data": {},
+            "iv_data": {},
+            "max_pain_data": {},
+            "spot_price": 0.0
+        }
+
+        with get_db_session(self.engine) as session:
+            # Latest OI Walls (top 10 from most recent snapshot)
+            walls = (
+                session.query(AnalyticsOIWall)
+                .filter_by(underlying=underlying)
+                .order_by(desc(AnalyticsOIWall.captured_at))
+                .limit(10)
+                .all()
+            )
+            result["oi_walls"] = [
+                {
+                    "strike": float(w.strike),
+                    "option_type": w.option_type,
+                    "oi": w.oi,
+                    "wall_rank": w.wall_rank
+                }
+                for w in walls
+            ]
+
+            # Latest PCR
+            pcr = (
+                session.query(AnalyticsPCR)
+                .filter_by(underlying=underlying)
+                .order_by(desc(AnalyticsPCR.captured_at))
+                .first()
+            )
+            if pcr:
+                result["pcr_data"] = {
+                    "overall_pcr": float(pcr.overall_pcr),
+                    "pcr_trend": pcr.pcr_trend,
+                    "sentiment_zone": pcr.sentiment_zone
+                }
+
+            # Latest Futures Buildup
+            buildup = (
+                session.query(AnalyticsFuturesBuildup)
+                .filter_by(underlying=underlying)
+                .order_by(desc(AnalyticsFuturesBuildup.captured_at))
+                .first()
+            )
+            if buildup:
+                result["buildup_data"] = {
+                    "buildup_type": buildup.buildup_type,
+                    "confidence_pct": float(buildup.confidence_pct)
+                }
+
+            # Latest IV
+            iv = (
+                session.query(AnalyticsIV)
+                .filter_by(underlying=underlying)
+                .order_by(desc(AnalyticsIV.captured_at))
+                .first()
+            )
+            if iv:
+                result["iv_data"] = {
+                    "iv_percentile": float(iv.iv_percentile) if iv.iv_percentile else 50.0,
+                    "iv_regime": iv.iv_regime
+                }
+
+            # Latest Max Pain
+            mp = (
+                session.query(AnalyticsMaxPain)
+                .filter_by(underlying=underlying)
+                .order_by(desc(AnalyticsMaxPain.captured_at))
+                .first()
+            )
+            if mp:
+                result["max_pain_data"] = {
+                    "max_pain_strike": float(mp.max_pain_strike)
+                }
+                result["spot_price"] = float(mp.spot_price)
+
+            # Fallback spot price from option chain if max pain has none
+            if result["spot_price"] == 0:
+                opt = (
+                    session.query(OptionChainSnapshot.spot_price)
+                    .filter_by(underlying=underlying)
+                    .order_by(desc(OptionChainSnapshot.captured_at))
+                    .first()
+                )
+                if opt:
+                    result["spot_price"] = float(opt[0])
+
+        return result
+

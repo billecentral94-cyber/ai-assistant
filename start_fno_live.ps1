@@ -13,11 +13,11 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot
 Write-Host "[2/3] Starting Vite Web Dashboard on http://localhost:5173..." -ForegroundColor Green
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot'; npm --prefix apps/web run dev"
 
-# 3. Start F&O Data Engine Daemon (15-min scheduler)
+# 3. Start F&O Autonomous Paper Trading Engine (15-min auto-trade cycle)
 $foServiceDir = "$PSScriptRoot\services\fo_data_service"
 if (-not (Test-Path $foServiceDir)) { $foServiceDir = "C:\Users\bille\OneDrive\Documents\Desktop\fo_data_service" }
-Write-Host "[3/3] Starting F&O Data Engine Daemon (Angel One SmartAPI)..." -ForegroundColor Green
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$foServiceDir'; `$env:Path = 'C:\Users\bille\.local\bin;' + `$env:Path; uv run main.py run"
+Write-Host "[3/3] Starting F&O Autonomous Paper Trading Engine (Angel One SmartAPI)..." -ForegroundColor Green
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$foServiceDir'; `$env:Path = 'C:\Users\bille\.local\bin;' + `$env:Path; uv run main.py auto-trade"
 
 Write-Host "`n====================================================" -ForegroundColor Cyan
 Write-Host "  SYSTEM ONLINE! OPEN YOUR BROWSER AT:              " -ForegroundColor Green

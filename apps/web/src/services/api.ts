@@ -220,3 +220,15 @@ export async function getFoNews(query: string = 'NSE Nifty F&O news') {
   const res = await fetch(`${BASE}/fo/news?q=${encodeURIComponent(query)}`);
   return res.json();
 }
+
+// ── Autonomous Paper Trading Engine ─────────────────────────────────────────
+
+export async function getFoPaperTrades() {
+  const res = await fetch(`${BASE}/fo/paper-trades`);
+  return res.json();
+}
+
+export async function getFoReadinessGates() {
+  const res = await fetch(`${BASE}/fo/readiness-gates`);
+  return res.json();
+}

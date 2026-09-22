@@ -7,7 +7,9 @@ import {
   getFoMaxPain,
   getFoSignals,
   getFoTradePanel,
-  getFoNews
+  getFoNews,
+  getFoPaperTrades,
+  getFoReadinessGates
 } from '../services/api';
 import { IconClock, IconPause, IconNews } from '../components/Icons';
 
@@ -25,11 +27,13 @@ export default function FnODashboard() {
   const [signal, setSignal] = useState<any>(null);
   const [tradePanel, setTradePanel] = useState<any>(null);
   const [news, setNews] = useState<any[]>([]);
+  const [paperTrades, setPaperTrades] = useState<any>(null);
+  const [readinessGates, setReadinessGates] = useState<any>(null);
 
   const fetchAllData = useCallback(async (sym: 'NIFTY' | 'BANKNIFTY') => {
     setLoading(true);
     try {
-      const [wRes, pRes, bRes, ivRes, mpRes, sRes, tpRes, nRes] = await Promise.all([
+      const [wRes, pRes, bRes, ivRes, mpRes, sRes, tpRes, nRes, ptRes, rgRes] = await Promise.all([
         getFoOiWalls(sym),
         getFoPcr(sym),
         getFoFuturesBuildup(sym),
@@ -37,7 +41,9 @@ export default function FnODashboard() {
         getFoMaxPain(sym),
         getFoSignals(sym),
         getFoTradePanel(sym),
-        getFoNews(`${sym} derivatives market news`)
+        getFoNews(`${sym} derivatives market news`),
+        getFoPaperTrades(),
+        getFoReadinessGates()
       ]);
 
       setOiWalls(wRes || { ce_walls: [], pe_walls: [] });
@@ -48,6 +54,8 @@ export default function FnODashboard() {
       setSignal(sRes?.signal || null);
       setTradePanel(tpRes || null);
       setNews(nRes?.results || []);
+      setPaperTrades(ptRes || null);
+      setReadinessGates(rgRes || null);
     } catch (e) {
       console.error('Error loading F&O data:', e);
     } finally {
@@ -108,6 +116,196 @@ export default function FnODashboard() {
       </div>
 
       {loading && <div style={{ padding: '20px 0', color: 'var(--muted)' }}>Refreshing institutional analytics...</div>}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* AUTONOMOUS PAPER TRADING ENGINE — STATUS & READINESS GATES            */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {readinessGates && (
+        <div style={{ marginBottom: 28 }}>
+          {/* Engine Status Banner */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '14px 20px',
+            background: readinessGates.engine_status === 'ACTIVE'
+              ? 'rgba(16,185,129,0.08)' : 'rgba(100,116,139,0.08)',
+            border: `1px solid ${readinessGates.engine_status === 'ACTIVE' ? '#10b981' : '#475569'}`,
+            borderRadius: '10px 10px 0 0'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{
+                width: 12, height: 12, borderRadius: '50%',
+                background: readinessGates.engine_status === 'ACTIVE' ? '#10b981' : '#475569',
+                boxShadow: readinessGates.engine_status === 'ACTIVE' ? '0 0 8px #10b981' : 'none',
+                animation: readinessGates.engine_status === 'ACTIVE' ? 'pulse 2s infinite' : 'none'
+              }} />
+              <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: 0.5 }}>
+                AUTONOMOUS PAPER TRADING ENGINE
+              </span>
+              <span className="badge" style={{
+                background: readinessGates.engine_status === 'ACTIVE' ? '#10b981' : '#475569',
+                color: '#000', fontWeight: 700, fontSize: 11, padding: '3px 10px'
+              }}>
+                {readinessGates.engine_status === 'ACTIVE' ? '15-MIN CYCLE' : 'STANDBY'}
+              </span>
+            </div>
+            {readinessGates.last_updated && (
+              <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+                Updated: {new Date(readinessGates.last_updated).toLocaleTimeString('en-IN', { hour12: false })} IST
+              </span>
+            )}
+          </div>
+
+          {/* 3 Readiness Gates + Portfolio Summary */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: 0,
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderTop: 'none',
+            borderRadius: '0 0 10px 10px',
+            overflow: 'hidden'
+          }}>
+            {/* Gate 1: Win Rate */}
+            <div style={{
+              padding: '16px 20px',
+              background: readinessGates.gate_1_win_rate?.passed
+                ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.04)',
+              borderRight: '1px solid rgba(255,255,255,0.06)'
+            }}>
+              <div style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Gate 1 — Win Rate
+              </div>
+              <div style={{
+                fontSize: 28, fontWeight: 800, marginTop: 4,
+                color: readinessGates.gate_1_win_rate?.passed ? '#10b981' : '#ef4444',
+                fontVariantNumeric: 'tabular-nums'
+              }}>
+                {readinessGates.gate_1_win_rate?.value ?? 0}%
+              </div>
+              <div style={{ fontSize: 11, marginTop: 4, display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--muted)' }}>Threshold: {'>'}= 55%</span>
+                <span style={{
+                  fontWeight: 700,
+                  color: readinessGates.gate_1_win_rate?.passed ? '#10b981' : '#ef4444'
+                }}>
+                  {readinessGates.gate_1_win_rate?.passed ? 'PASS' : 'FAIL'}
+                </span>
+              </div>
+            </div>
+
+            {/* Gate 2: Profit Factor */}
+            <div style={{
+              padding: '16px 20px',
+              background: readinessGates.gate_2_profit_factor?.passed
+                ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.04)',
+              borderRight: '1px solid rgba(255,255,255,0.06)'
+            }}>
+              <div style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Gate 2 — Profit Factor
+              </div>
+              <div style={{
+                fontSize: 28, fontWeight: 800, marginTop: 4,
+                color: readinessGates.gate_2_profit_factor?.passed ? '#10b981' : '#ef4444',
+                fontVariantNumeric: 'tabular-nums'
+              }}>
+                {readinessGates.gate_2_profit_factor?.value ?? 0}
+              </div>
+              <div style={{ fontSize: 11, marginTop: 4, display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--muted)' }}>Threshold: {'>'}= 1.5</span>
+                <span style={{
+                  fontWeight: 700,
+                  color: readinessGates.gate_2_profit_factor?.passed ? '#10b981' : '#ef4444'
+                }}>
+                  {readinessGates.gate_2_profit_factor?.passed ? 'PASS' : 'FAIL'}
+                </span>
+              </div>
+            </div>
+
+            {/* Gate 3: Max Drawdown */}
+            <div style={{
+              padding: '16px 20px',
+              background: readinessGates.gate_3_max_drawdown?.passed
+                ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.04)',
+              borderRight: '1px solid rgba(255,255,255,0.06)'
+            }}>
+              <div style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Gate 3 — Max Drawdown
+              </div>
+              <div style={{
+                fontSize: 28, fontWeight: 800, marginTop: 4,
+                color: readinessGates.gate_3_max_drawdown?.passed ? '#10b981' : '#ef4444',
+                fontVariantNumeric: 'tabular-nums'
+              }}>
+                {readinessGates.gate_3_max_drawdown?.value ?? 0}%
+              </div>
+              <div style={{ fontSize: 11, marginTop: 4, display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--muted)' }}>Threshold: {'<'}= 4%</span>
+                <span style={{
+                  fontWeight: 700,
+                  color: readinessGates.gate_3_max_drawdown?.passed ? '#10b981' : '#ef4444'
+                }}>
+                  {readinessGates.gate_3_max_drawdown?.passed ? 'PASS' : 'FAIL'}
+                </span>
+              </div>
+            </div>
+
+            {/* Paper Portfolio Summary */}
+            <div style={{
+              padding: '16px 20px',
+              background: 'rgba(56,189,248,0.04)'
+            }}>
+              <div style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Paper Portfolio
+              </div>
+              <div style={{
+                fontSize: 28, fontWeight: 800, marginTop: 4, color: '#e2e8f0',
+                fontVariantNumeric: 'tabular-nums'
+              }}>
+                {paperTrades?.current_capital
+                  ? `${(paperTrades.current_capital / 100000).toFixed(2)}L`
+                  : '5.00L'}
+              </div>
+              <div style={{ fontSize: 11, marginTop: 4, display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{
+                  color: (paperTrades?.daily_pnl ?? 0) >= 0 ? '#10b981' : '#ef4444'
+                }}>
+                  PnL: {(paperTrades?.daily_pnl ?? 0) >= 0 ? '+' : ''}{paperTrades?.daily_pnl ?? 0}
+                </span>
+                <span style={{ color: 'var(--muted)' }}>
+                  W:{readinessGates.wins ?? 0} / L:{readinessGates.losses ?? 0}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Overall Gates Status Bar */}
+          <div style={{
+            marginTop: 2,
+            padding: '10px 20px',
+            background: readinessGates.all_gates_passed
+              ? 'rgba(16,185,129,0.1)' : 'rgba(251,146,60,0.08)',
+            borderRadius: 8,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontSize: 13
+          }}>
+            <span style={{
+              fontWeight: 800,
+              color: readinessGates.all_gates_passed ? '#10b981' : '#fb923c'
+            }}>
+              {readinessGates.all_gates_passed
+                ? 'ALL 3 READINESS GATES PASSED — System eligible for live capital deployment'
+                : `GATES NOT YET PASSED — ${readinessGates.total_trades ?? 0} trades evaluated, continue paper sessions`}
+            </span>
+            <span style={{ color: 'var(--muted)', fontSize: 12 }}>
+              Trades: {readinessGates.total_trades ?? 0} | Risk Cap: 2% per trade
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* TRADE EXECUTION PANEL — The main IN/OUT position panel              */}

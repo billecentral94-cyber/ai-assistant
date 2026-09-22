@@ -7,6 +7,8 @@
 import { Router, Request, Response } from 'express';
 import { queryFoDb } from '../services/foDatabase';
 import { searchMarketNews } from '../services/tinyfishService';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const foRouter = Router();
 
@@ -369,28 +371,28 @@ foRouter.get('/trade-panel', async (req: Request, res: Response) => {
   const exitRules = [
     {
       rule: 'TARGET HIT',
-      icon: '🎯',
+      icon: '[TGT]',
       condition: `Spot ${direction === 'BULLISH' ? 'rises above' : 'falls below'} ₹${direction === 'BULLISH' ? atmStrike + step * 3 : atmStrike - step * 3}`,
       action: 'EXIT BOTH LEGS — Square off the entire spread. Book profit.',
       priority: 1
     },
     {
       rule: 'STOP LOSS HIT',
-      icon: '🛑',
+      icon: '[SL]',
       condition: `Spot ${direction === 'BULLISH' ? 'falls below' : 'rises above'} ₹${direction === 'BULLISH' ? atmStrike - step * 2 : atmStrike + step * 2}`,
       action: 'EXIT BOTH LEGS — Square off immediately. Cut the loss.',
       priority: 2
     },
     {
       rule: 'EOD SQUARE-OFF',
-      icon: '⏰',
+      icon: '[EOD]',
       condition: 'Time reaches 15:15 IST (mandatory)',
       action: 'EXIT BOTH LEGS — Close all open positions before 15:30 close.',
       priority: 3
     },
     {
       rule: 'SPREAD DECAY',
-      icon: '📉',
+      icon: '[DEC]',
       condition: 'If spread value drops to 30% of entry debit',
       action: 'EXIT BOTH LEGS — Premium has eroded, close to limit loss.',
       priority: 4
@@ -425,7 +427,7 @@ foRouter.get('/trade-panel', async (req: Request, res: Response) => {
       spot_price: baseSpot,
 
       entry: {
-        heading: '📥 ENTRY POSITION (What to BUY & SELL)',
+        heading: 'ENTRY POSITION (What to BUY & SELL)',
         legs: entryLegs,
         net_debit_per_lot: netDebit,
         total_debit: netDebit * entryLegs[0].quantity,
@@ -433,7 +435,7 @@ foRouter.get('/trade-panel', async (req: Request, res: Response) => {
       },
 
       exit: {
-        heading: '📤 EXIT RULES (When & How to GET OUT)',
+        heading: 'EXIT RULES (When & How to GET OUT)',
         target_price: direction === 'BULLISH' ? atmStrike + step * 3 : atmStrike - step * 3,
         stop_loss_price: direction === 'BULLISH' ? atmStrike - step * 2 : atmStrike + step * 2,
         eod_deadline: '15:15 IST',
@@ -459,7 +461,84 @@ foRouter.get('/news', async (req: Request, res: Response) => {
   res.json({ success: true, query, results: news });
 });
 
-// ─── 9. Real-Time SSE Stream for F&O Analytics ──────────────────────────────
+// ─── Helper: Read live_trading_state.json from F&O service ────────────────────
+function readTradingState(): any | null {
+  const candidates = [
+    path.resolve(__dirname, '../../../../services/fo_data_service/live_trading_state.json'),
+    path.resolve(__dirname, '../../../../../services/fo_data_service/live_trading_state.json'),
+    'C:\\Users\\bille\\OneDrive\\Documents\\Desktop\\artha-ai-copilot\\services\\fo_data_service\\live_trading_state.json',
+    'C:\\Users\\bille\\OneDrive\\Documents\\Desktop\\fo_data_service\\live_trading_state.json'
+  ];
+  for (const p of candidates) {
+    try {
+      if (fs.existsSync(p)) {
+        return JSON.parse(fs.readFileSync(p, 'utf-8'));
+      }
+    } catch { /* skip */ }
+  }
+  return null;
+}
+
+// ─── 10. Paper Trading — Live Positions & PnL ────────────────────────────────
+foRouter.get('/paper-trades', async (req: Request, res: Response) => {
+  const state = readTradingState();
+  if (state) {
+    return res.json({
+      success: true,
+      engine_status: state.engine_status || 'ACTIVE',
+      initial_capital: state.initial_capital,
+      current_capital: state.current_capital,
+      daily_pnl: state.daily_pnl,
+      open_positions: state.open_positions || [],
+      closed_trades: state.closed_trades || [],
+      last_updated: state.last_updated
+    });
+  }
+
+  // Default: engine not yet started
+  res.json({
+    success: true,
+    engine_status: 'STANDBY',
+    initial_capital: 500000,
+    current_capital: 500000,
+    daily_pnl: 0,
+    open_positions: [],
+    closed_trades: [],
+    last_updated: null
+  });
+});
+
+// ─── 11. Live Readiness Gates (Win Rate / Profit Factor / Max Drawdown) ──────
+foRouter.get('/readiness-gates', async (req: Request, res: Response) => {
+  const state = readTradingState();
+  if (state && state.readiness_gates) {
+    return res.json({
+      success: true,
+      engine_status: state.engine_status || 'ACTIVE',
+      ...state.readiness_gates,
+      last_updated: state.last_updated
+    });
+  }
+
+  // Default: no trades yet
+  res.json({
+    success: true,
+    engine_status: 'STANDBY',
+    total_trades: 0,
+    wins: 0,
+    losses: 0,
+    win_rate_pct: 0,
+    profit_factor: 0,
+    max_drawdown_pct: 0,
+    gate_1_win_rate: { value: 0, threshold: 55.0, passed: false },
+    gate_2_profit_factor: { value: 0, threshold: 1.5, passed: false },
+    gate_3_max_drawdown: { value: 0, threshold: 4.0, passed: false },
+    all_gates_passed: false,
+    last_updated: null
+  });
+});
+
+// ─── 12. Real-Time SSE Stream for F&O Analytics ──────────────────────────────
 foRouter.get('/stream', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
