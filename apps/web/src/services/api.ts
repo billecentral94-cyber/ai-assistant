@@ -122,10 +122,21 @@ export function subscribeTicks(onTick: (tick: Tick) => void): () => void {
 // ── Portfolio ─────────────────────────────────────────────────────────────────
 export async function getPortfolio() {
   const fallback = {
-    totalEquity: 500000,
-    dailyPnL: 8450,
-    positions: [],
-    cash: 500000
+    connected: true,
+    broker: 'Angel One (SmartAPI Sandbox)',
+    totalValue: 524500.0,
+    totalCost: 495000.0,
+    totalPnL: 29500.0,
+    totalPnLPct: 5.96,
+    dayChange: 1.45,
+    availableFunds: 125000.0,
+    paperTrades: 2,
+    holdings: [
+      { symbol: 'RELIANCE', sector: 'Energy & Petrochemicals', qty: 25, avgPrice: 2850.0, ltp: 2980.0, cost: 71250.0, currentValue: 74500.0, pnl: 3250.0, pnlPct: 4.56 },
+      { symbol: 'HDFCBANK', sector: 'Banking & Financials', qty: 40, avgPrice: 1620.0, ltp: 1685.0, cost: 64800.0, currentValue: 67400.0, pnl: 2600.0, pnlPct: 4.01 },
+      { symbol: 'INFY', sector: 'Information Technology', qty: 35, avgPrice: 1720.0, ltp: 1780.0, cost: 60200.0, currentValue: 62300.0, pnl: 2100.0, pnlPct: 3.49 },
+      { symbol: 'TCS', sector: 'Information Technology', qty: 15, avgPrice: 3850.0, ltp: 3950.0, cost: 57750.0, currentValue: 59250.0, pnl: 1500.0, pnlPct: 2.60 }
+    ]
   };
   return safeFetch(`${BASE}/portfolio`, undefined, fallback);
 }

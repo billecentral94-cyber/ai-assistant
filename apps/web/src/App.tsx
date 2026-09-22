@@ -23,6 +23,44 @@ import {
   IconShieldCheck
 } from './components/Icons';
 
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: any }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error('[Artha AI UI Error]:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 40, textAlign: 'center' }}>
+          <h2 style={{ color: '#ef4444', marginBottom: 12 }}>Terminal View Error</h2>
+          <p style={{ color: 'var(--muted)', marginBottom: 20 }}>
+            {this.state.error?.message || 'An unexpected rendering error occurred.'}
+          </p>
+          <button
+            className="primary"
+            onClick={() => {
+              this.setState({ hasError: false, error: null });
+              window.location.reload();
+            }}
+          >
+            Reload Module
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -149,17 +187,19 @@ export default function App() {
         <div className="app-main-wrapper">
           <TopNav />
           <main className="main">
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/fno" element={<FnODashboard />} />
-              <Route path="/watchlist" element={<Watchlist />} />
-              <Route path="/portfolio" element={<Portfolio />} />
-              <Route path="/copilot-trading" element={<CopilotTrading />} />
-              <Route path="/ai-chat" element={<AIChat />} />
-              <Route path="/backtesting" element={<Backtesting />} />
-              <Route path="/news" element={<NewsIntelligence />} />
-              <Route path="/sandbox" element={<SandboxPage />} />
-            </Routes>
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/fno" element={<FnODashboard />} />
+                <Route path="/watchlist" element={<Watchlist />} />
+                <Route path="/portfolio" element={<Portfolio />} />
+                <Route path="/copilot-trading" element={<CopilotTrading />} />
+                <Route path="/ai-chat" element={<AIChat />} />
+                <Route path="/backtesting" element={<Backtesting />} />
+                <Route path="/news" element={<NewsIntelligence />} />
+                <Route path="/sandbox" element={<SandboxPage />} />
+              </Routes>
+            </ErrorBoundary>
           </main>
         </div>
       </div>
