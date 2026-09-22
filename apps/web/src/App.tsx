@@ -56,7 +56,7 @@ export default function App() {
                   <IconZap size={16} className="nav-icon" />
                   <span>F&O Analytics</span>
                 </div>
-                <span className="nav-pill nav-pill-hot">HOT</span>
+                <span className="nav-pill nav-pill-hot">LIVE</span>
               </NavLink>
 
               <NavLink to="/watchlist" className={({ isActive }) => (isActive ? 'active' : '')}>

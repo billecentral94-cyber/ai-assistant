@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { IconSparkles, IconTrendingUp, IconActivity } from './Icons';
+import { IconSparkles, IconRefresh, IconBell, IconClose, IconZap } from './Icons';
 
 export interface AgentSuggestion {
   symbol: string;
@@ -31,9 +31,8 @@ async function requestNotificationPermission(): Promise<boolean> {
 function sendNotification(suggestion: AgentSuggestion) {
   if (Notification.permission !== 'granted') return;
 
-  const dirEmoji = suggestion.direction === 'LONG' ? '📈' : '📉';
-  const n = new Notification(`${dirEmoji} Artha AI — ${suggestion.symbol}`, {
-    body: `${suggestion.direction} signal | Confidence: ${suggestion.confidence}% | Strategy: ${suggestion.strategy.toUpperCase()}`,
+  const n = new Notification(`Artha AI — ${suggestion.symbol}`, {
+    body: `${suggestion.direction} Signal | Confidence: ${suggestion.confidence}% | Strategy: ${suggestion.strategy.toUpperCase()}`,
     icon: '/favicon.ico',
     tag: `artha-${suggestion.symbol}`,
     requireInteraction: false,
@@ -142,33 +141,33 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
       marginBottom: 28,
     }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
-            width: 32,
-            height: 32,
+            width: 34,
+            height: 34,
             borderRadius: 8,
-            background: 'rgba(139, 92, 246, 0.15)',
-            border: '1px solid rgba(139, 92, 246, 0.3)',
+            background: 'rgba(99, 102, 241, 0.12)',
+            border: '1px solid rgba(99, 102, 241, 0.28)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <IconSparkles size={16} color="#c084fc" />
+            <IconSparkles size={17} color="#a78bfa" />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#ffffff' }}>
-                AI Quantitative Radar
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.3px' }}>
+                Quantitative Intelligence Signals
               </h3>
               {suggestions.length > 0 && (
-                <span className="badge success">
-                  {suggestions.length} OPPORTUNITIES
+                <span className="badge success" style={{ fontSize: 9.5 }}>
+                  {suggestions.length} Active Setups
                 </span>
               )}
             </div>
             <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
-              {lastUpdated ? `Last screened: ${new Date(lastUpdated).toLocaleTimeString('en-IN')}` : 'Multi-timeframe algorithmic signals'}
+              {lastUpdated ? `Last screened: ${new Date(lastUpdated).toLocaleTimeString('en-IN')}` : 'Algorithmic multi-factor signal matrix'}
             </div>
           </div>
         </div>
@@ -178,13 +177,13 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
             <button
               onClick={handleEnableNotifications}
               className="secondary"
-              style={{ padding: '6px 12px', fontSize: 11 }}
+              style={{ padding: '6px 12px', fontSize: 11.5, gap: 6 }}
             >
-              🔔 Enable Push Alerts
+              <IconBell size={13} color="var(--text-secondary)" /> Enable Alerts
             </button>
           )}
           {notifEnabled && (
-            <span style={{ fontSize: 11, color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
+            <span style={{ fontSize: 11, color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 600 }}>
               <span className="status-dot-pulse" style={{ width: 6, height: 6 }} /> Alerts Active
             </span>
           )}
@@ -192,9 +191,10 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
             onClick={handleScreen}
             disabled={screening}
             className="primary"
-            style={{ padding: '6px 14px', fontSize: 12 }}
+            style={{ padding: '6px 14px', fontSize: 12, gap: 6 }}
           >
-            {screening ? '⏳ Running AI Screener…' : '⚡ Screen Live Setups'}
+            <IconRefresh size={13} style={{ animation: screening ? 'spin 1s linear infinite' : 'none' }} />
+            {screening ? 'Running Screener…' : 'Screen Setups'}
           </button>
         </div>
       </div>
@@ -217,8 +217,7 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
           borderRadius: 10,
           border: '1px dashed var(--border-subtle)'
         }}>
-          <div style={{ fontSize: 24, marginBottom: 8 }}>🎯</div>
-          <div>No pending signals. Click <strong>"Screen Live Setups"</strong> to initiate quantitative scanning.</div>
+          <div>No active signals found. Click <strong>Screen Setups</strong> to execute multi-factor quantitative screening.</div>
         </div>
       )}
 
@@ -251,7 +250,7 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: 800,
                     fontFamily: 'JetBrains Mono, monospace',
                     color: '#ffffff'
@@ -259,7 +258,7 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
                     {s.symbol}
                   </span>
                   <span className={`badge ${s.direction === 'LONG' ? 'success' : 'danger'}`}>
-                    {s.direction === 'LONG' ? '▲ LONG' : '▼ SHORT'}
+                    {s.direction === 'LONG' ? 'LONG' : 'SHORT'}
                   </span>
                 </div>
                 <div style={{ display: 'flex', gap: 6, marginTop: 6, alignItems: 'center' }}>
@@ -303,13 +302,12 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
                     border: 'none',
                     color: 'var(--muted)',
                     cursor: 'pointer',
-                    fontSize: 14,
                     padding: 4,
                     boxShadow: 'none'
                   }}
                   title="Dismiss"
                 >
-                  ✕
+                  <IconClose size={14} color="var(--muted)" />
                 </button>
               </div>
             </div>
@@ -346,12 +344,12 @@ export default function SuggestionBox({ onSuggestionClick }: SuggestionBoxProps)
               <div style={{ display: 'flex', gap: 14, marginTop: 10, fontSize: 11, fontFamily: 'JetBrains Mono, monospace' }}>
                 {s.target && (
                   <span style={{ color: 'var(--green)' }}>
-                    🎯 Target: ₹{s.target.toLocaleString('en-IN')}
+                    TARGET: ₹{s.target.toLocaleString('en-IN')}
                   </span>
                 )}
                 {s.stopLoss && (
                   <span style={{ color: 'var(--red)' }}>
-                    🛑 SL: ₹{s.stopLoss.toLocaleString('en-IN')}
+                    SL: ₹{s.stopLoss.toLocaleString('en-IN')}
                   </span>
                 )}
               </div>

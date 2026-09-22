@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { subscribeTicks, getDailyBriefing, Tick } from '../services/api';
 import SuggestionBox from '../components/SuggestionBox';
-import { IconZap, IconTrendingUp, IconActivity, IconShieldCheck, IconCandlestick } from '../components/Icons';
+import { IconZap, IconTrendingUp, IconActivity, IconShieldAlert } from '../components/Icons';
 import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
@@ -58,15 +58,15 @@ export default function Dashboard() {
       {killSwitchActive && (
         <div className="alert-banner">
           <div className="alert-banner-content">
-            <span style={{ fontSize: 22 }}>🔴</span>
+            <IconShieldAlert size={22} color="var(--red)" />
             <div>
-              <strong style={{ color: '#fff', fontSize: 15 }}>EMERGENCY STOP ENGAGED (KILL SWITCH ACTIVE)</strong>
-              <div style={{ fontSize: 13, color: '#fca5a5', marginTop: 3 }}>
+              <strong style={{ color: '#fff', fontSize: 14, letterSpacing: '0.3px' }}>EMERGENCY STOP TRIGGERED (KILL SWITCH ACTIVE)</strong>
+              <div style={{ fontSize: 12.5, color: '#fca5a5', marginTop: 2 }}>
                 All automated order dispatches and broker routing are immediately suspended.
               </div>
             </div>
           </div>
-          <button className="secondary" onClick={() => setKillSwitchActive(false)} style={{ padding: '8px 16px', fontSize: 12 }}>
+          <button className="secondary" onClick={() => setKillSwitchActive(false)} style={{ padding: '6px 14px', fontSize: 12 }}>
             Acknowledge & Clear
           </button>
         </div>
@@ -90,13 +90,13 @@ export default function Dashboard() {
         {/* Quick Launch Buttons */}
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           <Link to="/fno" style={{ textDecoration: 'none' }}>
-            <button className="primary" style={{ padding: '8px 16px', fontSize: 13 }}>
-              <IconZap size={15} /> F&O Execution Panel
+            <button className="primary" style={{ padding: '8px 16px', fontSize: 12.5, gap: 6 }}>
+              <IconZap size={14} /> F&O Execution Panel
             </button>
           </Link>
           <Link to="/copilot-trading" style={{ textDecoration: 'none' }}>
-            <button className="secondary" style={{ padding: '8px 16px', fontSize: 13 }}>
-              <IconActivity size={15} /> Capital Vault
+            <button className="secondary" style={{ padding: '8px 16px', fontSize: 12.5, gap: 6 }}>
+              <IconActivity size={14} /> Capital Vault
             </button>
           </Link>
         </div>
@@ -113,7 +113,7 @@ export default function Dashboard() {
           <div className="stat-value" style={{ color: regimeColor }}>
             {briefingLoaded ? regime : 'CALIBRATING…'}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ fontSize: 11.5, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
             <span>Auto-hedging:</span>
             <strong style={{ color: '#cbd5e1' }}>Dynamic</strong>
           </div>
@@ -128,7 +128,7 @@ export default function Dashboard() {
           <div className="stat-value" style={{ color: vix > 20 ? 'var(--red)' : 'var(--green)' }}>
             {briefingLoaded ? (vix > 0 ? vix.toFixed(2) : '13.45') : '13.45'}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+          <div style={{ fontSize: 11.5, color: 'var(--muted)' }}>
             Volatility: <strong style={{ color: 'var(--green)' }}>Normal ({'<'} 18.0)</strong>
           </div>
         </div>
@@ -142,7 +142,7 @@ export default function Dashboard() {
           <div className="stat-value" style={{ color: drawdown < -0.08 ? 'var(--red)' : 'var(--green)' }}>
             {briefingLoaded ? `${(drawdown * 100).toFixed(2)}%` : '0.00%'}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+          <div style={{ fontSize: 11.5, color: 'var(--muted)' }}>
             Limit threshold: <strong style={{ color: '#cbd5e1' }}>-5.00%</strong>
           </div>
         </div>
@@ -156,7 +156,7 @@ export default function Dashboard() {
           <div className="stat-value" style={{ color: portfolioHeat > 0.28 ? '#f59e0b' : '#818cf8' }}>
             {briefingLoaded ? `${(portfolioHeat * 100).toFixed(1)}%` : '0.0%'}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+          <div style={{ fontSize: 11.5, color: 'var(--muted)' }}>
             Max ceiling: <strong style={{ color: '#cbd5e1' }}>35.0%</strong>
           </div>
         </div>
@@ -170,11 +170,11 @@ export default function Dashboard() {
           <div style={{ display: 'flex', gap: 14, alignItems: 'baseline', margin: '8px 0 4px' }}>
             <div className="stat-value" style={{ color: 'var(--green)', margin: 0 }}>{weekWins}W</div>
             <div className="stat-value" style={{ color: 'var(--red)', margin: 0 }}>{weekLosses}L</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#c7d2fe', marginLeft: 'auto', fontFamily: 'JetBrains Mono, monospace' }}>
+            <div style={{ fontSize: 17, fontWeight: 700, color: '#c7d2fe', marginLeft: 'auto', fontFamily: 'JetBrains Mono, monospace' }}>
               {winRate}%
             </div>
           </div>
-          <div style={{ fontSize: 12, color: 'var(--muted)' }}>Risk/Reward: <strong style={{ color: '#cbd5e1' }}>1 : 2.4</strong></div>
+          <div style={{ fontSize: 11.5, color: 'var(--muted)' }}>Risk/Reward: <strong style={{ color: '#cbd5e1' }}>1 : 2.4</strong></div>
         </div>
       </div>
 
@@ -185,8 +185,9 @@ export default function Dashboard() {
       {highConfSetups.length > 0 && (
         <div style={{ marginBottom: 30 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <h3 style={{ color: '#fff', fontSize: 16, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
-              🎯 High-Probability Setups
+            <h3 style={{ color: '#fff', fontSize: 15, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <IconTrendingUp size={16} color="var(--green)" />
+              High-Probability Setups
               <span className="badge success">AI SCREENED</span>
             </h3>
             <span style={{ fontSize: 12, color: 'var(--muted)' }}>Min. Confidence: 75%</span>
@@ -200,7 +201,7 @@ export default function Dashboard() {
                     {s.symbol}
                   </span>
                   <span className={`badge ${s.direction === 'LONG' ? 'success' : 'danger'}`}>
-                    {s.direction === 'LONG' ? '▲ LONG' : '▼ SHORT'}
+                    {s.direction}
                   </span>
                 </div>
                 <div style={{ marginTop: 10 }}>
@@ -220,8 +221,8 @@ export default function Dashboard() {
 
       {/* Live Tick Streaming Cards */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-        <h3 style={{ color: '#fff', fontSize: 16, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <IconActivity size={18} color="#818cf8" />
+        <h3 style={{ color: '#fff', fontSize: 15, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <IconActivity size={16} color="#818cf8" />
           Real-Time Institutional Order Flow
         </h3>
         <span style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'JetBrains Mono, monospace' }}>
@@ -232,7 +233,9 @@ export default function Dashboard() {
       <div className="grid">
         {rows.length === 0 && (
           <div className="card" style={{ textAlign: 'center', padding: '36px 20px', color: 'var(--muted)', gridColumn: '1 / -1' }}>
-            <div style={{ fontSize: 28, marginBottom: 10 }}>📡</div>
+            <div style={{ marginBottom: 10, display: 'flex', justifyContent: 'center' }}>
+              <IconActivity size={26} color="var(--muted)" />
+            </div>
             <div style={{ fontSize: 14, color: '#cbd5e1', fontWeight: 600 }}>Connecting to Market Adapter Feed…</div>
             <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
               Subscribing to tick stream via Angel One SmartAPI / Market Gateway.
@@ -258,7 +261,7 @@ export default function Dashboard() {
                   ₹{tick.price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
                 <div style={{ fontSize: 12, fontWeight: 700, fontFamily: 'JetBrains Mono, monospace' }} className={up ? 'price-up' : 'price-down'}>
-                  {up ? '▲ +' : '▼ -'}{Math.abs(percentChange).toFixed(2)}%
+                  {up ? '+' : '-'}{Math.abs(percentChange).toFixed(2)}%
                 </div>
               </div>
 

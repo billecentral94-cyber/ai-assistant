@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getVaultStatus, allocateCapital, toggleKillSwitch, getOrders, placeOrder, subscribeTicks } from '../services/api';
 import type { PaperOrder } from '../services/api';
+import { IconShieldAlert, IconCheckCircle, IconAlertCircle } from '../components/Icons';
+
 
 interface VaultStatus {
   totalCapital: number;
@@ -171,7 +173,7 @@ export default function CopilotTrading() {
     <div>
       <h2>
         Copilot Trading <span className="badge">PAPER MODE</span>
-        {vault?.killSwitchActive && <span className="badge danger" style={{ marginLeft: 8 }}>⛔ KILL SWITCH ON</span>}
+        {vault?.killSwitchActive && <span className="badge danger" style={{ marginLeft: 8 }}>KILL SWITCH ACTIVE</span>}
       </h2>
       <p className="description">
         Block-of-money capital allocation with Fixed Fractional position sizing, portfolio heat monitoring, and risk-gated order approval.
@@ -181,7 +183,7 @@ export default function CopilotTrading() {
       {vault?.killSwitchActive && (
         <div className="alert-banner" style={{ marginBottom: 30 }}>
           <div className="alert-banner-content">
-            <span style={{ fontSize: 20 }}>🔴</span>
+            <IconShieldAlert size={20} color="var(--red)" />
             <div>
               <strong style={{ color: '#fff' }}>KILL SWITCH ACTIVE — All Allocations Blocked</strong>
               <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
@@ -190,7 +192,7 @@ export default function CopilotTrading() {
             </div>
           </div>
           <button className="secondary" onClick={handleKillSwitch} disabled={killLoading} style={{ padding: '8px 16px', fontSize: 12 }}>
-            {killLoading ? '…' : '✅ Deactivate'}
+            {killLoading ? 'Updating…' : 'Deactivate Kill Switch'}
           </button>
         </div>
       )}
@@ -265,7 +267,7 @@ export default function CopilotTrading() {
               padding: '10px 20px',
             }}
           >
-            {killLoading ? '…' : vault?.killSwitchActive ? '🔴 ACTIVE — Click to Deactivate' : '⛔ Activate Kill Switch'}
+            {killLoading ? 'Updating…' : vault?.killSwitchActive ? 'Active — Click to Deactivate' : 'Activate Kill Switch'}
           </button>
         </div>
       </div>
@@ -274,7 +276,7 @@ export default function CopilotTrading() {
         {/* Capital Allocator */}
         <div className="card" style={{ margin: 0 }}>
           <h3 style={{ color: '#fff', fontSize: 16, marginBottom: 20 }}>
-            💰 Capital Allocator <span className="badge" style={{ fontSize: 10 }}>Fixed Fractional</span>
+            Capital Allocator <span className="badge" style={{ fontSize: 10 }}>Fixed Fractional</span>
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -308,7 +310,7 @@ export default function CopilotTrading() {
               </select>
             </div>
             <button onClick={handleAllocate} disabled={allocLoading || vault?.killSwitchActive} style={{ marginTop: 6 }}>
-              {allocLoading ? '⚙️ Computing...' : '🧮 Calculate Position Size'}
+              {allocLoading ? 'Computing...' : 'Calculate Position Size'}
             </button>
           </div>
 
@@ -322,7 +324,9 @@ export default function CopilotTrading() {
             }}>
               {allocResult.approved ? (
                 <>
-                  <div style={{ color: 'var(--green)', fontWeight: 600, marginBottom: 8 }}>✅ Vault Approved</div>
+                  <div style={{ color: 'var(--green)', fontWeight: 600, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <IconCheckCircle size={15} color="var(--green)" /> Vault Approved
+                  </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'var(--muted)' }}>Quantity</span>
@@ -348,7 +352,9 @@ export default function CopilotTrading() {
                 </>
               ) : (
                 <>
-                  <div style={{ color: 'var(--red)', fontWeight: 600, marginBottom: 8 }}>⛔ Vault Rejected</div>
+                  <div style={{ color: 'var(--red)', fontWeight: 600, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <IconAlertCircle size={15} color="var(--red)" /> Vault Rejected
+                  </div>
                   <div style={{ fontSize: 13, color: 'var(--muted)' }}>{allocResult.error}</div>
                 </>
               )}
@@ -359,7 +365,7 @@ export default function CopilotTrading() {
         {/* Quick Order Entry */}
         <div className="card" style={{ margin: 0 }}>
           <h3 style={{ color: '#fff', fontSize: 16, marginBottom: 20 }}>
-            📤 Paper Order Entry
+            Paper Order Entry
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -392,7 +398,7 @@ export default function CopilotTrading() {
                 background: orderDirection === 'BUY' ? 'linear-gradient(135deg, #10b981, #059669)' : undefined,
               }}
             >
-              {orderLoading ? '⚙️ Processing...' : `${orderDirection === 'BUY' ? '▲ BUY' : '▼ SELL'} — Place Paper Order`}
+              {orderLoading ? 'Processing...' : `${orderDirection} — Place Paper Order`}
             </button>
           </div>
 
@@ -405,8 +411,16 @@ export default function CopilotTrading() {
               border: `1px solid ${orderResult.status === 'FILLED' ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
               fontSize: 13,
             }}>
-              <div style={{ color: orderResult.status === 'FILLED' ? 'var(--green)' : 'var(--red)', fontWeight: 600, marginBottom: 6 }}>
-                {orderResult.status === 'FILLED' ? '✅ Order Filled' : '⛔ Order Rejected'}
+              <div style={{ color: orderResult.status === 'FILLED' ? 'var(--green)' : 'var(--red)', fontWeight: 600, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                {orderResult.status === 'FILLED' ? (
+                  <>
+                    <IconCheckCircle size={15} color="var(--green)" /> Order Filled
+                  </>
+                ) : (
+                  <>
+                    <IconAlertCircle size={15} color="var(--red)" /> Order Rejected
+                  </>
+                )}
               </div>
               <div style={{ color: 'var(--muted)' }}>
                 {orderResult.message ?? orderResult.reason ?? orderResult.error}

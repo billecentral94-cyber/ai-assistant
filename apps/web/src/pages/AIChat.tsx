@@ -62,7 +62,7 @@ export default function AIChat() {
     } catch {
       setMessages(m => [...m, {
         role: 'assistant',
-        text: "❌ Service Notice: Failed to route prompt to AI Agent engine. Ensure backend API is active on port 4000.",
+        text: "Service Notice: Failed to route prompt to AI Agent engine. Ensure backend API is active on port 4000.",
         timestamp: new Date(),
       }]);
     } finally {
@@ -104,7 +104,7 @@ export default function AIChat() {
                         </>
                       ) : (
                         <>
-                          <span style={{ fontWeight: 700, color: '#a78bfa' }}>⚡ Artha Copilot</span>
+                          <span style={{ fontWeight: 700, color: '#a78bfa' }}>Artha Copilot</span>
                           <span>•</span>
                         </>
                       )}
@@ -121,7 +121,7 @@ export default function AIChat() {
                         marginBottom: 2,
                       }}>
                         <div style={{ fontSize: 10, color: '#a78bfa', fontWeight: 800, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.8 }}>
-                          ⚡ Orchestrated Tools ({m.toolsUsed.length})
+                          Orchestrated Tools ({m.toolsUsed.length})
                         </div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                           {m.toolsUsed.map((tool, ti) => (
@@ -134,7 +134,7 @@ export default function AIChat() {
                               borderRadius: 4,
                               fontFamily: 'JetBrains Mono, monospace'
                             }}>
-                              ✓ {tool}
+                              • {tool}
                             </span>
                           ))}
                         </div>
@@ -174,7 +174,7 @@ export default function AIChat() {
                             fontWeight: 700,
                             fontFamily: 'JetBrains Mono, monospace'
                           }}>
-                            {s.direction === 'LONG' ? '▲' : '▼'} {s.symbol} • {s.confidence}% Conf
+                            {s.direction} • {s.symbol} • {s.confidence}% Conf
                           </div>
                         ))}
                       </div>
@@ -206,7 +206,7 @@ export default function AIChat() {
               disabled={loading}
             />
             <button onClick={() => send(input)} disabled={loading || !input.trim()} className="primary" style={{ padding: '0 20px' }}>
-              {loading ? 'Thinking…' : 'Send ➤'}
+              {loading ? 'Thinking…' : 'Send'}
             </button>
           </div>
         </div>

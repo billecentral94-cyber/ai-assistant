@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts';
 import { runBacktest } from '../services/api';
+import { IconPlay, IconRefresh, IconAlertTriangle } from '../components/Icons';
+
 
 interface BacktestResult {
   strategy: string;
@@ -84,8 +86,18 @@ export default function Backtesting() {
             </select>
           </div>
 
-          <button onClick={executeBacktest} disabled={loading} style={{ height: 45, padding: '0 30px' }}>
-            {loading ? '⚙️ Running Simulation...' : '▶ Execute Backtest'}
+          <button onClick={executeBacktest} disabled={loading} style={{ height: 45, padding: '0 24px', gap: 8 }}>
+            {loading ? (
+              <>
+                <IconRefresh size={15} style={{ animation: 'spin 1s linear infinite' }} />
+                <span>Running Simulation...</span>
+              </>
+            ) : (
+              <>
+                <IconPlay size={13} color="#ffffff" />
+                <span>Execute Backtest</span>
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -93,7 +105,7 @@ export default function Backtesting() {
       {error && (
         <div className="alert-banner" style={{ marginTop: 20 }}>
           <div className="alert-banner-content">
-            <span>⚠️</span>
+            <IconAlertTriangle size={18} color="var(--red)" />
             <div>{error}</div>
           </div>
         </div>
@@ -101,11 +113,13 @@ export default function Backtesting() {
 
       {loading && (
         <div className="card" style={{ textAlign: 'center', padding: '60px 0' }}>
-          <div style={{ fontSize: 36, marginBottom: 16 }}>⚙️</div>
-          <div style={{ fontSize: 16, color: 'var(--muted)' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+            <IconRefresh size={32} color="#a78bfa" style={{ animation: 'spin 1.2s linear infinite' }} />
+          </div>
+          <div style={{ fontSize: 16, color: '#ffffff', fontWeight: 600 }}>
             Running {strategy.replace(/_/g, ' ')} across {universe} ({timeframe})…
           </div>
-          <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 8 }}>Server computing equity curve, Sharpe ratio, and trade metrics</div>
+          <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 8 }}>Computing historical equity curve, Sharpe ratio, and trade metrics</div>
         </div>
       )}
 

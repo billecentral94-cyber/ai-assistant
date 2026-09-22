@@ -9,6 +9,8 @@ import {
   getFoTradePanel,
   getFoNews
 } from '../services/api';
+import { IconClock, IconPause, IconNews } from '../components/Icons';
+
 
 export default function FnODashboard() {
   const [symbol, setSymbol] = useState<'NIFTY' | 'BANKNIFTY'>('NIFTY');
@@ -334,14 +336,16 @@ export default function FnODashboard() {
             </div>
           )}
 
-          {/* ── POSITION ACTION: EXIT ALL ── */}
-          {posAction === 'EXIT_ALL' && (
+          {/* ── POSITION ACTION: EXIT ── */}
+          {posAction === 'EXIT' && (
             <div style={{ padding: 24, textAlign: 'center' }}>
-              <div style={{ fontSize: 40 }}>⏰</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#fb923c', marginTop: 8 }}>
-                SQUARE-OFF WINDOW — EXIT ALL OPEN POSITIONS NOW
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+                <IconClock size={36} color="#fb923c" />
               </div>
-              <div style={{ fontSize: 14, color: 'var(--muted)', marginTop: 8 }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: '#fb923c', marginTop: 8, letterSpacing: '0.4px' }}>
+                SQUARE-OFF WINDOW — EXIT ALL OPEN POSITIONS
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 8 }}>
                 Market closes at 15:30 IST. Close all spread legs immediately to avoid overnight risk.
               </div>
             </div>
@@ -350,11 +354,13 @@ export default function FnODashboard() {
           {/* ── POSITION ACTION: NO TRADE ── */}
           {posAction === 'NO_TRADE' && (
             <div style={{ padding: 24, textAlign: 'center' }}>
-              <div style={{ fontSize: 40 }}>⏸️</div>
-              <div style={{ fontSize: 20, fontWeight: 800, color: '#64748b', marginTop: 8 }}>
-                NO ACTIVE SETUP — STAY IN CASH
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+                <IconPause size={36} color="#64748b" />
               </div>
-              <div style={{ fontSize: 14, color: 'var(--muted)', marginTop: 8 }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: '#94a3b8', marginTop: 8, letterSpacing: '0.4px' }}>
+                NO ACTIVE SETUP — STANDBY IN CASH
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 8 }}>
                 {ms?.is_weekend
                   ? 'Market is closed for the weekend. Signals will resume on Monday 9:15 AM IST.'
                   : !ms?.is_open
@@ -491,7 +497,8 @@ export default function FnODashboard() {
         {/* Put Walls (Support Floors) */}
         <div className="card">
           <h3 style={{ margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--green)' }}>
-            <span>🟢</span> Institutional Put Walls (Support Floors)
+            <span className="status-dot-pulse" style={{ width: 8, height: 8, background: 'var(--green)', boxShadow: '0 0 8px var(--green)' }} />
+            Institutional Put Walls (Support Floors)
           </h3>
           <table style={{ width: '100%', fontSize: 13 }}>
             <thead>
@@ -522,7 +529,7 @@ export default function FnODashboard() {
                   </td>
                   <td>
                     <span style={{ fontSize: 12, color: w.wall_shift_direction === 'up' ? 'var(--green)' : 'var(--muted)' }}>
-                      {w.wall_shift_direction === 'up' ? '▲ Higher' : w.wall_shift_direction === 'down' ? '▼ Lower' : '● Solid'}
+                      {w.wall_shift_direction === 'up' ? '+ Higher' : w.wall_shift_direction === 'down' ? '- Lower' : 'Solid'}
                     </span>
                   </td>
                 </tr>
@@ -534,7 +541,8 @@ export default function FnODashboard() {
         {/* Call Walls (Resistance Ceilings) */}
         <div className="card">
           <h3 style={{ margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--red)' }}>
-            <span>🔴</span> Institutional Call Walls (Resistance Ceilings)
+            <span className="status-dot-pulse" style={{ width: 8, height: 8, background: 'var(--red)', boxShadow: '0 0 8px var(--red)' }} />
+            Institutional Call Walls (Resistance Ceilings)
           </h3>
           <table style={{ width: '100%', fontSize: 13 }}>
             <thead>
@@ -565,7 +573,7 @@ export default function FnODashboard() {
                   </td>
                   <td>
                     <span style={{ fontSize: 12, color: w.wall_shift_direction === 'down' ? 'var(--red)' : 'var(--muted)' }}>
-                      {w.wall_shift_direction === 'up' ? '▲ Rising' : w.wall_shift_direction === 'down' ? '▼ Lowering' : '● Solid'}
+                      {w.wall_shift_direction === 'up' ? '+ Rising' : w.wall_shift_direction === 'down' ? '- Lowering' : 'Solid'}
                     </span>
                   </td>
                 </tr>
@@ -575,10 +583,11 @@ export default function FnODashboard() {
         </div>
       </div>
 
-      {/* Live Market News & Sentiment (TinyFish AI) */}
+      {/* Live Market News & Sentiment */}
       <div className="card">
-        <h3 style={{ margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span>🐟</span> Live Market Intelligence & Macro Sentiment (TinyFish AI)
+        <h3 style={{ margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8, color: '#ffffff' }}>
+          <IconNews size={16} color="#06b6d4" />
+          Live Market Intelligence & Macro Sentiment
         </h3>
         <p style={{ fontSize: 13, color: 'var(--muted)', margin: '0 0 16px' }}>
           Autonomous web agent news grounding: Scanning live disclosures, institutional flows, and derivatives commentary.

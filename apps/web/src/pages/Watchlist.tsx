@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ComposedChart, Line, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { getWatchlist, getCandles } from '../services/api';
+import { IconSearch, IconAlertTriangle } from '../components/Icons';
+
 
 interface CandleData {
   timestamp: string;
@@ -206,14 +208,16 @@ export default function Watchlist() {
             fontSize: 13
           }}
         />
-        <button type="submit" disabled={searching} style={{ padding: '10px 24px', fontSize: 13 }}>
-          {searching ? '🔍 Searching...' : 'Search Ticker'}
+        <button type="submit" disabled={searching} style={{ padding: '10px 22px', fontSize: 13, gap: 6 }}>
+          <IconSearch size={14} />
+          {searching ? 'Searching...' : 'Search Ticker'}
         </button>
       </form>
 
       {searchError && (
-        <div style={{ color: 'var(--red)', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '10px 16px', borderRadius: 8, marginBottom: 20, fontSize: 13 }}>
-          ⚠️ {searchError}
+        <div style={{ color: 'var(--red)', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '10px 16px', borderRadius: 8, marginBottom: 20, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <IconAlertTriangle size={15} color="var(--red)" />
+          {searchError}
         </div>
       )}
 
@@ -399,7 +403,7 @@ export default function Watchlist() {
       {/* Optional Diagnostics Toggle */}
       <details style={{ marginTop: 24, padding: '10px 14px', background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-subtle)', borderRadius: 8 }}>
         <summary style={{ color: 'var(--muted)', fontSize: 12, cursor: 'pointer', userSelect: 'none' }}>
-          🔧 Developer Diagnostics
+          Developer Diagnostics
         </summary>
         <pre style={{ fontSize: 11, color: '#a78bfa', fontFamily: 'monospace', whiteSpace: 'pre-wrap', marginTop: 10 }}>
           {debugText}

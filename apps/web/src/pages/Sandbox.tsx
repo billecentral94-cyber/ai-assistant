@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { IconFlask, IconPortfolio, IconRefresh, IconAlertCircle, IconCheckCircle } from '../components/Icons';
+
 
 const API_BASE = 'http://localhost:4000/api';
 
@@ -152,8 +154,9 @@ export default function SandboxPage() {
                 transition: 'all 0.2s',
               }}
             >
-              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>
-                {id === 'MICRO' ? '🔬' : '🏦'} {s?.label ?? `${id} Sandbox`}
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span className="badge" style={{ fontSize: 9.5 }}>{id}</span>
+                <span>{s?.label ?? `${id} Sandbox`}</span>
               </div>
               <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
                 <span style={{ color: 'var(--muted)' }}>Capital: <span style={{ color: '#fff' }}>₹{s?.currentCapital?.toFixed(0) ?? '…'}</span></span>
@@ -191,7 +194,7 @@ export default function SandboxPage() {
         {/* Place Trade */}
         <div className="card" style={{ width: 320, padding: 20, flexShrink: 0 }}>
           <h4 style={{ color: '#fff', marginBottom: 16, fontSize: 14 }}>
-            📋 Place Paper Trade — {activeSandbox}
+            Place Paper Trade — {activeSandbox}
           </h4>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -293,11 +296,17 @@ export default function SandboxPage() {
                 fontSize: 11,
               }}>
                 {lastResult.error ? (
-                  <span style={{ color: '#ef4444' }}>❌ {lastResult.error}</span>
+                  <span style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <IconAlertCircle size={14} color="#ef4444" /> {lastResult.error}
+                  </span>
                 ) : lastResult.trade?.status === 'REJECTED' ? (
-                  <span style={{ color: '#ef4444' }}>❌ {lastResult.trade.rejectionReason}</span>
+                  <span style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <IconAlertCircle size={14} color="#ef4444" /> {lastResult.trade.rejectionReason}
+                  </span>
                 ) : (
-                  <span style={{ color: '#10b981' }}>✅ {lastResult.trade?.direction} {lastResult.trade?.qty}×{lastResult.trade?.symbol} @ ₹{lastResult.trade?.price}</span>
+                  <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <IconCheckCircle size={14} color="#10b981" /> {lastResult.trade?.direction} {lastResult.trade?.qty}×{lastResult.trade?.symbol} @ ₹{lastResult.trade?.price}
+                  </span>
                 )}
                 {lastResult.trade?.thresholdReasoning && (
                   <div style={{ color: 'var(--muted)', marginTop: 4 }}>{lastResult.trade.thresholdReasoning}</div>
@@ -316,9 +325,13 @@ export default function SandboxPage() {
                 color: '#ef4444',
                 cursor: 'pointer',
                 fontSize: 12,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6
               }}
             >
-              🔄 Reset {activeSandbox} Sandbox
+              <IconRefresh size={13} color="#ef4444" /> Reset {activeSandbox} Sandbox
             </button>
           </div>
         </div>
@@ -332,8 +345,10 @@ export default function SandboxPage() {
 
           {trades.length === 0 ? (
             <div className="card" style={{ textAlign: 'center', padding: '40px', color: 'var(--muted)' }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>📋</div>
-              No trades yet. Place your first paper trade!
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+                <IconPortfolio size={28} color="var(--muted)" />
+              </div>
+              No trades recorded yet. Place your first paper trade.
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

@@ -118,17 +118,17 @@ export default function NewsIntelligence() {
             <div className="card" key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', margin: 0 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxWidth: '75%' }}>
                 <div style={{ fontSize: 15, fontWeight: 500, color: '#fff' }}>{item.headline}</div>
-                <div style={{ display: 'flex', gap: 10, fontSize: 12, color: 'var(--muted)' }}>
-                  <span>📰 {item.source}</span>
+                <div style={{ display: 'flex', gap: 10, fontSize: 12, color: 'var(--muted)', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>{item.source}</span>
                   <span>•</span>
-                  <span>🏷️ {item.symbol}</span>
+                  <span className="badge" style={{ fontSize: 10, padding: '1px 7px' }}>{item.symbol}</span>
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-                <span className={`badge ${isPositive ? 'success' : isNegative ? 'danger' : ''}`} style={{ width: 80, justifyContent: 'center' }}>
-                  {isPositive ? '▲' : isNegative ? '▼' : '—'} {item.sentiment}
+                <span className={`badge ${isPositive ? 'success' : isNegative ? 'danger' : ''}`} style={{ minWidth: 80, justifyContent: 'center' }}>
+                  {item.sentiment.toUpperCase()}
                 </span>
-                <span style={{ fontSize: 11, color: impactColor[item.impact] ?? 'var(--muted)' }}>
+                <span style={{ fontSize: 11, color: impactColor[item.impact] ?? 'var(--muted)', fontWeight: 600 }}>
                   {item.impact} IMPACT
                 </span>
               </div>
