@@ -4,7 +4,7 @@
   "private": true,
   "description": "Artha AI Copilot — Multi-asset Intelligence & F&O Engine",
   "scripts": {
-    "build": "cd apps/web && npm run build",
+    "build": "node build.js",
     "start": "cd apps/api && npm run start",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "jest"
