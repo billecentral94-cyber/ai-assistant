@@ -325,7 +325,10 @@ export default function Watchlist() {
             {/* Price axis */}
             <YAxis 
               yAxisId="price"
-              domain={['auto', 'auto']} 
+              domain={[
+                (dataMin: number) => (isNaN(dataMin) ? 2000 : Math.floor(dataMin * 0.998)),
+                (dataMax: number) => (isNaN(dataMax) ? 3000 : Math.ceil(dataMax * 1.002))
+              ]} 
               stroke="#6b7280"
               fontSize={11}
               tickLine={false}

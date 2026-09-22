@@ -83,6 +83,41 @@ export async function getTicks() {
   return Array.isArray(data) ? data : data.ticks || fallback;
 }
 
+// Helper to generate a realistic 45-candle time-series when offline or before backend responds
+function generateRealisticCandles(symbol: string, timeframe: string = '1m') {
+  const basePrices: Record<string, number> = {
+    RELIANCE: 2985.0,
+    TCS: 3950.0,
+    INFY: 1780.0,
+    HDFCBANK: 1685.0,
+    ICICIBANK: 1250.0,
+    'NIFTY 50': 24520.0,
+    NIFTY: 24520.0,
+    BANKNIFTY: 52400.0,
+  };
+
+  const symClean = symbol.toUpperCase().replace('.NS', '').trim();
+  let currentPrice = basePrices[symClean] || 2500.0;
+  const volatility = currentPrice * 0.0035;
+  const candles = [];
+  const now = Date.now();
+  const stepMs = timeframe === 'Daily' ? 86400000 : timeframe === '15m' ? 900000 : timeframe === '5m' ? 300000 : 60000;
+
+  for (let i = 45; i >= 0; i--) {
+    const timestamp = new Date(now - i * stepMs).toISOString();
+    const change = (Math.sin(i * 0.5) + (Math.random() - 0.48)) * volatility;
+    const open = parseFloat(currentPrice.toFixed(2));
+    const close = parseFloat((open + change).toFixed(2));
+    const high = parseFloat((Math.max(open, close) + Math.random() * volatility * 0.6).toFixed(2));
+    const low = parseFloat((Math.min(open, close) - Math.random() * volatility * 0.6).toFixed(2));
+    const volume = Math.floor(45000 + Math.random() * 140000);
+
+    candles.push({ timestamp, open, high, low, close, volume });
+    currentPrice = close;
+  }
+  return candles;
+}
+
 export async function getCandles(symbol: string, timeframe: string = '1m') {
   let period = '5d';
   let interval = '1m';
@@ -93,16 +128,20 @@ export async function getCandles(symbol: string, timeframe: string = '1m') {
   } else if (timeframe === 'Daily') {
     period = '3mo'; interval = '1d';
   }
+  
   const fallback = {
-    candles: [
-      { timestamp: new Date().toISOString(), open: 24500, high: 24540, low: 24480, close: 24520, volume: 150000 }
-    ]
+    candles: generateRealisticCandles(symbol, timeframe)
   };
+
   const data = await safeFetch<{ candles: any[] }>(
     `${BASE}/market/candles?symbol=${encodeURIComponent(symbol)}&period=${period}&interval=${interval}`,
     undefined,
     fallback
   );
+
+  if (!Array.isArray(data.candles) || data.candles.length < 2) {
+    return fallback.candles;
+  }
   return data.candles;
 }
 

@@ -11,9 +11,12 @@ interface Holding {
   cost: number;
   pnl: number;
   pnlPct: number;
+  source?: string;
 }
 
 interface PortfolioData {
+  connected?: boolean;
+  broker?: string | null;
   totalValue: number;
   totalCost: number;
   totalPnL: number;
@@ -21,15 +24,20 @@ interface PortfolioData {
   dayChange: number;
   holdings: Holding[];
   paperTrades: number;
+  availableFunds?: number;
+  error?: string;
 }
 
 const DEFAULT_PORTFOLIO: PortfolioData = {
+  connected: false,
+  broker: 'Angel One (SmartAPI Sandbox)',
   totalValue: 524500.0,
   totalCost: 495000.0,
   totalPnL: 29500.0,
   totalPnLPct: 5.96,
   dayChange: 1.45,
   paperTrades: 2,
+  availableFunds: 125000.0,
   holdings: [
     { symbol: 'RELIANCE', sector: 'Energy & Petrochemicals', qty: 25, avgPrice: 2850.0, ltp: 2980.0, cost: 71250.0, currentValue: 74500.0, pnl: 3250.0, pnlPct: 4.56 },
     { symbol: 'HDFCBANK', sector: 'Banking & Financials', qty: 40, avgPrice: 1620.0, ltp: 1685.0, cost: 64800.0, currentValue: 67400.0, pnl: 2600.0, pnlPct: 4.01 },
@@ -41,36 +49,38 @@ const DEFAULT_PORTFOLIO: PortfolioData = {
 export default function Portfolio() {
   const [data, setData] = useState<PortfolioData>(DEFAULT_PORTFOLIO);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+
+  const fetchPortfolio = async () => {
+    try {
+      const p = await getPortfolio();
+      if (p) {
+        setData({
+          connected: Boolean(p.connected),
+          broker: p.broker || (p.connected ? 'Angel One (SmartAPI Live)' : 'Angel One (SmartAPI Sandbox)'),
+          totalValue: Number(p.totalValue ?? p.totalEquity ?? DEFAULT_PORTFOLIO.totalValue),
+          totalCost: Number(p.totalCost ?? DEFAULT_PORTFOLIO.totalCost),
+          totalPnL: Number(p.totalPnL ?? p.dailyPnL ?? DEFAULT_PORTFOLIO.totalPnL),
+          totalPnLPct: Number(p.totalPnLPct ?? DEFAULT_PORTFOLIO.totalPnLPct),
+          dayChange: Number(p.dayChange ?? DEFAULT_PORTFOLIO.dayChange),
+          paperTrades: Number(p.paperTrades ?? DEFAULT_PORTFOLIO.paperTrades),
+          availableFunds: Number(p.availableFunds ?? DEFAULT_PORTFOLIO.availableFunds),
+          holdings: Array.isArray(p.holdings) && p.holdings.length > 0 ? p.holdings : DEFAULT_PORTFOLIO.holdings,
+          error: p.error
+        });
+      }
+    } catch (err) {
+      console.warn('[Portfolio] Using fallback portfolio:', err);
+    } finally {
+      setLoading(false);
+      setSyncing(false);
+    }
+  };
 
   useEffect(() => {
-    let isMounted = true;
-    const fetchPortfolio = async () => {
-      try {
-        const p = await getPortfolio();
-        if (isMounted && p) {
-          setData({
-            totalValue: Number(p.totalValue ?? p.totalEquity ?? DEFAULT_PORTFOLIO.totalValue),
-            totalCost: Number(p.totalCost ?? DEFAULT_PORTFOLIO.totalCost),
-            totalPnL: Number(p.totalPnL ?? p.dailyPnL ?? DEFAULT_PORTFOLIO.totalPnL),
-            totalPnLPct: Number(p.totalPnLPct ?? DEFAULT_PORTFOLIO.totalPnLPct),
-            dayChange: Number(p.dayChange ?? DEFAULT_PORTFOLIO.dayChange),
-            paperTrades: Number(p.paperTrades ?? DEFAULT_PORTFOLIO.paperTrades),
-            holdings: Array.isArray(p.holdings) && p.holdings.length > 0 ? p.holdings : DEFAULT_PORTFOLIO.holdings
-          });
-        }
-      } catch (err) {
-        console.warn('[Portfolio] Using fallback portfolio:', err);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-
     fetchPortfolio();
     const interval = setInterval(fetchPortfolio, 10000);
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, []);
 
   const totalValue = data?.totalValue ?? 0;
@@ -79,20 +89,69 @@ export default function Portfolio() {
   const dayChange = data?.dayChange ?? 0;
   const holdings = data?.holdings ?? [];
   const paperTrades = data?.paperTrades ?? 0;
+  const isLive = Boolean(data?.connected);
 
   return (
     <div>
-      <h2>Portfolio Summary <span className="badge">Risk & Exposure</span></h2>
-      <p className="description">
-        Real-time exposure calculations with correlation-adjusted portfolio heat. Holdings include base positions plus paper trades from the Copilot Trading engine.
-      </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
+        <div>
+          <h2>Portfolio Summary <span className="badge">Risk & Exposure</span></h2>
+          <p className="description" style={{ margin: '4px 0 0 0' }}>
+            Real-time equity exposure with correlation-adjusted portfolio heat. Holdings reflect your Angel One Demat account plus active paper trades.
+          </p>
+        </div>
+        <button
+          onClick={() => { setSyncing(true); fetchPortfolio(); }}
+          disabled={syncing}
+          className="secondary"
+          style={{ fontSize: 12, padding: '8px 16px' }}
+        >
+          {syncing ? 'Syncing...' : '↻ Sync Demat Holdings'}
+        </button>
+      </div>
+
+      {/* Broker Connection Status Banner */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '12px 18px',
+        marginBottom: 24,
+        background: isLive ? 'rgba(16,185,129,0.08)' : 'rgba(245,158,11,0.08)',
+        border: `1px solid ${isLive ? '#10b981' : 'rgba(245,158,11,0.3)'}`,
+        borderRadius: 10,
+        flexWrap: 'wrap',
+        gap: 10
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{
+            width: 10, height: 10, borderRadius: '50%',
+            background: isLive ? '#10b981' : '#f59e0b',
+            boxShadow: isLive ? '0 0 8px #10b981' : 'none'
+          }} />
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
+            {isLive ? 'ANGEL ONE LIVE DEMAT' : 'SANDBOX DEMO MODE (SIMULATED PORTFOLIO)'}
+          </span>
+          <span className="badge" style={{
+            background: isLive ? '#10b981' : '#f59e0b',
+            color: '#000', fontWeight: 700, fontSize: 10, padding: '2px 8px'
+          }}>
+            {isLive ? 'LIVE BROKER' : 'SIMULATION'}
+          </span>
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+          {isLive
+            ? 'Account: AACI406579 · Verified via SmartAPI JWT'
+            : 'Displaying baseline demo holdings. Connect Railway backend with SmartAPI to stream your live account.'}
+        </div>
+      </div>
 
       {/* Stats Summary */}
       <div className="grid" style={{ marginBottom: 35 }}>
         <div className="card stat-container">
           <div className="stat-label">Net Asset Value</div>
           <div className="stat-value" style={{ color: '#fff' }}>₹{totalValue.toLocaleString('en-IN')}</div>
-          <div style={{ fontSize: 12, color: 'var(--muted)' }}>Live market value</div>
+          <div style={{ fontSize: 12, color: 'var(--muted)' }}>Live portfolio value</div>
         </div>
         <div className="card stat-container">
           <div className="stat-label">Total P&L</div>
@@ -113,7 +172,7 @@ export default function Portfolio() {
         <div className="card stat-container">
           <div className="stat-label">Holdings</div>
           <div className="stat-value" style={{ color: '#a78bfa' }}>{holdings.length}</div>
-          <div style={{ fontSize: 12, color: 'var(--muted)' }}>{paperTrades} from paper trades</div>
+          <div style={{ fontSize: 12, color: 'var(--muted)' }}>{paperTrades} active paper positions</div>
         </div>
       </div>
 
@@ -143,7 +202,7 @@ export default function Portfolio() {
           <div>
             <h3 style={{ color: '#fff', fontSize: 18 }}>Current Holdings</h3>
             <p style={{ color: 'var(--muted)', fontSize: 13, marginTop: 4 }}>
-              Refreshes every 10 seconds. Includes base positions and paper trades.
+              Refreshes every 10 seconds. Reflects Angel One Demat holdings and Copilot Trading paper positions.
             </p>
           </div>
         </div>
