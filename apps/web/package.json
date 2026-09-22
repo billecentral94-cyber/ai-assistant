@@ -8,13 +8,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "lightweight-charts": "^5.2.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.24.0",
     "recharts": "^2.12.7",
     "typescript": "^5.5.3",
-    "vite": "^5.3.1",
-    "@vitejs/plugin-react": "^4.3.1"
+    "vite": "^5.3.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

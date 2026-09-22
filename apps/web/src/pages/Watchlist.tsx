@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
-import { ComposedChart, Line, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { useEffect, useRef, useState } from 'react';
+import { createChart, ColorType, IChartApi, ISeriesApi } from 'lightweight-charts';
 import { getWatchlist, getCandles } from '../services/api';
 import { IconSearch, IconAlertTriangle } from '../components/Icons';
-
 
 interface CandleData {
   timestamp: string;
@@ -15,79 +14,9 @@ interface CandleData {
   ema50?: number;
 }
 
-// Custom Candlestick shape for Recharts utilizing yAxis.scale
-const CandlestickShape = (props: any) => {
-  try {
-    const { x, width, payload, yAxis } = props;
-
-    if (typeof window !== 'undefined') {
-      (window as any).__recharts_debug = {
-        hasYAxis: !!yAxis,
-        yAxisKeys: yAxis ? Object.keys(yAxis) : [],
-        scaleType: yAxis ? typeof yAxis.scale : 'undefined',
-        hasYScale: !!props.yScale,
-        yScaleType: typeof props.yScale,
-        propKeys: Object.keys(props)
-      };
-    }
-
-    if (!payload || !yAxis || typeof yAxis.scale !== 'function') return null;
-
-    const open = Number(payload.open);
-    const close = Number(payload.close);
-    const high = Number(payload.high);
-    const low = Number(payload.low);
-
-    if (isNaN(open) || isNaN(close) || isNaN(high) || isNaN(low)) return null;
-
-    const yScale = yAxis.scale;
-
-    const isUp = close >= open;
-    const strokeColor = isUp ? 'var(--green)' : 'var(--red)';
-
-    const topVal = yScale(Math.max(open, close));
-    const bottomVal = yScale(Math.min(open, close));
-    const highVal = yScale(high);
-    const lowVal = yScale(low);
-
-    if (isNaN(topVal) || isNaN(bottomVal) || isNaN(highVal) || isNaN(lowVal)) return null;
-
-    const bodyHeight = Math.max(2, bottomVal - topVal);
-    const centerX = x + width / 2;
-
-    return (
-      <g>
-        {/* Wick (vertical line) */}
-        <line
-          x1={centerX}
-          y1={highVal}
-          x2={centerX}
-          y2={lowVal}
-          stroke={strokeColor}
-          strokeWidth={1.5}
-        />
-        {/* Body (rectangle) */}
-        <rect
-          x={x}
-          y={topVal}
-          width={width}
-          height={bodyHeight}
-          fill={isUp ? 'var(--green)' : 'var(--red)'}
-          stroke={strokeColor}
-          strokeWidth={1}
-        />
-      </g>
-    );
-  } catch (err) {
-    console.error('Error rendering CandlestickShape:', err);
-    return null;
-  }
-};
-
 export default function Watchlist() {
   const [symbols, setSymbols] = useState<Array<{ ticker: string; exchange: string }>>([]);
   const [selected, setSelected] = useState('RELIANCE');
-  const [candles, setCandles] = useState<CandleData[]>([]);
   const [timeframe, setTimeframe] = useState('1m');
   const [hoveredCandle, setHoveredCandle] = useState<CandleData | null>(null);
 
@@ -96,65 +25,244 @@ export default function Watchlist() {
   const [searchError, setSearchError] = useState<string | null>(null);
   const [searching, setSearching] = useState(false);
 
-  // Visual debugger state
-  const [debugText, setDebugText] = useState('No debug data recorded yet.');
+  // Chart DOM reference
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+  const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
+  const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
+  const smaSeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
+  const emaSeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
 
-  useEffect(() => {
-    const t = setInterval(() => {
-      if (typeof window !== 'undefined' && (window as any).__recharts_debug) {
-        setDebugText(JSON.stringify((window as any).__recharts_debug, null, 2));
-      }
-    }, 1000);
-    return () => clearInterval(t);
-  }, []);
-
+  // Load watchlist on mount
   useEffect(() => {
     getWatchlist().then(setSymbols).catch(() => {});
   }, []);
 
+  // Initialize TradingView Lightweight Chart
   useEffect(() => {
-    getCandles(selected, timeframe).then(rawCandles => {
-      if (!Array.isArray(rawCandles)) {
-        setCandles([]);
-        setHoveredCandle(null);
+    if (!chartContainerRef.current) return;
+
+    // Clean up previous chart instance if present
+    if (chartRef.current) {
+      chartRef.current.remove();
+      chartRef.current = null;
+    }
+
+    const container = chartContainerRef.current;
+    const chart = createChart(container, {
+      width: container.clientWidth,
+      height: 440,
+      layout: {
+        background: { type: ColorType.Solid, color: '#07090E' },
+        textColor: '#94a3b8',
+        fontSize: 12,
+      },
+      grid: {
+        vertLines: { color: 'rgba(255, 255, 255, 0.03)' },
+        horzLines: { color: 'rgba(255, 255, 255, 0.03)' },
+      },
+      crosshair: {
+        vertLine: {
+          color: 'rgba(255, 255, 255, 0.2)',
+          width: 1,
+          style: 3,
+        },
+        horzLine: {
+          color: 'rgba(255, 255, 255, 0.2)',
+          width: 1,
+          style: 3,
+        },
+      },
+      rightPriceScale: {
+        borderColor: 'rgba(255, 255, 255, 0.08)',
+        scaleMargins: {
+          top: 0.1,
+          bottom: 0.25,
+        },
+      },
+      timeScale: {
+        borderColor: 'rgba(255, 255, 255, 0.08)',
+        timeVisible: true,
+        secondsVisible: false,
+      },
+    });
+
+    // 1. Candlestick Series (Actual Japanese Candlesticks)
+    const candleSeries = chart.addCandlestickSeries({
+      upColor: '#10b981',
+      downColor: '#ef4444',
+      borderVisible: false,
+      wickUpColor: '#10b981',
+      wickDownColor: '#ef4444',
+    });
+
+    // 2. Volume Histogram Series (Below candlesticks)
+    const volumeSeries = chart.addHistogramSeries({
+      color: 'rgba(99, 102, 241, 0.25)',
+      priceFormat: {
+        type: 'volume',
+      },
+      priceScaleId: '', // Overlay
+    });
+    volumeSeries.priceScale().applyOptions({
+      scaleMargins: {
+        top: 0.8,
+        bottom: 0,
+      },
+    });
+
+    // 3. Technical Indicator Overlays
+    const smaSeries = chart.addLineSeries({
+      color: '#60a5fa',
+      lineWidth: 2,
+      crosshairMarkerVisible: false,
+    });
+
+    const emaSeries = chart.addLineSeries({
+      color: '#a78bfa',
+      lineWidth: 2,
+      crosshairMarkerVisible: false,
+    });
+
+    // Crosshair hover tracking for OHLC display
+    chart.subscribeCrosshairMove(param => {
+      if (!param || !param.time || !param.seriesData) {
         return;
       }
+      const data = param.seriesData.get(candleSeries) as any;
+      if (data) {
+        setHoveredCandle({
+          timestamp: typeof param.time === 'number'
+            ? new Date(param.time * 1000).toISOString()
+            : String(param.time),
+          open: data.open,
+          high: data.high,
+          low: data.low,
+          close: data.close,
+          volume: 0,
+        });
+      }
+    });
 
-      // Compute indicators dynamically
-      const enriched: CandleData[] = rawCandles.map((c: any, index: number) => {
-        const item: CandleData = { ...c };
-        
-        // Compute SMA20
-        if (index >= 19) {
-          const sum = rawCandles.slice(index - 19, index + 1).reduce((acc: number, val: any) => acc + val.close, 0);
-          item.sma20 = sum / 20;
+    // Auto-resize on window / container resize
+    const handleResize = () => {
+      if (chartContainerRef.current) {
+        chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+      }
+    };
+    window.addEventListener('resize', handleResize);
+
+    chartRef.current = chart;
+    candleSeriesRef.current = candleSeries;
+    volumeSeriesRef.current = volumeSeries;
+    smaSeriesRef.current = smaSeries;
+    emaSeriesRef.current = emaSeries;
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      chart.remove();
+      chartRef.current = null;
+    };
+  }, []);
+
+  // Fetch and update candlestick data when symbol or timeframe changes
+  useEffect(() => {
+    let isMounted = true;
+    getCandles(selected, timeframe).then(rawCandles => {
+      if (!isMounted || !Array.isArray(rawCandles) || rawCandles.length === 0) return;
+
+      // 1. Format and deduplicate time-series for Lightweight Charts (ascending order required)
+      const formatted = rawCandles
+        .map(c => {
+          const t = Math.floor(new Date(c.timestamp).getTime() / 1000);
+          return {
+            time: t as any,
+            open: parseFloat(Number(c.open).toFixed(2)),
+            high: parseFloat(Number(c.high).toFixed(2)),
+            low: parseFloat(Number(c.low).toFixed(2)),
+            close: parseFloat(Number(c.close).toFixed(2)),
+            volume: Math.round(Number(c.volume || 0)),
+          };
+        })
+        .filter(c => !isNaN(c.time) && c.open > 0 && c.close > 0)
+        .sort((a, b) => a.time - b.time);
+
+      // Deduplicate timestamps (Lightweight Charts strict requirement)
+      const uniqueCandles: any[] = [];
+      const seenTimes = new Set<number>();
+      for (const item of formatted) {
+        if (!seenTimes.has(item.time)) {
+          seenTimes.add(item.time);
+          uniqueCandles.push(item);
         }
+      }
 
-        // Compute EMA50
-        if (index >= 49) {
+      if (uniqueCandles.length === 0) return;
+
+      // 2. Compute SMA20 & EMA50
+      const smaData: Array<{ time: any; value: number }> = [];
+      const emaData: Array<{ time: any; value: number }> = [];
+
+      for (let i = 0; i < uniqueCandles.length; i++) {
+        if (i >= 19) {
+          const sum = uniqueCandles.slice(i - 19, i + 1).reduce((acc, v) => acc + v.close, 0);
+          smaData.push({ time: uniqueCandles[i].time, value: parseFloat((sum / 20).toFixed(2)) });
+        }
+        if (i >= 49) {
           const k = 2 / (50 + 1);
-          let prevEma = item.close;
-          if (index > 49) {
-            prevEma = enriched[index - 1].ema50 || item.close;
-          }
-          item.ema50 = item.close * k + prevEma * (1 - k);
+          const prevEma = emaData.length > 0 ? emaData[emaData.length - 1].value : uniqueCandles[i].close;
+          const emaVal = uniqueCandles[i].close * k + prevEma * (1 - k);
+          emaData.push({ time: uniqueCandles[i].time, value: parseFloat(emaVal.toFixed(2)) });
         }
+      }
 
-        return item;
+      // 3. Set data in TradingView chart series
+      if (candleSeriesRef.current) {
+        candleSeriesRef.current.setData(uniqueCandles);
+      }
+      if (volumeSeriesRef.current) {
+        volumeSeriesRef.current.setData(
+          uniqueCandles.map(c => ({
+            time: c.time,
+            value: c.volume,
+            color: c.close >= c.open ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.35)',
+          }))
+        );
+      }
+      if (smaSeriesRef.current) {
+        smaSeriesRef.current.setData(smaData);
+      }
+      if (emaSeriesRef.current) {
+        emaSeriesRef.current.setData(emaData);
+      }
+
+      // 4. Default header to latest candle
+      const latest = uniqueCandles[uniqueCandles.length - 1];
+      setHoveredCandle({
+        timestamp: new Date(latest.time * 1000).toISOString(),
+        open: latest.open,
+        high: latest.high,
+        low: latest.low,
+        close: latest.close,
+        volume: latest.volume,
+        sma20: smaData.length > 0 ? smaData[smaData.length - 1].value : undefined,
+        ema50: emaData.length > 0 ? emaData[emaData.length - 1].value : undefined,
       });
 
-      setCandles(enriched);
-      if (enriched.length > 0) {
-        setHoveredCandle(enriched[enriched.length - 1]); // default to latest
-      } else {
-        setHoveredCandle(null);
+      // Fit chart view to content
+      if (chartRef.current) {
+        chartRef.current.timeScale().fitContent();
       }
-    }).catch(() => {
-      setCandles([]);
-      setHoveredCandle(null);
+    }).catch(err => {
+      console.warn('[Watchlist] Error loading candles:', err);
     });
+
+    return () => {
+      isMounted = false;
+    };
   }, [selected, timeframe]);
 
+  // Handle ticker search
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     const query = searchQuery.trim().toUpperCase();
@@ -164,17 +272,15 @@ export default function Watchlist() {
     setSearching(true);
 
     try {
-      // Test fetch candles for search validation
       const res = await getCandles(query, timeframe);
       if (Array.isArray(res) && res.length > 0) {
-        // If not in watchlist, append it
         if (!symbols.some(s => s.ticker === query)) {
           setSymbols(prev => [...prev, { ticker: query, exchange: 'NSE' }]);
         }
         setSelected(query);
         setSearchQuery('');
       } else {
-        setSearchError('Symbol not found on Yahoo Finance. Try e.g. WIPRO, SBIN, or AAPL');
+        setSearchError(`Symbol ${query} not found on NSE. Try e.g. WIPRO, SBIN, or AAPL`);
       }
     } catch {
       setSearchError('Failed to fetch candles. Verify ticker symbol.');
@@ -185,27 +291,27 @@ export default function Watchlist() {
 
   return (
     <div>
-      <h2>Interactive Charting Terminal <span className="badge">TradingView Style</span></h2>
+      <h2>Interactive Charting Terminal <span className="badge">TradingView Powered</span></h2>
       <p className="description">
-        Professional candlestick charts complete with SMA20/EMA50 overlays, volume bars, and crosshair metrics mapping.
+        Institutional Japanese candlestick charts with high-performance WebGL rendering, volume profile, SMA20/EMA50 overlays, and crosshair metrics tracking.
       </p>
 
       {/* Search form bar */}
       <form onSubmit={handleSearch} style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
-        <input 
-          type="text" 
-          placeholder="Search symbol (e.g. WIPRO, SBIN, AAPL)..." 
+        <input
+          type="text"
+          placeholder="Search symbol (e.g. WIPRO, SBIN, AAPL)..."
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           disabled={searching}
-          style={{ 
-            padding: '10px 16px', 
-            borderRadius: 8, 
-            border: '1px solid var(--border)', 
-            background: 'rgba(255,255,255,0.03)', 
-            color: '#fff', 
+          style={{
+            padding: '10px 16px',
+            borderRadius: 8,
+            border: '1px solid var(--border)',
+            background: 'rgba(255,255,255,0.03)',
+            color: '#fff',
             width: 300,
-            fontSize: 13
+            fontSize: 13,
           }}
         />
         <button type="submit" disabled={searching} style={{ padding: '10px 22px', fontSize: 13, gap: 6 }}>
@@ -254,7 +360,7 @@ export default function Watchlist() {
                   fontSize: 12,
                   boxShadow: 'none',
                   background: active ? 'var(--accent-gradient)' : 'transparent',
-                  border: 'none'
+                  border: 'none',
                 }}
               >
                 {tf}
@@ -266,133 +372,45 @@ export default function Watchlist() {
 
       {/* Info bar showing OHLC details at cursor */}
       {hoveredCandle && (
-        <div style={{ 
-          background: 'rgba(255,255,255,0.02)', 
-          border: '1px solid var(--border)', 
-          borderRadius: 10, 
-          padding: '10px 20px', 
+        <div style={{
+          background: 'rgba(255,255,255,0.02)',
+          border: '1px solid var(--border)',
+          borderRadius: 10,
+          padding: '10px 20px',
           marginBottom: 15,
           display: 'flex',
           gap: 20,
           fontSize: 13,
           fontFamily: 'monospace',
           color: 'var(--muted)',
-          flexWrap: 'wrap'
+          flexWrap: 'wrap',
         }}>
           <span>Symbol: <strong style={{ color: '#fff' }}>{selected}</strong></span>
           <span>Open: <strong style={{ color: 'var(--text)' }}>₹{(hoveredCandle.open ?? 0).toFixed(2)}</strong></span>
           <span>High: <strong style={{ color: 'var(--green)' }}>₹{(hoveredCandle.high ?? 0).toFixed(2)}</strong></span>
           <span>Low: <strong style={{ color: 'var(--red)' }}>₹{(hoveredCandle.low ?? 0).toFixed(2)}</strong></span>
           <span>Close: <strong style={{ color: (hoveredCandle.close ?? 0) >= (hoveredCandle.open ?? 0) ? 'var(--green)' : 'var(--red)' }}>₹{(hoveredCandle.close ?? 0).toFixed(2)}</strong></span>
-          <span>Vol: <strong style={{ color: 'var(--text)' }}>{(hoveredCandle.volume ?? 0).toLocaleString()}</strong></span>
+          {hoveredCandle.volume > 0 && <span>Vol: <strong style={{ color: 'var(--text)' }}>{(hoveredCandle.volume ?? 0).toLocaleString()}</strong></span>}
           {hoveredCandle.sma20 && <span>SMA20: <strong style={{ color: '#60a5fa' }}>₹{hoveredCandle.sma20.toFixed(2)}</strong></span>}
           {hoveredCandle.ema50 && <span>EMA50: <strong style={{ color: '#a78bfa' }}>₹{hoveredCandle.ema50.toFixed(2)}</strong></span>}
         </div>
       )}
 
-      {/* Chart Card */}
-      <div className="card" style={{ minHeight: 460, padding: '24px 20px 10px 10px' }}>
-        <ResponsiveContainer width="100%" height={400}>
-          <ComposedChart
-            data={candles}
-            onMouseMove={(state: any) => {
-              if (state && state.activePayload && state.activePayload.length > 0) {
-                setHoveredCandle(state.activePayload[0].payload);
-              }
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
-            
-            <XAxis 
-              dataKey="timestamp" 
-              tickFormatter={v => {
-                try {
-                  const d = new Date(v as string);
-                  if (isNaN(d.getTime())) return '';
-                  return timeframe === 'Daily'
-                    ? d.toLocaleDateString([], { month: 'short', day: '2-digit' })
-                    : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                } catch {
-                  return '';
-                }
-              }}
-              stroke="#6b7280"
-              fontSize={11}
-              tickLine={false}
-              axisLine={false}
-            />
-            
-            {/* Price axis */}
-            <YAxis 
-              yAxisId="price"
-              domain={[
-                (dataMin: number) => (isNaN(dataMin) ? 2000 : Math.floor(dataMin * 0.998)),
-                (dataMax: number) => (isNaN(dataMax) ? 3000 : Math.ceil(dataMax * 1.002))
-              ]} 
-              stroke="#6b7280"
-              fontSize={11}
-              tickLine={false}
-              axisLine={false}
-              orientation="right"
-              tickFormatter={v => `₹${Number(v).toFixed(0)}`}
-            />
-
-            {/* Volume axis */}
-            <YAxis 
-              yAxisId="volume"
-              domain={[0, (data: any) => {
-                if (!Array.isArray(data) || data.length === 0) return 1000;
-                const max = Math.max(...data.map((c: any) => c?.volume ?? 0));
-                return max > 0 ? max * 4 : 1000;
-              }]}
-              stroke="transparent"
-              tickLine={false}
-              axisLine={false}
-            />
-
-            <Tooltip
-              content={<div style={{ display: 'none' }} />} // Handled by info bar overhead
-            />
-
-            {/* Volume Bars */}
-            <Bar 
-              yAxisId="volume"
-              dataKey="volume" 
-              fill="rgba(99, 102, 241, 0.08)"
-              radius={[4, 4, 0, 0]}
-            />
-
-            {/* Candlesticks - custom shape using d3 scale directly */}
-            <Bar
-              yAxisId="price"
-              dataKey="close"
-              shape={<CandlestickShape />}
-            />
-
-            {/* Overlay indicators */}
-            <Line 
-              yAxisId="price"
-              type="monotone" 
-              dataKey="sma20" 
-              stroke="#60a5fa" 
-              dot={false} 
-              strokeWidth={1.5}
-              connectNulls
-            />
-            <Line 
-              yAxisId="price"
-              type="monotone" 
-              dataKey="ema50" 
-              stroke="#a78bfa" 
-              dot={false} 
-              strokeWidth={1.5}
-              connectNulls
-            />
-          </ComposedChart>
-        </ResponsiveContainer>
+      {/* Actual TradingView Candlestick Chart Container */}
+      <div className="card" style={{ padding: 16, background: '#07090E', border: '1px solid var(--border)' }}>
+        <div ref={chartContainerRef} style={{ width: '100%', height: 440 }} />
       </div>
 
-      <div style={{ display: 'flex', gap: 15, marginTop: 10, paddingLeft: 5 }}>
+      {/* Indicator Legend */}
+      <div style={{ display: 'flex', gap: 20, marginTop: 12, paddingLeft: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--muted)' }}>
+          <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 2, background: '#10b981' }} />
+          Bullish Candle
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--muted)' }}>
+          <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 2, background: '#ef4444' }} />
+          Bearish Candle
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--muted)' }}>
           <span style={{ display: 'inline-block', width: 12, height: 3, background: '#60a5fa' }} />
           SMA20
@@ -401,17 +419,11 @@ export default function Watchlist() {
           <span style={{ display: 'inline-block', width: 12, height: 3, background: '#a78bfa' }} />
           EMA50
         </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--muted)' }}>
+          <span style={{ display: 'inline-block', width: 8, height: 10, background: 'rgba(99, 102, 241, 0.4)' }} />
+          Volume Bars
+        </div>
       </div>
-
-      {/* Optional Diagnostics Toggle */}
-      <details style={{ marginTop: 24, padding: '10px 14px', background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-subtle)', borderRadius: 8 }}>
-        <summary style={{ color: 'var(--muted)', fontSize: 12, cursor: 'pointer', userSelect: 'none' }}>
-          Developer Diagnostics
-        </summary>
-        <pre style={{ fontSize: 11, color: '#a78bfa', fontFamily: 'monospace', whiteSpace: 'pre-wrap', marginTop: 10 }}>
-          {debugText}
-        </pre>
-      </details>
     </div>
   );
 }
