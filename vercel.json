@@ -3,7 +3,6 @@
   "framework": "vite",
   "buildCommand": "node build.js",
   "outputDirectory": "dist",
-  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/(.*)",
