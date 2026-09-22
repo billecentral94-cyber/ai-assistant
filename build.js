@@ -2,7 +2,8 @@
 /**
  * Root Build Script for Vercel & Production Deployments.
  * Ensures dependencies are installed in apps/web, builds with Vite,
- * and synchronizes output to both ./dist and ./apps/web/dist for 100% Vercel path detection.
+ * and synchronizes output to both ./dist and ./apps/web/dist.
+ * Also generates static route HTML entrypoints to guarantee zero 404s on any static CDN host.
  */
 
 const { execSync } = require('child_process');
@@ -40,5 +41,36 @@ if (fs.existsSync(webDist)) {
   console.error('[Vercel Build] ERROR: Output directory apps/web/dist was not found!');
   process.exit(1);
 }
+
+// 4. Generate static route fallback files to eliminate 404s on Vercel / static edge servers
+const clientRoutes = [
+  'portfolio',
+  'fno',
+  'watchlist',
+  'copilot-trading',
+  'ai-chat',
+  'backtesting',
+  'news',
+  'sandbox'
+];
+
+for (const dir of [webDist, rootDist]) {
+  const indexHtmlPath = path.join(dir, 'index.html');
+  if (fs.existsSync(indexHtmlPath)) {
+    const indexHtml = fs.readFileSync(indexHtmlPath, 'utf-8');
+    for (const route of clientRoutes) {
+      // Create subfolder /route/index.html
+      const routeDir = path.join(dir, route);
+      if (!fs.existsSync(routeDir)) {
+        fs.mkdirSync(routeDir, { recursive: true });
+      }
+      fs.writeFileSync(path.join(routeDir, 'index.html'), indexHtml, 'utf-8');
+
+      // Create /route.html for cleanUrls / static resolution
+      fs.writeFileSync(path.join(dir, `${route}.html`), indexHtml, 'utf-8');
+    }
+  }
+}
+console.log('[Vercel Build] Pre-rendered static entrypoints for all client routes (portfolio, fno, etc.)');
 
 console.log('[Vercel Build] Build finished successfully!');
