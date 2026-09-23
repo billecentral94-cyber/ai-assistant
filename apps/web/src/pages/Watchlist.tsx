@@ -88,6 +88,7 @@ export default function Watchlist() {
   const prevPriceRef = useRef<number | null>(null);
   const selectedRef = useRef(selected);
   selectedRef.current = selected;
+  const lastRenderedSymbolRef = useRef<string>('');
 
   // Load watchlist on mount
   useEffect(() => {
@@ -254,9 +255,9 @@ export default function Watchlist() {
       // Guard against race conditions if user switched symbols while fetching
       if (symbol !== selectedRef.current) return;
 
-      const rawCandles = res.candles;
+      const rawCandles = Array.isArray(res) ? res : (Array.isArray(res?.candles) ? res.candles : []);
       if (!Array.isArray(rawCandles) || rawCandles.length === 0) {
-        if (isInitial) setDataSource('offline');
+        if (isInitial || symbol !== lastRenderedSymbolRef.current) setDataSource('offline');
         return;
       }
 
@@ -283,7 +284,7 @@ export default function Watchlist() {
 
       parsed.sort((a, b) => (a.time as number) - (b.time as number));
       if (parsed.length === 0) {
-        if (isInitial) setDataSource('offline');
+        if (isInitial || symbol !== lastRenderedSymbolRef.current) setDataSource('offline');
         return;
       }
 
@@ -317,13 +318,19 @@ export default function Watchlist() {
       const last = parsed[parsed.length - 1];
       const prev = parsed.length > 1 ? parsed[parsed.length - 2] : last;
 
+      // Integrate live tick LTP from backend quote metadata into active candle
+      const liveLtp = (res && typeof res.ltp === 'number' && res.ltp > 0) ? res.ltp : last.close;
+      last.close = liveLtp;
+      if (liveLtp > last.high) last.high = liveLtp;
+      if (liveLtp < last.low) last.low = liveLtp;
+
       // Price tick flash indicator
-      if (prevPriceRef.current !== null && prevPriceRef.current !== last.close) {
-        const dir = last.close > prevPriceRef.current ? 'up' : 'down';
+      if (prevPriceRef.current !== null && prevPriceRef.current !== liveLtp) {
+        const dir = liveLtp > prevPriceRef.current ? 'up' : 'down';
         setPriceFlash(dir);
         setTimeout(() => setPriceFlash(null), 800);
       }
-      prevPriceRef.current = last.close;
+      prevPriceRef.current = liveLtp;
 
       const candleSeries = candleSeriesRef.current;
       const volumeSeries = volumeSeriesRef.current;
@@ -332,9 +339,11 @@ export default function Watchlist() {
 
       if (!candleSeries || !volumeSeries) return;
 
+      const isSymbolChange = symbol !== lastRenderedSymbolRef.current;
+
       // ── INCREMENTAL VS FULL UPDATE ───────────────────────────────
-      if (isInitial || isFirstLoadRef.current) {
-        // Full chart initialization
+      if (isInitial || isFirstLoadRef.current || isSymbolChange) {
+        // Full chart initialization for new symbol or timeframe
         candleSeries.setData(parsed.map(c => ({
           time: c.time, open: c.open, high: c.high, low: c.low, close: c.close,
         })));
@@ -351,7 +360,7 @@ export default function Watchlist() {
         // Price line
         if (!priceLineRef.current) {
           priceLineRef.current = candleSeries.createPriceLine({
-            price: last.close,
+            price: liveLtp,
             color: COLORS.priceLine,
             lineWidth: 1,
             lineStyle: 2,
@@ -359,14 +368,15 @@ export default function Watchlist() {
             title: 'LTP',
           });
         } else {
-          priceLineRef.current.applyOptions({ price: last.close });
+          priceLineRef.current.applyOptions({ price: liveLtp });
         }
 
-        // Fit content only on initial load / symbol switch
+        // Fit content on initial load / symbol switch
         if (chartRef.current) {
           chartRef.current.timeScale().fitContent();
         }
         isFirstLoadRef.current = false;
+        lastRenderedSymbolRef.current = symbol;
       } else {
         // High-frequency real-time tick update (smooth, zero jitter, preserves user zoom)
         candleSeries.update({
@@ -388,23 +398,23 @@ export default function Watchlist() {
 
         // Update price line position
         if (priceLineRef.current) {
-          priceLineRef.current.applyOptions({ price: last.close });
+          priceLineRef.current.applyOptions({ price: liveLtp });
         }
       }
 
       latestDataRef.current = parsed;
 
       // Header day change calculation
-      const dayChange = (res.change !== undefined && res.change !== 0)
+      const dayChange = (res && typeof res.change === 'number' && res.change !== 0)
         ? res.change
-        : (last.close - prev.close);
-      const dayChangePct = (res.changePct !== undefined && res.changePct !== 0)
+        : (liveLtp - prev.close);
+      const dayChangePct = (res && typeof res.changePct === 'number' && res.changePct !== 0)
         ? res.changePct
-        : (((last.close - prev.close) / prev.close) * 100);
+        : (prev.close > 0 ? (((liveLtp - prev.close) / prev.close) * 100) : 0);
 
       // Update header legend
       setLegend({
-        open: last.open, high: last.high, low: last.low, close: last.close,
+        open: last.open, high: last.high, low: last.low, close: liveLtp,
         volume: last.volume,
         change: dayChange,
         changePct: dayChangePct,
@@ -627,6 +637,10 @@ export default function Watchlist() {
                   setLegend(null);
                   setBarCount(0);
                   setDataSource('loading');
+                  candleSeriesRef.current?.setData([]);
+                  volumeSeriesRef.current?.setData([]);
+                  smaSeriesRef.current?.setData([]);
+                  emaSeriesRef.current?.setData([]);
                 }
               }}
               style={{

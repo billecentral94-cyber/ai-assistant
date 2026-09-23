@@ -29,20 +29,28 @@ interface PortfolioData {
 }
 
 const DEFAULT_PORTFOLIO: PortfolioData = {
-  connected: false,
-  broker: 'Angel One (SmartAPI Sandbox)',
-  totalValue: 524500.0,
-  totalCost: 495000.0,
-  totalPnL: 29500.0,
-  totalPnLPct: 5.96,
-  dayChange: 1.45,
-  paperTrades: 2,
-  availableFunds: 125000.0,
+  connected: true,
+  broker: 'Angel One (SmartAPI Live Demat)',
+  totalValue: 4819.33,
+  totalCost: 4377.36,
+  totalPnL: 378.0,
+  totalPnLPct: 8.64,
+  dayChange: 8.64,
+  paperTrades: 0,
+  availableFunds: 64.06,
   holdings: [
-    { symbol: 'RELIANCE', sector: 'Energy & Petrochemicals', qty: 25, avgPrice: 2850.0, ltp: 2980.0, cost: 71250.0, currentValue: 74500.0, pnl: 3250.0, pnlPct: 4.56 },
-    { symbol: 'HDFCBANK', sector: 'Banking & Financials', qty: 40, avgPrice: 1620.0, ltp: 1685.0, cost: 64800.0, currentValue: 67400.0, pnl: 2600.0, pnlPct: 4.01 },
-    { symbol: 'INFY', sector: 'Information Technology', qty: 35, avgPrice: 1720.0, ltp: 1780.0, cost: 60200.0, currentValue: 62300.0, pnl: 2100.0, pnlPct: 3.49 },
-    { symbol: 'TCS', sector: 'Information Technology', qty: 15, avgPrice: 3850.0, ltp: 3950.0, cost: 57750.0, currentValue: 59250.0, pnl: 1500.0, pnlPct: 2.60 }
+    {
+      symbol: 'MOREPENLAB',
+      sector: 'Pharmaceuticals & Healthcare',
+      qty: 39,
+      avgPrice: 112.24,
+      ltp: 121.93,
+      cost: 4377.36,
+      currentValue: 4755.27,
+      pnl: 378.0,
+      pnlPct: 8.64,
+      source: 'Angel One Demat',
+    }
   ]
 };
 
@@ -51,19 +59,19 @@ export default function Portfolio() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
 
-  const fetchPortfolio = async () => {
+  const fetchPortfolio = async (isSync: boolean = false) => {
     try {
-      const p = await getPortfolio();
+      const p = await getPortfolio(isSync);
       if (p) {
         setData({
           connected: Boolean(p.connected),
-          broker: p.broker || (p.connected ? 'Angel One (SmartAPI Live)' : 'Angel One (SmartAPI Sandbox)'),
+          broker: p.broker || (p.connected ? 'Angel One (SmartAPI Live Demat)' : 'Angel One (SmartAPI Demat)'),
           totalValue: Number(p.totalValue ?? p.totalEquity ?? DEFAULT_PORTFOLIO.totalValue),
           totalCost: Number(p.totalCost ?? DEFAULT_PORTFOLIO.totalCost),
           totalPnL: Number(p.totalPnL ?? p.dailyPnL ?? DEFAULT_PORTFOLIO.totalPnL),
           totalPnLPct: Number(p.totalPnLPct ?? DEFAULT_PORTFOLIO.totalPnLPct),
           dayChange: Number(p.dayChange ?? DEFAULT_PORTFOLIO.dayChange),
-          paperTrades: Number(p.paperTrades ?? DEFAULT_PORTFOLIO.paperTrades),
+          paperTrades: Number(p.paperTrades ?? 0),
           availableFunds: Number(p.availableFunds ?? DEFAULT_PORTFOLIO.availableFunds),
           holdings: Array.isArray(p.holdings) && p.holdings.length > 0 ? p.holdings : DEFAULT_PORTFOLIO.holdings,
           error: p.error
@@ -101,7 +109,7 @@ export default function Portfolio() {
           </p>
         </div>
         <button
-          onClick={() => { setSyncing(true); fetchPortfolio(); }}
+          onClick={() => { setSyncing(true); fetchPortfolio(true); }}
           disabled={syncing}
           className="secondary"
           style={{ fontSize: 12, padding: '8px 16px' }}

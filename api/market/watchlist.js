@@ -8,6 +8,7 @@ const WATCHLIST = [
   { ticker: 'ICICIBANK', exchange: 'NSE' },
   { ticker: 'SBIN', exchange: 'NSE' },
   { ticker: 'BAJFINANCE', exchange: 'NSE' },
+  { ticker: 'MOREPENLAB', exchange: 'NSE' },
 ];
 
 module.exports = function handler(req, res) {
