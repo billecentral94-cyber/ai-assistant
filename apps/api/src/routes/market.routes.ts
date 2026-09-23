@@ -108,6 +108,40 @@ marketRouter.get('/ticks', (req: Request, res: Response) => {
   res.json({ ticks: Array.from(latestTicks.values()) });
 });
 
+marketRouter.get('/quote', async (req: Request, res: Response) => {
+  const symbol = String(req.query.symbol ?? 'RELIANCE').toUpperCase().trim();
+  const yhTicker = YAHOO_MAP[symbol] ?? (symbol.includes('.') || symbol.startsWith('^') ? symbol : `${symbol}.NS`);
+  try {
+    const { data } = await axios.get(
+      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yhTicker)}?interval=1m&range=1d`,
+      { timeout: 4000, headers: { 'User-Agent': 'Mozilla/5.0' } }
+    );
+    const meta = data?.chart?.result?.[0]?.meta ?? {};
+    const quote = data?.chart?.result?.[0]?.indicators?.quote?.[0] ?? {};
+    const closes = (quote.close ?? []).filter((v: any) => v != null);
+    const ltp = meta.regularMarketPrice ?? (closes.length > 0 ? closes[closes.length - 1] : 0);
+    const prevClose = meta.previousClose ?? meta.chartPreviousClose ?? ltp;
+    const change = ltp - prevClose;
+    const changePct = prevClose > 0 ? (change / prevClose) * 100 : 0;
+
+    res.json({
+      symbol,
+      ltp: parseFloat(Number(ltp).toFixed(2)),
+      high: parseFloat(Number(meta.regularMarketDayHigh ?? ltp).toFixed(2)),
+      low: parseFloat(Number(meta.regularMarketDayLow ?? ltp).toFixed(2)),
+      previousClose: parseFloat(Number(prevClose).toFixed(2)),
+      change: parseFloat(Number(change).toFixed(2)),
+      changePct: parseFloat(Number(changePct).toFixed(2)),
+      volume: meta.regularMarketVolume ?? 0,
+      timestamp: meta.regularMarketTime
+        ? new Date(meta.regularMarketTime * 1000).toISOString()
+        : new Date().toISOString(),
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ── GET /api/market/candles — Yahoo Finance historical candles ─────────────────
 marketRouter.get('/candles', async (req: Request, res: Response) => {
   const symbol = String(req.query.symbol ?? 'RELIANCE');

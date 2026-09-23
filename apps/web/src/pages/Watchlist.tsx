@@ -7,7 +7,7 @@ import {
   HistogramSeries,
   LineSeries,
 } from 'lightweight-charts';
-import type { IChartApi, ISeriesApi, CandlestickData, Time } from 'lightweight-charts';
+import type { IChartApi, ISeriesApi, IPriceLine, CandlestickData, Time } from 'lightweight-charts';
 import { getWatchlist, getCandles } from '../services/api';
 import { IconSearch, IconAlertTriangle } from '../components/Icons';
 
@@ -49,14 +49,14 @@ const COLORS = {
   crosshair:    'rgba(148, 163, 184, 0.35)',
   bullCandle:   '#10b981',
   bearCandle:   '#ef4444',
-  bullVolume:   'rgba(16, 185, 129, 0.20)',
-  bearVolume:   'rgba(239, 68, 68, 0.20)',
+  bullVolume:   'rgba(16, 185, 129, 0.25)',
+  bearVolume:   'rgba(239, 68, 68, 0.25)',
   sma20:        '#60a5fa',
   ema50:        '#a78bfa',
   textPrimary:  '#e2e8f0',
   textMuted:    '#64748b',
   borderColor:  'rgba(255, 255, 255, 0.06)',
-  priceLine:    'rgba(99, 102, 241, 0.5)',
+  priceLine:    'rgba(99, 102, 241, 0.6)',
 };
 
 export default function Watchlist() {
@@ -68,6 +68,7 @@ export default function Watchlist() {
   const [dataSource, setDataSource] = useState<'live' | 'loading' | 'offline'>('loading');
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [barCount, setBarCount] = useState(0);
+  const [priceFlash, setPriceFlash] = useState<'up' | 'down' | null>(null);
 
   // Search
   const [searchQuery, setSearchQuery] = useState('');
@@ -81,7 +82,10 @@ export default function Watchlist() {
   const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
   const smaSeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
   const emaSeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
+  const priceLineRef = useRef<IPriceLine | null>(null);
   const latestDataRef = useRef<OHLCVData[]>([]);
+  const isFirstLoadRef = useRef(true);
+  const prevPriceRef = useRef<number | null>(null);
 
   // Load watchlist on mount
   useEffect(() => {
@@ -92,7 +96,6 @@ export default function Watchlist() {
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    // Dispose previous
     if (chartRef.current) {
       chartRef.current.remove();
       chartRef.current = null;
@@ -136,8 +139,8 @@ export default function Watchlist() {
         borderColor: COLORS.borderColor,
         timeVisible: true,
         secondsVisible: false,
-        rightOffset: 5,
-        barSpacing: 8,
+        rightOffset: 6,
+        barSpacing: 9,
         minBarSpacing: 3,
         fixLeftEdge: false,
         fixRightEdge: false,
@@ -154,7 +157,7 @@ export default function Watchlist() {
       wickDownColor: COLORS.bearCandle,
     });
 
-    // ─── Volume histogram (separate price scale, bottom) ──────────
+    // ─── Volume histogram (bottom overlay) ─────────────────────────
     const volumeSeries = chart.addSeries(HistogramSeries, {
       priceFormat: { type: 'volume' },
       priceScaleId: 'vol',
@@ -184,7 +187,6 @@ export default function Watchlist() {
     // ─── Crosshair hover → update legend ──────────────────────────
     chart.subscribeCrosshairMove(param => {
       if (!param || !param.time || !param.seriesData) {
-        // Reset to latest
         const data = latestDataRef.current;
         if (data.length > 0) {
           const last = data[data.length - 1];
@@ -204,7 +206,7 @@ export default function Watchlist() {
       if (candle) {
         setLegend({
           open: candle.open, high: candle.high, low: candle.low, close: candle.close,
-          volume: 0, // Will be overridden if we find it
+          volume: 0,
           change: candle.close - candle.open,
           changePct: ((candle.close - candle.open) / candle.open) * 100,
           sma20: smaVal?.value,
@@ -227,29 +229,35 @@ export default function Watchlist() {
     volumeSeriesRef.current = volumeSeries;
     smaSeriesRef.current = smaSeries;
     emaSeriesRef.current = emaSeries;
+    priceLineRef.current = null;
 
     return () => {
       resizeObserver.disconnect();
       chart.remove();
       chartRef.current = null;
+      candleSeriesRef.current = null;
+      volumeSeriesRef.current = null;
+      smaSeriesRef.current = null;
+      emaSeriesRef.current = null;
+      priceLineRef.current = null;
     };
   }, []);
 
-  /* ── Fetch & render candle data ────────────────────────────────────── */
-  const loadCandleData = useCallback(async (symbol: string, timeframe: string) => {
-    setLoading(true);
+  /* ── Fetch & render candle data (supports incremental real-time update) ─ */
+  const loadCandleData = useCallback(async (symbol: string, timeframe: string, isInitial: boolean = false) => {
+    if (isInitial) setLoading(true);
+
     try {
       const rawCandles = await getCandles(symbol, timeframe);
       if (!Array.isArray(rawCandles) || rawCandles.length === 0) {
-        setDataSource('offline');
+        if (isInitial) setDataSource('offline');
         return;
       }
 
       setDataSource('live');
       setLastUpdated(new Date());
 
-
-      // Parse, validate, sort, deduplicate
+      // Parse & deduplicate
       const parsed: OHLCVData[] = [];
       const seenTimes = new Set<number>();
 
@@ -269,26 +277,23 @@ export default function Watchlist() {
 
       parsed.sort((a, b) => (a.time as number) - (b.time as number));
       if (parsed.length === 0) {
-        setDataSource('offline');
+        if (isInitial) setDataSource('offline');
         return;
       }
 
       setBarCount(parsed.length);
-      latestDataRef.current = parsed;
 
-      // ── Compute technicals ──────────────────────────────────────
+      // Technical indicators
       const smaData: Array<{ time: Time; value: number }> = [];
       const emaData: Array<{ time: Time; value: number }> = [];
       let emaAccum = 0;
 
       for (let i = 0; i < parsed.length; i++) {
-        // SMA 20
         if (i >= 19) {
           let sum = 0;
           for (let j = i - 19; j <= i; j++) sum += parsed[j].close;
           smaData.push({ time: parsed[i].time, value: parseFloat((sum / 20).toFixed(2)) });
         }
-        // EMA 50
         if (i < 49) {
           emaAccum += parsed[i].close;
         } else if (i === 49) {
@@ -303,40 +308,87 @@ export default function Watchlist() {
         }
       }
 
-      // ── Set data on chart series ────────────────────────────────
-      if (candleSeriesRef.current) {
-        candleSeriesRef.current.setData(parsed.map(c => ({
+      const last = parsed[parsed.length - 1];
+      const prev = parsed.length > 1 ? parsed[parsed.length - 2] : last;
+
+      // Price tick flash indicator
+      if (prevPriceRef.current !== null && prevPriceRef.current !== last.close) {
+        const dir = last.close > prevPriceRef.current ? 'up' : 'down';
+        setPriceFlash(dir);
+        setTimeout(() => setPriceFlash(null), 800);
+      }
+      prevPriceRef.current = last.close;
+
+      const candleSeries = candleSeriesRef.current;
+      const volumeSeries = volumeSeriesRef.current;
+      const smaSeries = smaSeriesRef.current;
+      const emaSeries = emaSeriesRef.current;
+
+      if (!candleSeries || !volumeSeries) return;
+
+      // ── INCREMENTAL VS FULL UPDATE ───────────────────────────────
+      if (isInitial || isFirstLoadRef.current) {
+        // Full chart initialization
+        candleSeries.setData(parsed.map(c => ({
           time: c.time, open: c.open, high: c.high, low: c.low, close: c.close,
         })));
-      }
 
-      if (volumeSeriesRef.current) {
-        volumeSeriesRef.current.setData(parsed.map(c => ({
+        volumeSeries.setData(parsed.map(c => ({
           time: c.time,
           value: c.volume,
           color: c.close >= c.open ? COLORS.bullVolume : COLORS.bearVolume,
         })));
-      }
 
-      if (smaSeriesRef.current) smaSeriesRef.current.setData(smaData);
-      if (emaSeriesRef.current) emaSeriesRef.current.setData(emaData);
+        if (smaSeries) smaSeries.setData(smaData);
+        if (emaSeries) emaSeries.setData(emaData);
 
-      // ── LTP price line ──────────────────────────────────────────
-      if (candleSeriesRef.current) {
-        const last = parsed[parsed.length - 1];
-        candleSeriesRef.current.createPriceLine({
-          price: last.close,
-          color: COLORS.priceLine,
-          lineWidth: 1,
-          lineStyle: 2,
-          axisLabelVisible: true,
-          title: 'LTP',
+        // Price line
+        if (!priceLineRef.current) {
+          priceLineRef.current = candleSeries.createPriceLine({
+            price: last.close,
+            color: COLORS.priceLine,
+            lineWidth: 1,
+            lineStyle: 2,
+            axisLabelVisible: true,
+            title: 'LTP',
+          });
+        } else {
+          priceLineRef.current.applyOptions({ price: last.close });
+        }
+
+        // Fit content only on initial load / symbol switch
+        if (chartRef.current) {
+          chartRef.current.timeScale().fitContent();
+        }
+        isFirstLoadRef.current = false;
+      } else {
+        // High-frequency real-time tick update (smooth, zero jitter, preserves user zoom)
+        candleSeries.update({
+          time: last.time, open: last.open, high: last.high, low: last.low, close: last.close,
         });
+
+        volumeSeries.update({
+          time: last.time,
+          value: last.volume,
+          color: last.close >= last.open ? COLORS.bullVolume : COLORS.bearVolume,
+        });
+
+        if (smaSeries && smaData.length > 0) {
+          smaSeries.update(smaData[smaData.length - 1]);
+        }
+        if (emaSeries && emaData.length > 0) {
+          emaSeries.update(emaData[emaData.length - 1]);
+        }
+
+        // Update price line position
+        if (priceLineRef.current) {
+          priceLineRef.current.applyOptions({ price: last.close });
+        }
       }
 
-      // ── Set initial legend to latest bar ────────────────────────
-      const last = parsed[parsed.length - 1];
-      const prev = parsed.length > 1 ? parsed[parsed.length - 2] : last;
+      latestDataRef.current = parsed;
+
+      // Update header legend
       setLegend({
         open: last.open, high: last.high, low: last.low, close: last.close,
         volume: last.volume,
@@ -346,27 +398,25 @@ export default function Watchlist() {
         ema50: emaData.length > 0 ? emaData[emaData.length - 1].value : undefined,
       });
 
-      // Fit content
-      if (chartRef.current) {
-        chartRef.current.timeScale().fitContent();
-      }
     } catch (err) {
-      console.warn('[Watchlist] Error loading candles:', err);
+      console.warn('[Watchlist] Error updating candles:', err);
     } finally {
-      setLoading(false);
+      if (isInitial) setLoading(false);
     }
   }, []);
 
+  /* ── Effect: Symbol/Timeframe switch & High-Frequency Auto-Refresh ──── */
   useEffect(() => {
-    // Initial load
-    loadCandleData(selected, activeTimeframe);
+    isFirstLoadRef.current = true;
+    prevPriceRef.current = null;
+    loadCandleData(selected, activeTimeframe, true);
 
-    // Auto-refresh interval: 10s for intraday, 60s for daily
+    // High-frequency refresh: 2.5s for intraday, 10s for daily
     const isIntraday = ['1m', '5m', '15m', '1h'].includes(activeTimeframe);
-    const pollMs = isIntraday ? 10_000 : 60_000;
+    const pollMs = isIntraday ? 2500 : 10000;
 
     const interval = setInterval(() => {
-      loadCandleData(selected, activeTimeframe);
+      loadCandleData(selected, activeTimeframe, false);
     }, pollMs);
 
     return () => clearInterval(interval);
@@ -421,8 +471,10 @@ export default function Watchlist() {
           {legend && (
             <>
               <span style={{
-                fontSize: 20, fontWeight: 700, color: '#fff',
+                fontSize: 20, fontWeight: 700,
                 fontFamily: "'JetBrains Mono', monospace",
+                color: priceFlash === 'up' ? COLORS.bullCandle : priceFlash === 'down' ? COLORS.bearCandle : '#fff',
+                transition: 'color 0.3s ease',
               }}>
                 {legend.close.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </span>
@@ -432,7 +484,8 @@ export default function Watchlist() {
               }}>
                 {changeSign}{legend.change.toFixed(2)} ({changeSign}{legend.changePct.toFixed(2)}%)
               </span>
-              {/* Live indicator */}
+
+              {/* High-frequency Live indicator */}
               <span style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
                 fontSize: 10, fontWeight: 700, letterSpacing: 0.5,
@@ -450,10 +503,11 @@ export default function Watchlist() {
                   width: 6, height: 6, borderRadius: '50%',
                   background: 'currentColor',
                   boxShadow: `0 0 6px currentColor`,
-                  animation: dataSource === 'live' ? 'pulseDot 2s infinite' : 'none',
+                  animation: dataSource === 'live' ? 'pulseDot 1.2s infinite' : 'none',
                 }} />
-                {dataSource === 'live' ? 'LIVE' : dataSource === 'loading' ? 'CONNECTING' : 'OFFLINE'}
+                {dataSource === 'live' ? 'LIVE 2.5s' : dataSource === 'loading' ? 'CONNECTING' : 'OFFLINE'}
               </span>
+
               {barCount > 0 && (
                 <span style={{
                   fontSize: 10, color: COLORS.textMuted, marginLeft: 4,
@@ -596,6 +650,11 @@ export default function Watchlist() {
             )}
             {legend.ema50 !== undefined && (
               <span style={{ color: COLORS.ema50 }}>EMA50 <b>{legend.ema50.toFixed(2)}</b></span>
+            )}
+            {lastUpdated && (
+              <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10 }}>
+                {lastUpdated.toLocaleTimeString()}
+              </span>
             )}
           </div>
         )}

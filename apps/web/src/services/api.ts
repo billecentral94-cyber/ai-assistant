@@ -192,6 +192,30 @@ export async function getCandles(symbol: string, timeframe: string = '1m') {
   return [];
 }
 
+export interface LiveQuote {
+  symbol: string;
+  ltp: number;
+  high?: number;
+  low?: number;
+  previousClose?: number;
+  change: number;
+  changePct: number;
+  volume?: number;
+  timestamp: string;
+}
+
+export async function getLiveQuote(symbol: string): Promise<LiveQuote | null> {
+  try {
+    const data = await safeFetch<LiveQuote>(
+      `${BASE}/market/quote?symbol=${encodeURIComponent(symbol)}`,
+      undefined,
+      undefined
+    );
+    if (data && data.ltp > 0) return data;
+  } catch {}
+  return null;
+}
+
 /** Subscribes to the live tick SSE stream. Returns an unsubscribe function. */
 export function subscribeTicks(onTick: (tick: Tick) => void): () => void {
   try {
