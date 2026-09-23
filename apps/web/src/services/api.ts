@@ -83,39 +83,78 @@ export async function getTicks() {
   return Array.isArray(data) ? data : data.ticks || fallback;
 }
 
-// Helper to generate a realistic 45-candle time-series when offline or before backend responds
-function generateRealisticCandles(symbol: string, timeframe: string = '1m') {
-  const basePrices: Record<string, number> = {
-    RELIANCE: 2985.0,
-    TCS: 3950.0,
-    INFY: 1780.0,
-    HDFCBANK: 1685.0,
-    ICICIBANK: 1250.0,
-    'NIFTY 50': 24520.0,
-    NIFTY: 24520.0,
-    BANKNIFTY: 52400.0,
-  };
+// Yahoo Finance symbol map (mirrors backend YAHOO_MAP for direct browser fetch)
+const YAHOO_TICKER_MAP: Record<string, string> = {
+  RELIANCE: 'RELIANCE.NS', TCS: 'TCS.NS', INFY: 'INFY.NS',
+  HDFCBANK: 'HDFCBANK.NS', ICICIBANK: 'ICICIBANK.NS',
+  'NIFTY 50': '^NSEI', NIFTY: '^NSEI', NIFTY50: '^NSEI',
+  BANKNIFTY: '^NSEBANK', 'BANK NIFTY': '^NSEBANK',
+  WIPRO: 'WIPRO.NS', KOTAKBANK: 'KOTAKBANK.NS', AXISBANK: 'AXISBANK.NS',
+  SBIN: 'SBIN.NS', BAJFINANCE: 'BAJFINANCE.NS', MARUTI: 'MARUTI.NS',
+  CUPID: 'CUPID.NS', TATAMOTORS: 'TATAMOTORS.NS', LT: 'LT.NS',
+  BHARTIARTL: 'BHARTIARTL.NS', ITC: 'ITC.NS', HINDUNILVR: 'HINDUNILVR.NS',
+  AAPL: 'AAPL', TSLA: 'TSLA', GOOGL: 'GOOGL', MSFT: 'MSFT', AMZN: 'AMZN',
+};
 
-  const symClean = symbol.toUpperCase().replace('.NS', '').trim();
-  let currentPrice = basePrices[symClean] || 2500.0;
-  const volatility = currentPrice * 0.0035;
-  const candles = [];
-  const now = Date.now();
-  const stepMs = timeframe === 'Daily' ? 86400000 : timeframe === '15m' ? 900000 : timeframe === '5m' ? 300000 : 60000;
+/**
+ * Fetch REAL candles directly from Yahoo Finance via CORS proxy.
+ * Used as fallback when the Express backend is unreachable (e.g. Vercel standalone).
+ */
+async function fetchYahooCandles(symbol: string, period: string, interval: string): Promise<any[]> {
+  const sym = symbol.toUpperCase().replace('.NS', '').trim();
+  const yhTicker = YAHOO_TICKER_MAP[sym] ?? `${sym}.NS`;
+  const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yhTicker)}?interval=${interval}&range=${period}`;
 
-  for (let i = 45; i >= 0; i--) {
-    const timestamp = new Date(now - i * stepMs).toISOString();
-    const change = (Math.sin(i * 0.5) + (Math.random() - 0.48)) * volatility;
-    const open = parseFloat(currentPrice.toFixed(2));
-    const close = parseFloat((open + change).toFixed(2));
-    const high = parseFloat((Math.max(open, close) + Math.random() * volatility * 0.6).toFixed(2));
-    const low = parseFloat((Math.min(open, close) - Math.random() * volatility * 0.6).toFixed(2));
-    const volume = Math.floor(45000 + Math.random() * 140000);
+  // Try multiple CORS proxies in order of reliability
+  const PROXIES = [
+    (url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    (url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  ];
 
-    candles.push({ timestamp, open, high, low, close, volume });
-    currentPrice = close;
+  for (const makeProxy of PROXIES) {
+    try {
+      const proxyUrl = makeProxy(yahooUrl);
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) continue;
+      const json = await res.json();
+      const result = json?.chart?.result?.[0];
+      if (!result?.timestamp) continue;
+
+      const ts: number[] = result.timestamp;
+      const q = result.indicators?.quote?.[0] ?? {};
+      const opens: number[] = q.open ?? [];
+      const highs: number[] = q.high ?? [];
+      const lows: number[] = q.low ?? [];
+      const closes: number[] = q.close ?? [];
+      const volumes: number[] = q.volume ?? [];
+
+      const LIMIT: Record<string, number> = { '1m': 120, '5m': 150, '15m': 150, '60m': 200, '1h': 200, '1d': 365 };
+      const limit = LIMIT[interval] ?? 200;
+
+      const candles = ts
+        .map((t, i) => ({
+          timestamp: new Date(t * 1000).toISOString(),
+          open: parseFloat((opens[i] ?? 0).toFixed(2)),
+          high: parseFloat((highs[i] ?? 0).toFixed(2)),
+          low: parseFloat((lows[i] ?? 0).toFixed(2)),
+          close: parseFloat((closes[i] ?? 0).toFixed(2)),
+          volume: Math.round(volumes[i] ?? 0),
+        }))
+        .filter(c => c.open > 0 && c.close > 0)
+        .slice(-limit);
+
+      if (candles.length > 0) {
+        console.log(`[Yahoo Direct] ${sym}: ${candles.length} bars via CORS proxy`);
+        return candles;
+      }
+    } catch {
+      // Try next proxy
+    }
   }
-  return candles;
+
+  console.warn(`[Yahoo Direct] All proxies failed for ${sym}`);
+  return [];
 }
 
 export async function getCandles(symbol: string, timeframe: string = '1m') {
@@ -125,24 +164,32 @@ export async function getCandles(symbol: string, timeframe: string = '1m') {
     period = '5d'; interval = '5m';
   } else if (timeframe === '15m') {
     period = '5d'; interval = '15m';
+  } else if (timeframe === '1h') {
+    period = '1mo'; interval = '60m';
   } else if (timeframe === 'Daily') {
     period = '3mo'; interval = '1d';
   }
-  
-  const fallback = {
-    candles: generateRealisticCandles(symbol, timeframe)
-  };
 
-  const data = await safeFetch<{ candles: any[] }>(
-    `${BASE}/market/candles?symbol=${encodeURIComponent(symbol)}&period=${period}&interval=${interval}`,
-    undefined,
-    fallback
-  );
-
-  if (!Array.isArray(data.candles) || data.candles.length < 2) {
-    return fallback.candles;
+  // 1. Try our own backend first
+  try {
+    const data = await safeFetch<{ candles: any[] }>(
+      `${BASE}/market/candles?symbol=${encodeURIComponent(symbol)}&period=${period}&interval=${interval}`,
+      undefined,
+      undefined  // no fallback — let it throw if backend is down
+    );
+    if (Array.isArray(data?.candles) && data.candles.length >= 2) {
+      return data.candles;
+    }
+  } catch {
+    // Backend unreachable — fall through to Yahoo direct
   }
-  return data.candles;
+
+  // 2. Fallback: fetch directly from Yahoo Finance via CORS proxy (REAL DATA)
+  const yahooCandles = await fetchYahooCandles(symbol, period, interval);
+  if (yahooCandles.length > 0) return yahooCandles;
+
+  // 3. Last resort: empty (chart will show "no data")
+  return [];
 }
 
 /** Subscribes to the live tick SSE stream. Returns an unsubscribe function. */

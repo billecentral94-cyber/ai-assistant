@@ -65,6 +65,9 @@ export default function Watchlist() {
   const [activeTimeframe, setActiveTimeframe] = useState('1m');
   const [legend, setLegend] = useState<LegendData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [dataSource, setDataSource] = useState<'live' | 'loading' | 'offline'>('loading');
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [barCount, setBarCount] = useState(0);
 
   // Search
   const [searchQuery, setSearchQuery] = useState('');
@@ -237,7 +240,14 @@ export default function Watchlist() {
     setLoading(true);
     try {
       const rawCandles = await getCandles(symbol, timeframe);
-      if (!Array.isArray(rawCandles) || rawCandles.length === 0) return;
+      if (!Array.isArray(rawCandles) || rawCandles.length === 0) {
+        setDataSource('offline');
+        return;
+      }
+
+      setDataSource('live');
+      setLastUpdated(new Date());
+
 
       // Parse, validate, sort, deduplicate
       const parsed: OHLCVData[] = [];
@@ -258,8 +268,12 @@ export default function Watchlist() {
       }
 
       parsed.sort((a, b) => (a.time as number) - (b.time as number));
-      if (parsed.length === 0) return;
+      if (parsed.length === 0) {
+        setDataSource('offline');
+        return;
+      }
 
+      setBarCount(parsed.length);
       latestDataRef.current = parsed;
 
       // ── Compute technicals ──────────────────────────────────────
@@ -344,7 +358,18 @@ export default function Watchlist() {
   }, []);
 
   useEffect(() => {
+    // Initial load
     loadCandleData(selected, activeTimeframe);
+
+    // Auto-refresh interval: 10s for intraday, 60s for daily
+    const isIntraday = ['1m', '5m', '15m', '1h'].includes(activeTimeframe);
+    const pollMs = isIntraday ? 10_000 : 60_000;
+
+    const interval = setInterval(() => {
+      loadCandleData(selected, activeTimeframe);
+    }, pollMs);
+
+    return () => clearInterval(interval);
   }, [selected, activeTimeframe, loadCandleData]);
 
   /* ── Search handler ────────────────────────────────────────────────── */
@@ -407,6 +432,36 @@ export default function Watchlist() {
               }}>
                 {changeSign}{legend.change.toFixed(2)} ({changeSign}{legend.changePct.toFixed(2)}%)
               </span>
+              {/* Live indicator */}
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                fontSize: 10, fontWeight: 700, letterSpacing: 0.5,
+                padding: '3px 8px', borderRadius: 4,
+                marginLeft: 6,
+                background: dataSource === 'live'
+                  ? 'rgba(16, 185, 129, 0.12)'
+                  : 'rgba(245, 158, 11, 0.12)',
+                color: dataSource === 'live' ? '#34d399' : '#fbbf24',
+                border: `1px solid ${dataSource === 'live'
+                  ? 'rgba(16, 185, 129, 0.3)'
+                  : 'rgba(245, 158, 11, 0.3)'}`,
+              }}>
+                <span style={{
+                  width: 6, height: 6, borderRadius: '50%',
+                  background: 'currentColor',
+                  boxShadow: `0 0 6px currentColor`,
+                  animation: dataSource === 'live' ? 'pulseDot 2s infinite' : 'none',
+                }} />
+                {dataSource === 'live' ? 'LIVE' : dataSource === 'loading' ? 'CONNECTING' : 'OFFLINE'}
+              </span>
+              {barCount > 0 && (
+                <span style={{
+                  fontSize: 10, color: COLORS.textMuted, marginLeft: 4,
+                  fontFamily: "'JetBrains Mono', monospace",
+                }}>
+                  {barCount} bars
+                </span>
+              )}
             </>
           )}
         </div>
