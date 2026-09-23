@@ -86,6 +86,8 @@ export default function Watchlist() {
   const latestDataRef = useRef<OHLCVData[]>([]);
   const isFirstLoadRef = useRef(true);
   const prevPriceRef = useRef<number | null>(null);
+  const selectedRef = useRef(selected);
+  selectedRef.current = selected;
 
   // Load watchlist on mount
   useEffect(() => {
@@ -248,7 +250,11 @@ export default function Watchlist() {
     if (isInitial) setLoading(true);
 
     try {
-      const rawCandles = await getCandles(symbol, timeframe);
+      const res = await getCandles(symbol, timeframe);
+      // Guard against race conditions if user switched symbols while fetching
+      if (symbol !== selectedRef.current) return;
+
+      const rawCandles = res.candles;
       if (!Array.isArray(rawCandles) || rawCandles.length === 0) {
         if (isInitial) setDataSource('offline');
         return;
@@ -388,12 +394,20 @@ export default function Watchlist() {
 
       latestDataRef.current = parsed;
 
+      // Header day change calculation
+      const dayChange = (res.change !== undefined && res.change !== 0)
+        ? res.change
+        : (last.close - prev.close);
+      const dayChangePct = (res.changePct !== undefined && res.changePct !== 0)
+        ? res.changePct
+        : (((last.close - prev.close) / prev.close) * 100);
+
       // Update header legend
       setLegend({
         open: last.open, high: last.high, low: last.low, close: last.close,
         volume: last.volume,
-        change: last.close - prev.close,
-        changePct: ((last.close - prev.close) / prev.close) * 100,
+        change: dayChange,
+        changePct: dayChangePct,
         sma20: smaData.length > 0 ? smaData[smaData.length - 1].value : undefined,
         ema50: emaData.length > 0 ? emaData[emaData.length - 1].value : undefined,
       });
@@ -431,11 +445,14 @@ export default function Watchlist() {
     setSearching(true);
     try {
       const res = await getCandles(query, activeTimeframe);
-      if (Array.isArray(res) && res.length > 0) {
+      if (Array.isArray(res.candles) && res.candles.length > 0) {
         if (!symbols.some(s => s.ticker === query)) {
           setSymbols(prev => [...prev, { ticker: query, exchange: 'NSE' }]);
         }
         setSelected(query);
+        setLegend(null);
+        setBarCount(0);
+        setDataSource('loading');
         setSearchQuery('');
       } else {
         setSearchError(`Symbol ${query} not found. Try WIPRO, SBIN, TCS, AAPL`);
@@ -604,7 +621,14 @@ export default function Watchlist() {
           return (
             <button
               key={s.ticker}
-              onClick={() => setSelected(s.ticker)}
+              onClick={() => {
+                if (selected !== s.ticker) {
+                  setSelected(s.ticker);
+                  setLegend(null);
+                  setBarCount(0);
+                  setDataSource('loading');
+                }
+              }}
               style={{
                 padding: '5px 14px', borderRadius: 4, fontSize: 11,
                 fontWeight: isActive ? 700 : 500,

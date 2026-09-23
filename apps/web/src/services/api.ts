@@ -157,7 +157,15 @@ async function fetchYahooCandles(symbol: string, period: string, interval: strin
   return [];
 }
 
-export async function getCandles(symbol: string, timeframe: string = '1m') {
+export interface CandleResponse {
+  candles: any[];
+  ltp?: number;
+  previousClose?: number;
+  change?: number;
+  changePct?: number;
+}
+
+export async function getCandles(symbol: string, timeframe: string = '1m'): Promise<CandleResponse> {
   let period = '5d';
   let interval = '1m';
   if (timeframe === '5m') {
@@ -170,15 +178,21 @@ export async function getCandles(symbol: string, timeframe: string = '1m') {
     period = '3mo'; interval = '1d';
   }
 
-  // 1. Try our own backend first
+  // 1. Try our backend / Vercel serverless function first
   try {
-    const data = await safeFetch<{ candles: any[] }>(
+    const data = await safeFetch<{ candles: any[]; ltp?: number; previousClose?: number; change?: number; changePct?: number }>(
       `${BASE}/market/candles?symbol=${encodeURIComponent(symbol)}&period=${period}&interval=${interval}`,
       undefined,
-      undefined  // no fallback — let it throw if backend is down
+      undefined
     );
     if (Array.isArray(data?.candles) && data.candles.length >= 2) {
-      return data.candles;
+      return {
+        candles: data.candles,
+        ltp: data.ltp,
+        previousClose: data.previousClose,
+        change: data.change,
+        changePct: data.changePct,
+      };
     }
   } catch {
     // Backend unreachable — fall through to Yahoo direct
@@ -186,10 +200,18 @@ export async function getCandles(symbol: string, timeframe: string = '1m') {
 
   // 2. Fallback: fetch directly from Yahoo Finance via CORS proxy (REAL DATA)
   const yahooCandles = await fetchYahooCandles(symbol, period, interval);
-  if (yahooCandles.length > 0) return yahooCandles;
+  if (yahooCandles.length > 0) {
+    const last = yahooCandles[yahooCandles.length - 1];
+    return {
+      candles: yahooCandles,
+      ltp: last.close,
+      change: 0,
+      changePct: 0,
+    };
+  }
 
-  // 3. Last resort: empty (chart will show "no data")
-  return [];
+  // 3. Last resort: empty
+  return { candles: [] };
 }
 
 export interface LiveQuote {

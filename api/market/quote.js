@@ -40,7 +40,7 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const symbol = String(req.query.symbol || 'RELIANCE').toUpperCase().trim();
+  const symbol = String(req.query.symbol || 'RELIANCE').toUpperCase().replace(/\+/g, ' ').trim();
   const yhTicker = YAHOO_MAP[symbol] || (symbol.includes('.') || symbol.startsWith('^') ? symbol : `${symbol}.NS`);
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yhTicker)}?interval=1m&range=1d`;
 

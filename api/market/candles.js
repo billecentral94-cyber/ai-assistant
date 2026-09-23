@@ -41,7 +41,7 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const symbol = String(req.query.symbol || 'RELIANCE').toUpperCase().trim();
+  const symbol = String(req.query.symbol || 'RELIANCE').toUpperCase().replace(/\+/g, ' ').trim();
   const period = String(req.query.period || '5d');
   const interval = String(req.query.interval || '1m');
 
