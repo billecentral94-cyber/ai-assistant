@@ -105,9 +105,11 @@ export default function Watchlist() {
     }
 
     const container = chartContainerRef.current;
+    const initialWidth = container.clientWidth || 800;
+    const initialHeight = Math.max(container.clientHeight || 0, 520);
     const chart = createChart(container, {
-      width: container.clientWidth,
-      height: container.clientHeight || 560,
+      width: initialWidth,
+      height: initialHeight,
       layout: {
         background: { type: ColorType.Solid, color: COLORS.bg },
         textColor: COLORS.textMuted,
@@ -222,7 +224,9 @@ export default function Watchlist() {
     const resizeObserver = new ResizeObserver(entries => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
-        chart.applyOptions({ width, height: height || 560 });
+        if (width > 0) {
+          chart.applyOptions({ width, height: Math.max(height, 520) });
+        }
       }
     });
     resizeObserver.observe(container);
@@ -665,7 +669,7 @@ export default function Watchlist() {
       </div>
 
       {/* ── Chart area (fills remaining height) ───────────────────── */}
-      <div style={{ flex: 1, position: 'relative', minHeight: 400 }}>
+      <div style={{ flex: 1, position: 'relative', minHeight: 520, height: '100%' }}>
         {/* OHLCV legend overlay (top-left on chart, like TradingView) */}
         {legend && (
           <div style={{
@@ -713,7 +717,9 @@ export default function Watchlist() {
         <div
           ref={chartContainerRef}
           style={{
-            width: '100%', height: '100%',
+            width: '100%',
+            height: '100%',
+            minHeight: 520,
             borderRadius: 0,
             background: COLORS.bg,
           }}

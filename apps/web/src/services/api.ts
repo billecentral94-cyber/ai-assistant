@@ -4,7 +4,9 @@
  * when deployed standalone (e.g. on Vercel preview without a live backend attached).
  */
 
-const BASE = (import.meta.env.VITE_API_URL as string) || '/api';
+// ALWAYS use same-origin relative `/api` for Vercel serverless endpoints and local dev proxy.
+// This prevents external dead URLs (like 502 Railway) from breaking frontend data fetches.
+const BASE = '/api';
 
 export interface Tick {
   symbol: string;
@@ -178,24 +180,26 @@ export async function getCandles(symbol: string, timeframe: string = '1m'): Prom
     period = '3mo'; interval = '1d';
   }
 
-  // 1. Try our backend / Vercel serverless function first
+  // 1. Try our same-origin Vercel serverless function directly
   try {
-    const data = await safeFetch<{ candles: any[]; ltp?: number; previousClose?: number; change?: number; changePct?: number }>(
-      `${BASE}/market/candles?symbol=${encodeURIComponent(symbol)}&period=${period}&interval=${interval}`,
-      undefined,
-      undefined
-    );
-    if (Array.isArray(data?.candles) && data.candles.length >= 2) {
-      return {
-        candles: data.candles,
-        ltp: data.ltp,
-        previousClose: data.previousClose,
-        change: data.change,
-        changePct: data.changePct,
-      };
+    const endpoint = `/api/market/candles?symbol=${encodeURIComponent(symbol)}&period=${period}&interval=${interval}`;
+    const res = await fetch(endpoint, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data?.candles) && data.candles.length >= 2) {
+        return {
+          candles: data.candles,
+          ltp: data.ltp,
+          previousClose: data.previousClose,
+          change: data.change,
+          changePct: data.changePct,
+        };
+      }
     }
-  } catch {
-    // Backend unreachable — fall through to Yahoo direct
+  } catch (err) {
+    console.warn('[getCandles] Error fetching /api/market/candles:', err);
   }
 
   // 2. Fallback: fetch directly from Yahoo Finance via CORS proxy (REAL DATA)
