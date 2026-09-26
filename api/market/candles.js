@@ -78,8 +78,8 @@ module.exports = async function handler(req, res) {
             const closes = quote.close || [];
             const volumes = quote.volume || [];
 
-            const LIMIT = { '1m': 120, '5m': 150, '15m': 150, '60m': 200, '1h': 200, '1d': 365 };
-            const limit = LIMIT[interval] || 200;
+            const LIMIT = { '1m': 150, '5m': 250, '15m': 250, '60m': 350, '1h': 350, '1d': 2500, '1wk': 1500, '1mo': 600 };
+            const limit = LIMIT[interval] || 2500;
 
             const candles = ts
               .map((t, i) => ({

@@ -35,11 +35,14 @@ interface LegendData {
 
 /* ── Timeframe config ────────────────────────────────────────────────── */
 const TIMEFRAMES = [
-  { label: '1m',    value: '1m',    period: '5d',  interval: '1m'  },
-  { label: '5m',    value: '5m',    period: '5d',  interval: '5m'  },
-  { label: '15m',   value: '15m',   period: '5d',  interval: '15m' },
-  { label: '1H',    value: '1h',    period: '1mo', interval: '60m' },
-  { label: '1D',    value: 'Daily', period: '3mo', interval: '1d'  },
+  { label: '1m', value: '1m' },
+  { label: '5m', value: '5m' },
+  { label: '15m', value: '15m' },
+  { label: '1H', value: '1h' },
+  { label: '1D', value: '1D' },
+  { label: '5Y', value: '5Y' },
+  { label: '1W', value: '1W' },
+  { label: '1M', value: '1M' },
 ];
 
 /* ── Color palette (professional dark terminal) ──────────────────────── */

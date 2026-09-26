@@ -174,10 +174,16 @@ export async function getCandles(symbol: string, timeframe: string = '1m'): Prom
     period = '5d'; interval = '5m';
   } else if (timeframe === '15m') {
     period = '5d'; interval = '15m';
-  } else if (timeframe === '1h') {
+  } else if (timeframe === '1h' || timeframe === '1H') {
     period = '1mo'; interval = '60m';
-  } else if (timeframe === 'Daily') {
-    period = '3mo'; interval = '1d';
+  } else if (timeframe === '1D' || timeframe === 'Daily') {
+    period = '1y'; interval = '1d';
+  } else if (timeframe === '5Y' || timeframe === '5y') {
+    period = '5y'; interval = '1d';
+  } else if (timeframe === '1W' || timeframe === '1w') {
+    period = '5y'; interval = '1wk';
+  } else if (timeframe === '1M' || timeframe === '1mo') {
+    period = '10y'; interval = '1mo';
   }
 
   // 1. Try our same-origin Vercel serverless function directly
