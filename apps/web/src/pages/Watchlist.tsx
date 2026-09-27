@@ -104,6 +104,53 @@ export default function Watchlist() {
   const [barCount, setBarCount] = useState(0);
   const [priceFlash, setPriceFlash] = useState<'up' | 'down' | null>(null);
 
+  // Section toggle: Stocks vs F&O
+  type WatchlistSection = 'stocks' | 'fno';
+  const [activeSection, setActiveSection] = useState<WatchlistSection>('stocks');
+  const [fnoSymbols, setFnoSymbols] = useState<Array<{ ticker: string; exchange: string }>>([
+    { ticker: 'NIFTY 50', exchange: 'NSE' },
+    { ticker: 'BANKNIFTY', exchange: 'NSE' },
+    { ticker: 'FINNIFTY', exchange: 'NSE' },
+    { ticker: 'MIDCPNIFTY', exchange: 'NSE' },
+    { ticker: 'RELIANCE', exchange: 'NSE' },
+    { ticker: 'HDFCBANK', exchange: 'NSE' },
+    { ticker: 'ICICIBANK', exchange: 'NSE' },
+    { ticker: 'SBIN', exchange: 'NSE' },
+    { ticker: 'BAJFINANCE', exchange: 'NSE' },
+    { ticker: 'TCS', exchange: 'NSE' },
+    { ticker: 'INFY', exchange: 'NSE' },
+    { ticker: 'TATAMOTORS', exchange: 'NSE' },
+    { ticker: 'ITC', exchange: 'NSE' },
+    { ticker: 'AXISBANK', exchange: 'NSE' },
+    { ticker: 'LT', exchange: 'NSE' },
+  ]);
+
+  // Pinned stocks — persisted in localStorage
+  const [pinnedTickers, setPinnedTickers] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('artha_pinned_tickers');
+      return saved ? new Set(JSON.parse(saved)) : new Set<string>();
+    } catch { return new Set<string>(); }
+  });
+
+  const togglePin = (ticker: string) => {
+    setPinnedTickers(prev => {
+      const next = new Set(prev);
+      if (next.has(ticker)) { next.delete(ticker); } else { next.add(ticker); }
+      localStorage.setItem('artha_pinned_tickers', JSON.stringify([...next]));
+      return next;
+    });
+  };
+
+  // Derive the visible symbol list based on active section, with pinned first
+  const visibleSymbols = (activeSection === 'stocks' ? symbols : fnoSymbols)
+    .slice()
+    .sort((a, b) => {
+      const ap = pinnedTickers.has(a.ticker) ? 0 : 1;
+      const bp = pinnedTickers.has(b.ticker) ? 0 : 1;
+      return ap - bp;
+    });
+
   // Search
   const [searchQuery, setSearchQuery] = useState('');
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -565,8 +612,10 @@ export default function Watchlist() {
     try {
       const res = await getCandles(query, activeTimeframe);
       if (Array.isArray(res.candles) && res.candles.length > 0) {
-        if (!symbols.some(s => s.ticker === query)) {
-          setSymbols(prev => [...prev, { ticker: query, exchange: 'NSE' }]);
+        const currentList = activeSection === 'stocks' ? symbols : fnoSymbols;
+        const setter = activeSection === 'stocks' ? setSymbols : setFnoSymbols;
+        if (!currentList.some(s => s.ticker === query)) {
+          setter(prev => [...prev, { ticker: query, exchange: 'NSE' }]);
         }
         setSelected(query);
         setLegend(null);
@@ -809,14 +858,50 @@ export default function Watchlist() {
         </div>
       )}
 
+      {/* ── Section toggle (Stocks / F&O) ─────────────────────────── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 0, padding: '6px 0 0',
+        borderBottom: `1px solid ${COLORS.borderColor}`, flexShrink: 0,
+      }}>
+        {(['stocks', 'fno'] as const).map(sec => {
+          const active = activeSection === sec;
+          return (
+            <button
+              key={sec}
+              onClick={() => setActiveSection(sec)}
+              style={{
+                padding: '7px 20px', fontSize: 12, fontWeight: active ? 700 : 500,
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                letterSpacing: 0.3,
+                background: 'transparent',
+                color: active ? '#e0e7ff' : COLORS.textMuted,
+                border: 'none',
+                borderBottom: active ? '2px solid #818cf8' : '2px solid transparent',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              {sec === 'stocks' ? 'STOCKS' : 'F&O'}
+            </button>
+          );
+        })}
+        <span style={{
+          marginLeft: 'auto', fontSize: 10, color: COLORS.textMuted,
+          fontFamily: "'JetBrains Mono', monospace", paddingRight: 4,
+        }}>
+          {visibleSymbols.length} symbols
+        </span>
+      </div>
+
       {/* ── Symbol tabs (watchlist strip) ──────────────────────────── */}
       <div style={{
         display: 'flex', gap: 2, padding: '8px 0',
         borderBottom: `1px solid ${COLORS.borderColor}`,
         overflowX: 'auto', flexShrink: 0,
       }}>
-        {symbols.map(s => {
+        {visibleSymbols.map(s => {
           const isActive = selected === s.ticker;
+          const isPinned = pinnedTickers.has(s.ticker);
           return (
             <button
               key={s.ticker}
@@ -840,7 +925,8 @@ export default function Watchlist() {
                 }
               }}
               style={{
-                padding: '5px 14px', borderRadius: 4, fontSize: 11,
+                display: 'flex', alignItems: 'center', gap: 5,
+                padding: '5px 10px', borderRadius: 4, fontSize: 11,
                 fontWeight: isActive ? 700 : 500,
                 fontFamily: "'JetBrains Mono', monospace",
                 background: isActive ? 'rgba(99, 102, 241, 0.18)' : 'transparent',
@@ -854,6 +940,23 @@ export default function Watchlist() {
                 whiteSpace: 'nowrap',
               }}
             >
+              {/* Pin indicator */}
+              <span
+                title={isPinned ? 'Unpin' : 'Pin to top'}
+                onClick={(e) => { e.stopPropagation(); togglePin(s.ticker); }}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 14, height: 14, fontSize: 10, lineHeight: 1,
+                  color: isPinned ? '#818cf8' : 'rgba(100,116,139,0.4)',
+                  cursor: 'pointer', transition: 'color 0.15s',
+                  transform: isPinned ? 'rotate(0deg)' : 'rotate(45deg)',
+                }}
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill={isPinned ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 17v5" />
+                  <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" />
+                </svg>
+              </span>
               {s.ticker}
             </button>
           );
