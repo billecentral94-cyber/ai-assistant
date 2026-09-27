@@ -10,6 +10,7 @@ import CopilotTrading from './pages/CopilotTrading';
 import SandboxPage from './pages/Sandbox';
 import FnODashboard from './pages/FnODashboard';
 import { TopNav } from './components/TopNav';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import {
   IconDashboard,
   IconZap,
@@ -63,8 +64,9 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <div className="app-shell">
+    <ThemeProvider>
+      <BrowserRouter>
+        <div className="app-shell">
         {/* Institutional Left Sidebar */}
         <aside className="sidebar">
           {/* Brand Header */}
@@ -204,5 +206,6 @@ export default function App() {
         </div>
       </div>
     </BrowserRouter>
+  </ThemeProvider>
   );
 }

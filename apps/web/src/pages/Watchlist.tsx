@@ -10,6 +10,7 @@ import {
 import type { IChartApi, ISeriesApi, IPriceLine, CandlestickData, Time } from 'lightweight-charts';
 import { getWatchlist, getCandles } from '../services/api';
 import { useSearchParams } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
 import { IconSearch, IconAlertTriangle } from '../components/Icons';
 
 /* ── Types ───────────────────────────────────────────────────────────── */
@@ -92,6 +93,7 @@ export interface BreakoutBox {
 }
 
 export default function Watchlist() {
+  const { isDark } = useTheme();
   const [searchParams] = useSearchParams();
   const urlSymbol = searchParams.get('symbol');
   const [symbols, setSymbols] = useState<Array<{ ticker: string; exchange: string }>>([]);
@@ -401,6 +403,28 @@ export default function Watchlist() {
       priceLineRef.current = null;
     };
   }, []);
+
+  // Update chart layout colors when theme changes
+  useEffect(() => {
+    if (!chartRef.current) return;
+    const bg = isDark ? '#07090E' : '#ffffff';
+    const text = isDark ? '#64748b' : '#475569';
+    const grid = isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.05)';
+    const border = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.08)';
+
+    chartRef.current.applyOptions({
+      layout: {
+        background: { type: ColorType.Solid, color: bg },
+        textColor: text,
+      },
+      grid: {
+        vertLines: { color: grid },
+        horzLines: { color: grid },
+      },
+      rightPriceScale: { borderColor: border },
+      timeScale: { borderColor: border },
+    });
+  }, [isDark]);
 
   /* ── Fetch & render candle data (supports incremental real-time update) ─ */
   const loadCandleData = useCallback(async (symbol: string, timeframe: string, isInitial: boolean = false) => {
@@ -969,8 +993,8 @@ export default function Watchlist() {
         {/* ── TradingView-Style Left Sketching Toolbar ───────────────── */}
         <div style={{
           width: 44,
-          background: '#080a10',
-          borderRight: `1px solid ${COLORS.borderColor}`,
+          background: isDark ? '#080a10' : '#ffffff',
+          borderRight: `1px solid ${isDark ? COLORS.borderColor : 'rgba(0, 0, 0, 0.08)'}`,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
