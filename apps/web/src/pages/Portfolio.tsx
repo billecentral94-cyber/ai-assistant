@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getPortfolio } from '../services/api';
 
 interface Holding {
@@ -55,6 +56,7 @@ const DEFAULT_PORTFOLIO: PortfolioData = {
 };
 
 export default function Portfolio() {
+  const navigate = useNavigate();
   const [data, setData] = useState<PortfolioData>(DEFAULT_PORTFOLIO);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -229,7 +231,7 @@ export default function Portfolio() {
           </thead>
           <tbody>
             {holdings.map(h => (
-              <tr key={h.symbol}>
+              <tr key={h.symbol} onClick={() => navigate('/watchlist?symbol=' + encodeURIComponent(h.symbol))} style={{ cursor: 'pointer' }} title={'View ' + h.symbol + ' chart'}>
                 <td style={{ fontWeight: 700, color: '#fff' }}>{h.symbol}</td>
                 <td><span className="badge" style={{ fontSize: 10 }}>{h.sector}</span></td>
                 <td>{h.qty}</td>

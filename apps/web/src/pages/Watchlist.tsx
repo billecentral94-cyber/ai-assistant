@@ -9,6 +9,7 @@ import {
 } from 'lightweight-charts';
 import type { IChartApi, ISeriesApi, IPriceLine, CandlestickData, Time } from 'lightweight-charts';
 import { getWatchlist, getCandles } from '../services/api';
+import { useSearchParams } from 'react-router-dom';
 import { IconSearch, IconAlertTriangle } from '../components/Icons';
 
 /* ── Types ───────────────────────────────────────────────────────────── */
@@ -91,8 +92,10 @@ export interface BreakoutBox {
 }
 
 export default function Watchlist() {
+  const [searchParams] = useSearchParams();
+  const urlSymbol = searchParams.get('symbol');
   const [symbols, setSymbols] = useState<Array<{ ticker: string; exchange: string }>>([]);
-  const [selected, setSelected] = useState('RELIANCE');
+  const [selected, setSelected] = useState(urlSymbol || 'RELIANCE');
   const [activeTimeframe, setActiveTimeframe] = useState('1m');
   const [legend, setLegend] = useState<LegendData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -150,7 +153,13 @@ export default function Watchlist() {
 
   // Load watchlist on mount
   useEffect(() => {
-    getWatchlist().then(setSymbols).catch(() => {});
+    getWatchlist().then(list => {
+      // If navigated from Portfolio with ?symbol=, ensure it appears in tabs
+      if (urlSymbol && !list.some((s: { ticker: string }) => s.ticker === urlSymbol)) {
+        list = [{ ticker: urlSymbol, exchange: 'NSE' }, ...list];
+      }
+      setSymbols(list);
+    }).catch(() => {});
   }, []);
 
   /* ── Chart initialization ─────────────────────────────────────────── */
