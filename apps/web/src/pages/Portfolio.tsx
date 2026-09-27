@@ -139,7 +139,7 @@ export default function Portfolio() {
             background: isLive ? '#10b981' : '#f59e0b',
             boxShadow: isLive ? '0 0 8px #10b981' : 'none'
           }} />
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>
             {isLive ? 'ANGEL ONE LIVE DEMAT' : 'SANDBOX DEMO MODE (SIMULATED PORTFOLIO)'}
           </span>
           <span className="badge" style={{
@@ -160,7 +160,7 @@ export default function Portfolio() {
       <div className="grid" style={{ marginBottom: 35 }}>
         <div className="card stat-container">
           <div className="stat-label">Net Asset Value</div>
-          <div className="stat-value" style={{ color: '#fff' }}>₹{totalValue.toLocaleString('en-IN')}</div>
+          <div className="stat-value" style={{ color: 'var(--text)' }}>₹{totalValue.toLocaleString('en-IN')}</div>
           <div style={{ fontSize: 12, color: 'var(--muted)' }}>Live portfolio value</div>
         </div>
         <div className="card stat-container">
@@ -188,7 +188,7 @@ export default function Portfolio() {
 
       {/* Sector Breakdown */}
       <div className="card" style={{ marginBottom: 24 }}>
-        <h3 style={{ color: '#fff', fontSize: 16, marginBottom: 16 }}>Sector Exposure</h3>
+        <h3 style={{ color: 'var(--text)', fontSize: 16, marginBottom: 16 }}>Sector Exposure</h3>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           {Object.entries(
             holdings.reduce((acc: Record<string, number>, h) => {
@@ -199,7 +199,7 @@ export default function Portfolio() {
           ).map(([sector, val]) => (
             <div key={sector} style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '10px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid var(--border)' }}>
               <div style={{ fontSize: 12, color: 'var(--muted)' }}>{sector}</div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>₹{(val / 1000).toFixed(1)}K</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>₹{(val / 1000).toFixed(1)}K</div>
               <div style={{ fontSize: 11, color: '#a78bfa' }}>{totalValue > 0 ? ((val / totalValue) * 100).toFixed(1) : 0}%</div>
             </div>
           ))}
@@ -210,7 +210,7 @@ export default function Portfolio() {
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{ padding: '24px 24px 8px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h3 style={{ color: '#fff', fontSize: 18 }}>Current Holdings</h3>
+            <h3 style={{ color: 'var(--text)', fontSize: 18 }}>Current Holdings</h3>
             <p style={{ color: 'var(--muted)', fontSize: 13, marginTop: 4 }}>
               Refreshes every 10 seconds. Reflects Angel One Demat holdings and Copilot Trading paper positions.
             </p>
@@ -232,7 +232,7 @@ export default function Portfolio() {
           <tbody>
             {holdings.map(h => (
               <tr key={h.symbol} onClick={() => navigate('/watchlist?symbol=' + encodeURIComponent(h.symbol))} style={{ cursor: 'pointer' }} title={'View ' + h.symbol + ' chart'}>
-                <td style={{ fontWeight: 700, color: '#fff' }}>{h.symbol}</td>
+                <td style={{ fontWeight: 700, color: 'var(--text)' }}>{h.symbol}</td>
                 <td><span className="badge" style={{ fontSize: 10 }}>{h.sector}</span></td>
                 <td>{h.qty}</td>
                 <td>₹{Number(h.avgPrice ?? 0).toFixed(2)}</td>
@@ -240,7 +240,7 @@ export default function Portfolio() {
                   ₹{Number(h.ltp ?? 0).toFixed(2)}
                 </td>
                 <td style={{ textAlign: 'right', color: 'var(--muted)' }}>₹{Number(h.cost ?? 0).toLocaleString('en-IN')}</td>
-                <td style={{ textAlign: 'right', color: '#fff', fontWeight: 500 }}>₹{Number(h.currentValue ?? 0).toLocaleString('en-IN')}</td>
+                <td style={{ textAlign: 'right', color: 'var(--text)', fontWeight: 500 }}>₹{Number(h.currentValue ?? 0).toLocaleString('en-IN')}</td>
                 <td style={{ textAlign: 'right', fontWeight: 600 }} className={(h.pnl ?? 0) >= 0 ? 'price-up' : 'price-down'}>
                   {(h.pnl ?? 0) >= 0 ? '+' : ''}₹{Number(h.pnl ?? 0).toLocaleString('en-IN')}
                   <div style={{ fontSize: 11, marginTop: 2, fontWeight: 500 }}>

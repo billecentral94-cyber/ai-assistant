@@ -227,37 +227,37 @@ export default function Watchlist() {
       width: initialWidth,
       height: initialHeight,
       layout: {
-        background: { type: ColorType.Solid, color: COLORS.bg },
-        textColor: COLORS.textMuted,
+        background: { type: ColorType.Solid, color: isDark ? '#07090E' : '#ffffff' },
+        textColor: isDark ? '#64748b' : '#475569',
         fontSize: 11,
         fontFamily: "'JetBrains Mono', 'SF Mono', 'Fira Code', monospace",
       },
       grid: {
-        vertLines: { color: COLORS.gridLine },
-        horzLines: { color: COLORS.gridLine },
+        vertLines: { color: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.05)' },
+        horzLines: { color: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.05)' },
       },
       crosshair: {
         mode: CrosshairMode.Normal,
         vertLine: {
-          color: COLORS.crosshair,
+          color: isDark ? 'rgba(148, 163, 184, 0.35)' : 'rgba(100, 116, 139, 0.4)',
           width: 1,
           style: 3,
-          labelBackgroundColor: '#1e293b',
+          labelBackgroundColor: isDark ? '#1e293b' : '#cbd5e1',
         },
         horzLine: {
-          color: COLORS.crosshair,
+          color: isDark ? 'rgba(148, 163, 184, 0.35)' : 'rgba(100, 116, 139, 0.4)',
           width: 1,
           style: 3,
-          labelBackgroundColor: '#1e293b',
+          labelBackgroundColor: isDark ? '#1e293b' : '#cbd5e1',
         },
       },
       rightPriceScale: {
-        borderColor: COLORS.borderColor,
+        borderColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.08)',
         scaleMargins: { top: 0.08, bottom: 0.22 },
         entireTextOnly: true,
       },
       timeScale: {
-        borderColor: COLORS.borderColor,
+        borderColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.08)',
         timeVisible: true,
         secondsVisible: false,
         rightOffset: 6,
@@ -746,13 +746,13 @@ export default function Watchlist() {
       {/* ── Top toolbar (broker-style) ─────────────────────────────── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
-        padding: '10px 0', borderBottom: `1px solid ${COLORS.borderColor}`,
+        padding: '10px 0', borderBottom: `1px solid ${isDark ? COLORS.borderColor : 'rgba(0, 0, 0, 0.08)'}`,
         flexWrap: 'wrap',
       }}>
         {/* Symbol name + price */}
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginRight: 8 }}>
           <span style={{
-            fontSize: 18, fontWeight: 700, color: '#fff',
+            fontSize: 18, fontWeight: 700, color: isDark ? '#ffffff' : '#0f172a',
             fontFamily: "'Plus Jakarta Sans', sans-serif",
           }}>
             {selected}
@@ -762,7 +762,7 @@ export default function Watchlist() {
               <span style={{
                 fontSize: 20, fontWeight: 700,
                 fontFamily: "'JetBrains Mono', monospace",
-                color: priceFlash === 'up' ? COLORS.bullCandle : priceFlash === 'down' ? COLORS.bearCandle : '#fff',
+                color: priceFlash === 'up' ? COLORS.bullCandle : priceFlash === 'down' ? COLORS.bearCandle : (isDark ? '#ffffff' : '#0f172a'),
                 transition: 'color 0.3s ease',
               }}>
                 {legend.close.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
@@ -783,7 +783,7 @@ export default function Watchlist() {
                 background: dataSource === 'live'
                   ? 'rgba(16, 185, 129, 0.12)'
                   : 'rgba(245, 158, 11, 0.12)',
-                color: dataSource === 'live' ? '#34d399' : '#fbbf24',
+                color: dataSource === 'live' ? '#10b981' : '#f59e0b',
                 border: `1px solid ${dataSource === 'live'
                   ? 'rgba(16, 185, 129, 0.3)'
                   : 'rgba(245, 158, 11, 0.3)'}`,
@@ -799,7 +799,7 @@ export default function Watchlist() {
 
               {barCount > 0 && (
                 <span style={{
-                  fontSize: 10, color: COLORS.textMuted, marginLeft: 4,
+                  fontSize: 10, color: isDark ? COLORS.textMuted : '#64748b', marginLeft: 4,
                   fontFamily: "'JetBrains Mono', monospace",
                 }}>
                   {barCount} bars
@@ -811,8 +811,8 @@ export default function Watchlist() {
 
         {/* Timeframe buttons */}
         <div style={{
-          display: 'flex', gap: 2, background: 'rgba(255,255,255,0.03)',
-          padding: 3, borderRadius: 6, border: `1px solid ${COLORS.borderColor}`,
+          display: 'flex', gap: 2, background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)',
+          padding: 3, borderRadius: 6, border: `1px solid ${isDark ? COLORS.borderColor : 'rgba(0,0,0,0.08)'}`,
           marginLeft: 'auto',
         }}>
           {TIMEFRAMES.map(tf => {
@@ -825,9 +825,15 @@ export default function Watchlist() {
                   padding: '5px 12px', borderRadius: 4, fontSize: 11,
                   fontWeight: active ? 700 : 500,
                   fontFamily: "'JetBrains Mono', monospace",
-                  background: active ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-                  color: active ? '#c7d2fe' : COLORS.textMuted,
-                  border: active ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid transparent',
+                  background: active
+                    ? (isDark ? 'rgba(99, 102, 241, 0.25)' : 'rgba(99, 102, 241, 0.15)')
+                    : 'transparent',
+                  color: active
+                    ? (isDark ? '#c7d2fe' : '#4338ca')
+                    : (isDark ? COLORS.textMuted : '#64748b'),
+                  border: active
+                    ? (isDark ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid rgba(99, 102, 241, 0.35)')
+                    : '1px solid transparent',
                   boxShadow: 'none',
                   cursor: 'pointer',
                   transition: 'all 0.15s',
@@ -850,15 +856,17 @@ export default function Watchlist() {
               disabled={searching}
               style={{
                 padding: '6px 12px 6px 30px', borderRadius: 6,
-                border: `1px solid ${COLORS.borderColor}`,
-                background: 'rgba(255,255,255,0.03)', color: '#fff',
+                border: `1px solid ${isDark ? COLORS.borderColor : 'rgba(0,0,0,0.12)'}`,
+                background: isDark ? 'rgba(255,255,255,0.03)' : '#ffffff',
+                color: isDark ? '#ffffff' : '#0f172a',
                 width: 160, fontSize: 12,
                 fontFamily: "'JetBrains Mono', monospace",
               }}
             />
             <IconSearch size={13} style={{
               position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)',
-              opacity: 0.4,
+              opacity: isDark ? 0.4 : 0.6,
+              color: isDark ? '#ffffff' : '#475569',
             } as any} />
           </div>
           <button type="submit" disabled={searching} style={{
@@ -885,7 +893,7 @@ export default function Watchlist() {
       {/* ── Section toggle (Stocks / F&O) ─────────────────────────── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 0, padding: '6px 0 0',
-        borderBottom: `1px solid ${COLORS.borderColor}`, flexShrink: 0,
+        borderBottom: `1px solid ${isDark ? COLORS.borderColor : 'rgba(0, 0, 0, 0.08)'}`, flexShrink: 0,
       }}>
         {(['stocks', 'fno'] as const).map(sec => {
           const active = activeSection === sec;
@@ -898,9 +906,9 @@ export default function Watchlist() {
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 letterSpacing: 0.3,
                 background: 'transparent',
-                color: active ? '#e0e7ff' : COLORS.textMuted,
+                color: active ? (isDark ? '#e0e7ff' : '#4338ca') : (isDark ? COLORS.textMuted : '#64748b'),
                 border: 'none',
-                borderBottom: active ? '2px solid #818cf8' : '2px solid transparent',
+                borderBottom: active ? (isDark ? '2px solid #818cf8' : '2px solid #4f46e5') : '2px solid transparent',
                 cursor: 'pointer',
                 transition: 'all 0.15s',
               }}
@@ -910,7 +918,7 @@ export default function Watchlist() {
           );
         })}
         <span style={{
-          marginLeft: 'auto', fontSize: 10, color: COLORS.textMuted,
+          marginLeft: 'auto', fontSize: 10, color: isDark ? COLORS.textMuted : '#64748b',
           fontFamily: "'JetBrains Mono', monospace", paddingRight: 4,
         }}>
           {visibleSymbols.length} symbols
@@ -920,7 +928,7 @@ export default function Watchlist() {
       {/* ── Symbol tabs (watchlist strip) ──────────────────────────── */}
       <div style={{
         display: 'flex', gap: 2, padding: '8px 0',
-        borderBottom: `1px solid ${COLORS.borderColor}`,
+        borderBottom: `1px solid ${isDark ? COLORS.borderColor : 'rgba(0, 0, 0, 0.08)'}`,
         overflowX: 'auto', flexShrink: 0,
       }}>
         {visibleSymbols.map(s => {
@@ -953,10 +961,14 @@ export default function Watchlist() {
                 padding: '5px 10px', borderRadius: 4, fontSize: 11,
                 fontWeight: isActive ? 700 : 500,
                 fontFamily: "'JetBrains Mono', monospace",
-                background: isActive ? 'rgba(99, 102, 241, 0.18)' : 'transparent',
-                color: isActive ? '#e0e7ff' : COLORS.textMuted,
+                background: isActive
+                  ? (isDark ? 'rgba(99, 102, 241, 0.18)' : 'rgba(99, 102, 241, 0.12)')
+                  : 'transparent',
+                color: isActive
+                  ? (isDark ? '#e0e7ff' : '#3730a3')
+                  : (isDark ? COLORS.textMuted : '#475569'),
                 border: isActive
-                  ? '1px solid rgba(99, 102, 241, 0.35)'
+                  ? (isDark ? '1px solid rgba(99, 102, 241, 0.35)' : '1px solid rgba(99, 102, 241, 0.35)')
                   : '1px solid transparent',
                 boxShadow: 'none',
                 cursor: 'pointer',
@@ -971,7 +983,7 @@ export default function Watchlist() {
                 style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 14, height: 14, fontSize: 10, lineHeight: 1,
-                  color: isPinned ? '#818cf8' : 'rgba(100,116,139,0.4)',
+                  color: isPinned ? (isDark ? '#818cf8' : '#4f46e5') : (isDark ? 'rgba(100,116,139,0.4)' : 'rgba(100,116,139,0.5)'),
                   cursor: 'pointer', transition: 'color 0.15s',
                   transform: isPinned ? 'rotate(0deg)' : 'rotate(45deg)',
                 }}
@@ -1201,18 +1213,24 @@ export default function Watchlist() {
           {legend && (
             <div style={{
               position: 'absolute', top: 10, left: 12, zIndex: 10,
-              display: 'flex', gap: 14, fontSize: 11,
+              display: 'flex', gap: 12, fontSize: 11,
               fontFamily: "'JetBrains Mono', monospace",
-              color: COLORS.textMuted,
+              color: isDark ? COLORS.textMuted : '#64748b',
+              background: isDark ? 'rgba(7, 9, 14, 0.75)' : 'rgba(255, 255, 255, 0.88)',
+              backdropFilter: 'blur(6px)',
+              padding: '4px 10px',
+              borderRadius: 6,
+              border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}`,
+              boxShadow: isDark ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.05)',
               pointerEvents: 'none',
               flexWrap: 'wrap',
             }}>
-              <span>O <b style={{ color: COLORS.textPrimary }}>{legend.open.toFixed(2)}</b></span>
+              <span>O <b style={{ color: isDark ? '#f8fafc' : '#0f172a' }}>{legend.open.toFixed(2)}</b></span>
               <span>H <b style={{ color: COLORS.bullCandle }}>{legend.high.toFixed(2)}</b></span>
               <span>L <b style={{ color: COLORS.bearCandle }}>{legend.low.toFixed(2)}</b></span>
               <span>C <b style={{ color: changeColor }}>{legend.close.toFixed(2)}</b></span>
               {legend.volume > 0 && (
-                <span>Vol <b style={{ color: COLORS.textPrimary }}>{legend.volume.toLocaleString()}</b></span>
+                <span>Vol <b style={{ color: isDark ? '#f8fafc' : '#0f172a' }}>{legend.volume.toLocaleString()}</b></span>
               )}
               {legend.sma20 !== undefined && (
                 <span style={{ color: COLORS.sma20 }}>SMA20 <b>{legend.sma20.toFixed(2)}</b></span>
@@ -1221,7 +1239,7 @@ export default function Watchlist() {
                 <span style={{ color: COLORS.ema50 }}>EMA50 <b>{legend.ema50.toFixed(2)}</b></span>
               )}
               {lastUpdated && (
-                <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10 }}>
+                <span style={{ color: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)', fontSize: 10 }}>
                   {lastUpdated.toLocaleTimeString()}
                 </span>
               )}
@@ -1233,7 +1251,7 @@ export default function Watchlist() {
             <div style={{
               position: 'absolute', top: '50%', left: '50%',
               transform: 'translate(-50%, -50%)', zIndex: 20,
-              color: COLORS.textMuted, fontSize: 13,
+              color: isDark ? COLORS.textMuted : '#64748b', fontSize: 13,
               fontFamily: "'JetBrains Mono', monospace",
             }}>
               Loading {selected}...
@@ -1248,7 +1266,7 @@ export default function Watchlist() {
               height: '100%',
               minHeight: 520,
               borderRadius: 0,
-              background: COLORS.bg,
+              background: isDark ? '#07090E' : '#ffffff',
             }}
           />
 
