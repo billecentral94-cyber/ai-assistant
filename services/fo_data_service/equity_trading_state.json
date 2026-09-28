@@ -1,0 +1,11 @@
+{
+  "engine_status": "ACTIVE",
+  "initial_capital": 2500.0,
+  "current_capital": 2500.0,
+  "daily_pnl": 0.0,
+  "leverage_multiplier": 5.0,
+  "purchasing_power": 12500.0,
+  "open_positions": [],
+  "closed_trades": [],
+  "last_updated": "2026-09-28T18:31:09.656449+05:30"
+}

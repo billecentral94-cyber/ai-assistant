@@ -109,7 +109,20 @@ class RiskManager:
 
         max_risk_rupees = account_capital * (target_risk_pct / 100.0)
 
-        # Number of lots allowed
+        # Micro-account adaptation: For retail individual accounts (<= ₹15,000), allow exactly 1 lot
+        if account_capital <= 15000:
+            single_lot_risk = min(max_loss_per_lot, account_capital * 0.08)  # max ~8% risk per trade on micro capital
+            if account_capital >= single_lot_risk:
+                return {
+                    "lots": 1,
+                    "quantity": lot_size,
+                    "allocated_risk_rupees": round(single_lot_risk, 2),
+                    "max_risk_ceiling_rupees": round(single_lot_risk, 2),
+                    "risk_pct": round((single_lot_risk / account_capital) * 100.0, 2),
+                    "fractional_kelly_pct": round(target_risk_pct, 2)
+                }
+
+        # Number of lots allowed for larger capital
         lots = math.floor(max_risk_rupees / max_loss_per_lot)
 
         # Ensure risk never exceeds the strict ceiling even by 1 rupee

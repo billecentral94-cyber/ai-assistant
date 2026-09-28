@@ -9,6 +9,7 @@ import argparse
 import logging
 import time
 from datetime import datetime, date
+from typing import Dict, Any
 import pytz
 
 from config.settings import settings
@@ -18,6 +19,7 @@ from orchestrator.runner import FetchOrchestrator
 from audit.reporter import DailyAuditReporter
 from strategy.signal_generator import SignalGenerator
 from strategy.paper_trader import PaperTrader
+from strategy.equity_intraday_trader import EquityIntradayTrader
 
 logging.basicConfig(
     level=logging.INFO,
@@ -192,8 +194,25 @@ def _run_trade_cycle(orchestrator, analytics_engine, signal_gen, paper_trader, u
                     f"Reason: {trade['exit_reason']} | PnL: {pnl_sign}{trade['net_pnl']}"
                 )
 
+        return signal
     except Exception as e:
         logger.error(f"[{underlying}] Trade cycle error: {e}", exc_info=True)
+        return None
+
+
+def _fetch_equity_quotes(session_mgr, timeout: int = 10) -> Dict[str, Dict[str, Any]]:
+    """Fetches real-time LTP, High, Low, Open quotes for equity cash universe from Angel One."""
+    try:
+        headers = session_mgr._get_headers(with_auth=True)
+        tokens = ["3045", "3456", "4963", "2885", "1594"]
+        payload = {"mode": "FULL", "exchangeTokens": {"NSE": tokens}}
+        resp = session_mgr.session.post("https://apiconnect.angelbroking.com/rest/secure/angelbroking/market/v1/quote/", json=payload, headers=headers, timeout=timeout)
+        data = resp.json().get("data", {}).get("fetched", [])
+        token_map = {"3045": "SBIN", "3456": "TATAMOTORS", "4963": "ICICIBANK", "2885": "RELIANCE", "1594": "INFY"}
+        return {token_map[item["symbolToken"]]: item for item in data if item.get("symbolToken") in token_map}
+    except Exception as e:
+        logger.warning(f"Failed to fetch equity quotes from Angel One: {e}")
+        return {}
 
 
 def cmd_auto_trade(args):
@@ -214,16 +233,19 @@ def cmd_auto_trade(args):
     analytics_engine = orchestrator.analytics_engine
     signal_gen = SignalGenerator()
     paper_trader = PaperTrader(signal_generator=signal_gen)
+    equity_trader = EquityIntradayTrader()
 
     # Try to load persisted state from previous session
     if paper_trader.load_state():
         logger.info(
-            f"Resumed state: Capital={paper_trader.current_capital:.2f} | "
+            f"Resumed F&O state: Capital={paper_trader.current_capital:.2f} | "
             f"Open={len(paper_trader.open_positions)} | "
             f"Closed={len(paper_trader.closed_trades)}"
         )
     else:
-        logger.info(f"Fresh session. Initial capital: {paper_trader.initial_capital:.2f}")
+        logger.info(f"Fresh F&O session. Initial capital: {paper_trader.initial_capital:.2f}")
+
+    logger.info(f"Equity Intraday session: Capital={equity_trader.current_capital:.2f} (5x Power: {equity_trader.get_purchasing_power():.2f})")
 
     underlyings = settings.UNDERLYINGS
     eod_audit_done_today = False
@@ -233,9 +255,18 @@ def cmd_auto_trade(args):
     if getattr(args, 'simulate_cycle', False):
         logger.info("SIMULATE MODE: Running one immediate cycle (ignoring market hours)...")
         now_ist = datetime.now(IST)
+        last_signal_dir = "NEUTRAL"
         for sym in underlyings:
-            _run_trade_cycle(orchestrator, analytics_engine, signal_gen, paper_trader, sym, now_ist)
+            sig = _run_trade_cycle(orchestrator, analytics_engine, signal_gen, paper_trader, sym, now_ist)
+            if sym == "NIFTY" and sig:
+                last_signal_dir = sig.direction
         paper_trader.save_state()
+
+        eq_quotes = _fetch_equity_quotes(orchestrator.angel_opt_primary.session_mgr)
+        if eq_quotes:
+            equity_trader.process_cycle(eq_quotes, index_trend=last_signal_dir, timestamp=now_ist)
+            equity_trader.save_state()
+
         _print_readiness_report(paper_trader)
         logger.info("Simulate cycle complete. Exiting.")
         return
@@ -254,19 +285,37 @@ def cmd_auto_trade(args):
             last_audit_date = today
 
         if is_open:
-            logger.info(f"Market OPEN ({now_time} IST). Executing autonomous trade cycle...")
+            logger.info(f"Market OPEN ({now_time} IST). Executing autonomous trade cycles...")
 
+            # 1. Execute F&O Options Cycle (₹5,000 threshold)
+            last_signal_dir = "NEUTRAL"
             for sym in underlyings:
-                _run_trade_cycle(orchestrator, analytics_engine, signal_gen, paper_trader, sym, now_ist)
+                sig = _run_trade_cycle(orchestrator, analytics_engine, signal_gen, paper_trader, sym, now_ist)
+                if sym == "NIFTY" and sig:
+                    last_signal_dir = sig.direction
 
-            # Persist state after each cycle (atomic JSON write)
             paper_trader.save_state()
 
+            # 2. Execute Equity Marginal Intraday Cycle (₹2,500 capital with 5x leverage)
+            try:
+                eq_quotes = _fetch_equity_quotes(orchestrator.angel_opt_primary.session_mgr)
+                if eq_quotes:
+                    equity_trader.process_cycle(eq_quotes, index_trend=last_signal_dir, timestamp=now_ist)
+                    equity_trader.save_state()
+            except Exception as eq_err:
+                logger.error(f"Equity intraday cycle error: {eq_err}")
+
             logger.info(
-                f"Cycle Complete | Capital: {paper_trader.current_capital:.2f} | "
-                f"PnL Today: {paper_trader.daily_pnl:+.2f} | "
+                f"[F&O Vault] Capital: {paper_trader.current_capital:.2f} | "
+                f"PnL: {paper_trader.daily_pnl:+.2f} | "
                 f"Open: {len(paper_trader.open_positions)} | "
                 f"Closed: {len(paper_trader.closed_trades)}"
+            )
+            logger.info(
+                f"[Equity Vault] Capital: {equity_trader.current_capital:.2f} (5x Power: {equity_trader.get_purchasing_power():.2f}) | "
+                f"PnL: {equity_trader.daily_pnl:+.2f} | "
+                f"Open: {len(equity_trader.open_positions)} | "
+                f"Closed: {len(equity_trader.closed_trades)}"
             )
 
         elif now_time >= "15:35" and now_time < "16:00" and not eod_audit_done_today:

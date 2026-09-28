@@ -28,7 +28,7 @@ class PaperTrader:
         self,
         signal_generator: Optional[SignalGenerator] = None,
         risk_manager: Optional[RiskManager] = None,
-        initial_capital: float = 500000.0,
+        initial_capital: float = 5000.0,
         lot_size: int = 25,
         slippage_pct: float = 0.05
     ):

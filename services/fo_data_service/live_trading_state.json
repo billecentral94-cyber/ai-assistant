@@ -1,7 +1,7 @@
 {
   "engine_status": "ACTIVE",
-  "initial_capital": 500000.0,
-  "current_capital": 500000.0,
+  "initial_capital": 5000.0,
+  "current_capital": 5000.0,
   "daily_pnl": 0.0,
   "open_positions": [],
   "closed_trades": [],
@@ -29,5 +29,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-09-28T15:00:11.154858+05:30"
+  "last_updated": "2026-09-28T18:31:09.617167+05:30"
 }

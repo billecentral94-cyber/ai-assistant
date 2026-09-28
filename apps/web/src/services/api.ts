@@ -360,17 +360,17 @@ export async function placeOrder(params: {
 // ── Vault ─────────────────────────────────────────────────────────────────────
 export async function getVaultStatus() {
   const fallback = {
-    totalCapital: 500000,
-    available: 480000,
-    allocated: 20000,
+    totalCapital: 7500,
+    available: 7500,
+    allocated: 0,
     reserved: 0,
-    hwm: 512000,
-    dailyPnL: 8450,
-    drawdown: 0.8,
-    drawdownPct: 0.8,
-    portfolioHeat: 15.0,
+    hwm: 7500,
+    dailyPnL: 0,
+    drawdown: 0.0,
+    drawdownPct: 0.0,
+    portfolioHeat: 0.0,
     killSwitchActive: false,
-    openPositions: 1,
+    openPositions: 0,
     riskPerTrade: 1.5
   };
   return safeFetch(`${BASE}/vault/status`, undefined, fallback);
@@ -609,13 +609,28 @@ export async function getFoPaperTrades() {
   const fallback = {
     success: true,
     engine_status: 'ACTIVE',
-    initial_capital: 500000,
-    current_capital: 508450,
-    daily_pnl: 8450,
+    initial_capital: 5000,
+    current_capital: 5000,
+    daily_pnl: 0,
     open_positions: [],
     closed_trades: []
   };
   return safeFetch(`${BASE}/fo/paper-trades`, undefined, fallback);
+}
+
+export async function getEquityPaperTrades() {
+  const fallback = {
+    success: true,
+    engine_status: 'ACTIVE',
+    initial_capital: 2500,
+    current_capital: 2500,
+    daily_pnl: 0,
+    leverage_multiplier: 5.0,
+    purchasing_power: 12500,
+    open_positions: [],
+    closed_trades: []
+  };
+  return safeFetch(`${BASE}/fo/equity-trades`, undefined, fallback);
 }
 
 export async function getFoReadinessGates() {
