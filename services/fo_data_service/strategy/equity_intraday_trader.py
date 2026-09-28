@@ -18,13 +18,22 @@ IST = pytz.timezone("Asia/Kolkata")
 
 STATE_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "equity_trading_state.json")
 
-# High-liquidity cash universe with Angel One NSE tokens
+# Multi-sector high-liquidity cash universe (14 top liquid NSE large-caps across 7 sectors)
 EQUITY_UNIVERSE = [
-    {"symbol": "SBIN", "token": "3045", "lot": 1, "tick": 0.05},
-    {"symbol": "TATAMOTORS", "token": "3456", "lot": 1, "tick": 0.05},
-    {"symbol": "ICICIBANK", "token": "4963", "lot": 1, "tick": 0.05},
-    {"symbol": "RELIANCE", "token": "2885", "lot": 1, "tick": 0.05},
-    {"symbol": "INFY", "token": "1594", "lot": 1, "tick": 0.05},
+    {"symbol": "SBIN", "token": "3045", "lot": 1, "tick": 0.05, "sector": "PSU_BANK"},
+    {"symbol": "ICICIBANK", "token": "4963", "lot": 1, "tick": 0.05, "sector": "PVT_BANK"},
+    {"symbol": "HDFCBANK", "token": "1333", "lot": 1, "tick": 0.05, "sector": "PVT_BANK"},
+    {"symbol": "AXISBANK", "token": "5900", "lot": 1, "tick": 0.05, "sector": "PVT_BANK"},
+    {"symbol": "KOTAKBANK", "token": "1922", "lot": 1, "tick": 0.05, "sector": "PVT_BANK"},
+    {"symbol": "INFY", "token": "1594", "lot": 1, "tick": 0.05, "sector": "IT"},
+    {"symbol": "TCS", "token": "11536", "lot": 1, "tick": 0.05, "sector": "IT"},
+    {"symbol": "WIPRO", "token": "3787", "lot": 1, "tick": 0.05, "sector": "IT"},
+    {"symbol": "RELIANCE", "token": "2885", "lot": 1, "tick": 0.05, "sector": "ENERGY"},
+    {"symbol": "TATASTEEL", "token": "3499", "lot": 1, "tick": 0.05, "sector": "METALS"},
+    {"symbol": "COALINDIA", "token": "20374", "lot": 1, "tick": 0.05, "sector": "ENERGY"},
+    {"symbol": "M&M", "token": "2031", "lot": 1, "tick": 0.05, "sector": "AUTO"},
+    {"symbol": "BHARTIARTL", "token": "10604", "lot": 1, "tick": 0.05, "sector": "TELECOM"},
+    {"symbol": "ITC", "token": "1660", "lot": 1, "tick": 0.05, "sector": "FMCG"},
 ]
 
 
@@ -67,7 +76,8 @@ class EquityIntradayTrader:
         """
         Executes a 15-minute intraday cycle:
         1. Manages open positions (trailing stops, profit targets, 15:15 EOD square-off).
-        2. Evaluates new high-momentum stock breakouts if slots are open.
+        2. Evaluates multi-sector watchlist, ranks candidates by relative momentum strength,
+           and selects the single best setup avoiding abnormal/choppy outliers.
         """
         now = timestamp or datetime.now(IST)
         current_time = now.time()
@@ -159,9 +169,11 @@ class EquityIntradayTrader:
 
         self.open_positions = active_positions
 
-        # ── 2. Scan & Enter New High-Confluence Setups (09:20 - 14:45) ────────
+        # ── 2. Scan & Rank Setups Across 14 Stocks (09:20 - 14:45) ───────────
         can_open_new = not is_eod and current_time <= time(14, 45) and len(self.open_positions) < self.max_concurrent_trades
         if can_open_new and index_trend != "NEUTRAL":
+            candidates = []
+
             for stock in EQUITY_UNIVERSE:
                 sym = stock["symbol"]
                 # Skip if already open
@@ -176,48 +188,80 @@ class EquityIntradayTrader:
                 high = float(quote.get("high", ltp))
                 low = float(quote.get("low", ltp))
                 open_p = float(quote.get("open", ltp))
+                pct_change = float(quote.get("percentChange", 0.0))
+                day_range = high - low
 
-                # Simple, robust momentum confirmation
-                signal_dir = None
-                if index_trend == "BULLISH" and ltp > open_p and (high - low) > 0:
-                    # Stock trading in top 30% of day's range with positive momentum
-                    if ltp >= (low + 0.70 * (high - low)):
-                        signal_dir = "BUY"
-                elif index_trend == "BEARISH" and ltp < open_p and (high - low) > 0:
-                    # Stock trading in bottom 30% of day's range with downward pressure
-                    if ltp <= (low + 0.30 * (high - low)):
-                        signal_dir = "SHORT"
+                if day_range <= 0:
+                    continue
 
-                if signal_dir:
-                    # Calculate position size within ₹50 max risk limit
-                    risk_pct = 0.007  # 0.7% stop loss
-                    risk_points = round(max(ltp * risk_pct, stock["tick"] * 10), 2)
-                    raw_qty = math.floor(self.max_risk_per_trade_rupees / risk_points)
+                # Relative range position (0.0 = low of day, 1.0 = high of day)
+                range_pos = (ltp - low) / day_range
 
-                    # Bounded by available intraday purchasing power
-                    max_affordable_qty = math.floor((self.get_purchasing_power() * 0.45) / ltp)
-                    qty = min(raw_qty, max_affordable_qty)
+                if index_trend == "BULLISH" and ltp > open_p and range_pos >= 0.70:
+                    # Strong upward breakout near highs
+                    momentum_score = range_pos * 100 + pct_change * 10
+                    candidates.append({
+                        "stock": stock,
+                        "direction": "BUY",
+                        "ltp": ltp,
+                        "score": momentum_score,
+                        "pct_change": pct_change
+                    })
 
-                    if qty >= 1:
-                        sl = round(ltp - risk_points if signal_dir == "BUY" else ltp + risk_points, 2)
-                        tp = round(ltp + (risk_points * self.target_rr) if signal_dir == "BUY" else ltp - (risk_points * self.target_rr), 2)
+                elif index_trend == "BEARISH" and ltp < open_p and range_pos <= 0.30:
+                    # Strong downward breakdown near lows
+                    momentum_score = (1.0 - range_pos) * 100 - pct_change * 10
+                    candidates.append({
+                        "stock": stock,
+                        "direction": "SHORT",
+                        "ltp": ltp,
+                        "score": momentum_score,
+                        "pct_change": pct_change
+                    })
 
-                        new_pos = {
-                            "symbol": sym,
-                            "direction": signal_dir,
-                            "entry_price": ltp,
-                            "stop_loss": sl,
-                            "target": tp,
-                            "risk_points": risk_points,
-                            "quantity": qty,
-                            "entry_time": now.isoformat(),
-                            "product": "INTRADAY",
-                            "strategy": "MOMENTUM_BREAKOUT"
-                        }
-                        self.open_positions.append(new_pos)
-                        events.append({"event": "EQUITY_POSITION_OPENED", "position": new_pos})
-                        logger.info(f"[EQUITY] OPENED {signal_dir} {qty}x {sym} @ ₹{ltp} | SL: ₹{sl} | Target: ₹{tp}")
-                        break  # 1 new trade per cycle
+            # Sort qualifying candidates by highest relative momentum score
+            candidates.sort(key=lambda c: c["score"], reverse=True)
+
+            # Enter the top-ranked candidate
+            for best in candidates:
+                stock = best["stock"]
+                sym = stock["symbol"]
+                signal_dir = best["direction"]
+                ltp = best["ltp"]
+
+                # Calculate position size within ₹50 max risk limit
+                risk_pct = 0.007  # 0.7% stop loss
+                risk_points = round(max(ltp * risk_pct, stock["tick"] * 10), 2)
+                raw_qty = math.floor(self.max_risk_per_trade_rupees / risk_points)
+
+                # Bounded by available intraday purchasing power (up to 45% per slot)
+                max_affordable_qty = math.floor((self.get_purchasing_power() * 0.45) / ltp)
+                qty = min(raw_qty, max_affordable_qty)
+
+                if qty >= 1:
+                    sl = round(ltp - risk_points if signal_dir == "BUY" else ltp + risk_points, 2)
+                    tp = round(ltp + (risk_points * self.target_rr) if signal_dir == "BUY" else ltp - (risk_points * self.target_rr), 2)
+
+                    new_pos = {
+                        "symbol": sym,
+                        "direction": signal_dir,
+                        "entry_price": ltp,
+                        "stop_loss": sl,
+                        "target": tp,
+                        "risk_points": risk_points,
+                        "quantity": qty,
+                        "entry_time": now.isoformat(),
+                        "product": "INTRADAY",
+                        "strategy": "MOMENTUM_BREAKOUT",
+                        "momentum_score": round(best["score"], 1)
+                    }
+                    self.open_positions.append(new_pos)
+                    events.append({"event": "EQUITY_POSITION_OPENED", "position": new_pos})
+                    logger.info(
+                        f"[EQUITY] OPENED {signal_dir} {qty}x {sym} ({stock['sector']}) @ ₹{ltp} "
+                        f"(Score: {best['score']:.1f}) | SL: ₹{sl} | Target: ₹{tp}"
+                    )
+                    break  # Enter the single best candidate per cycle
 
         self.save_state()
 

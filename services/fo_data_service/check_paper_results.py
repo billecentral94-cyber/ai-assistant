@@ -101,7 +101,7 @@ def main():
 
         print(f"  Cash Allocated    : {format_inr(eq_curr)} | 5x Purchasing Power: {BOLD}{format_inr(eq_power)}{RESET}")
         print(f"  Intraday P&L      : {eq_daily_col}{BOLD}{format_inr(eq_daily)}{RESET}")
-        print(f"  Universe (5)      : SBIN, TATAMOTORS, ICICIBANK, RELIANCE, INFY")
+        print(f"  Universe (14)     : 14 Multi-Sector Stocks (Banks, IT, Auto, Metals, Energy, FMCG, Telecom)")
         print(f"  Open Positions    : {len(eq_open)}")
         if eq_open:
             for p in eq_open:
