@@ -19,7 +19,11 @@ const DEFAULT_TICKERS: TickerItem[] = [
   { symbol: 'GOLD 10G', price: '₹72,420', change: '+0.12%', isUp: true },
 ];
 
-export const TopNav: React.FC = () => {
+interface TopNavProps {
+  onToggleSidebar?: () => void;
+}
+
+export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar }) => {
   const { isDark, toggleTheme } = useTheme();
   const [timeStr, setTimeStr] = useState<string>('');
   const [isMarketOpen, setIsMarketOpen] = useState<boolean>(false);
@@ -56,6 +60,20 @@ export const TopNav: React.FC = () => {
 
   return (
     <header className="top-nav-bar">
+      {/* Mobile Hamburger Menu Toggle */}
+      <button 
+        className="mobile-menu-btn" 
+        onClick={onToggleSidebar}
+        aria-label="Toggle Navigation Menu"
+        type="button"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
       {/* Ticker tape scroll */}
       <div className="ticker-tape-container">
         <div className="ticker-tape-track">
@@ -86,7 +104,7 @@ export const TopNav: React.FC = () => {
         <div className="mode-badge">
           <IconShieldCheck size={14} color="#10b981" />
           <span>Paper Mode</span>
-          <span className="capital-tag">₹10,00,000</span>
+          <span className="capital-tag">₹7,500</span>
         </div>
 
         {/* Broker Connectivity Pill */}

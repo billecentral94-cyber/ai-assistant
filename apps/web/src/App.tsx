@@ -63,12 +63,23 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 }
 
 export default function App() {
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+
   return (
     <ThemeProvider>
       <BrowserRouter>
         <div className="app-shell">
+        {/* Mobile Backdrop Overlay */}
+        {sidebarOpen && (
+          <div 
+            className="sidebar-backdrop" 
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true" 
+          />
+        )}
+
         {/* Institutional Left Sidebar */}
-        <aside className="sidebar">
+        <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           {/* Brand Header */}
           <div className="sidebar-brand">
             <div className="brand-icon-box">
@@ -187,8 +198,8 @@ export default function App() {
 
         {/* Main Application Area */}
         <div className="app-main-wrapper">
-          <TopNav />
-          <main className="main">
+          <TopNav onToggleSidebar={() => setSidebarOpen(prev => !prev)} />
+          <main className="main" onClick={() => setSidebarOpen(false)}>
             <ErrorBoundary>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
