@@ -43,9 +43,13 @@ class FetchOrchestrator:
         self.max_retries = max_retries
         self.retry_delay_seconds = retry_delay_seconds
 
-        # Primary and Fallback Fetcher instances
-        self.nse_opt_primary = NSEOptionChainFetcher()
-        self.angel_opt_fallback = AngelOptionChainFetcher()
+        # Primary and Fallback Fetcher instances (Angel One is Primary for speed & reliability)
+        self.angel_opt_primary = AngelOptionChainFetcher()
+        self.nse_opt_fallback = NSEOptionChainFetcher()
+
+        # Backward-compatibility aliases
+        self.nse_opt_primary = self.nse_opt_fallback
+        self.angel_opt_fallback = self.angel_opt_primary
 
         self.angel_fut_primary = AngelFuturesFetcher()
         self.nse_fut_fallback = NSEFuturesFetcher()
@@ -57,7 +61,7 @@ class FetchOrchestrator:
         captured_at: Optional[datetime] = None
     ) -> Dict[str, Any]:
         """
-        Retrieves option chain for an underlying: Primary (nsepython) -> Fallback (Angel One).
+        Retrieves option chain for an underlying: Primary (Angel One SmartAPI) -> Fallback (NSE).
         """
         if captured_at is None:
             captured_at = datetime.now(IST)
@@ -66,53 +70,48 @@ class FetchOrchestrator:
         can_use_primary = self.circuit_breaker.can_attempt_primary(channel_key)
         rows: List[OptionChainRow] = []
         source_used = "primary"
-        primary_failed = False
         last_error = ""
 
-        # 1. Attempt Primary (nsepython) if circuit breaker allows
+        # 1. Primary: Angel One SmartAPI (authenticated, fast ~300ms, zero bot-blocking)
         if can_use_primary:
             for attempt in range(1 + self.max_retries):
                 try:
-                    raw_rows = self.nse_opt_primary.fetch(underlying, max_expiries=2, captured_at=captured_at)
-                    v_res = validate_option_chain_batch(raw_rows, underlying)
+                    spot = self.angel_opt_primary.fetch_spot_price(underlying)
+                    if spot <= 0:
+                        spot = 24000.0 if underlying == "NIFTY" else 54000.0
+
+                    step = 50.0 if underlying == "NIFTY" else 100.0
+                    raw_rows = self.angel_opt_primary.fetch(
+                        underlying=underlying,
+                        spot_price=spot,
+                        strike_step=step,
+                        max_expiries=2,
+                        captured_at=captured_at
+                    )
+                    v_res = validate_option_chain_batch(raw_rows, underlying, min_strikes_required=5)
                     if v_res.is_valid:
                         rows = raw_rows
                         source_used = "primary"
                         self.circuit_breaker.record_success(channel_key)
                         break
                     else:
-                        last_error = f"Validation failed: {'; '.join(v_res.errors[:3])}"
+                        last_error = f"Angel One validation failed: {'; '.join(v_res.errors[:3])}"
                 except Exception as e:
                     last_error = str(e)
                     if attempt < self.max_retries:
                         time.sleep(self.retry_delay_seconds)
 
             if not rows:
-                primary_failed = True
                 self.circuit_breaker.record_failure(channel_key, reason=last_error)
-                logger.warning(f"Primary option chain fetch failed for {underlying}: {last_error}. Triggering Fallback...")
+                logger.warning(f"Primary (Angel One) option chain fetch failed for {underlying}: {last_error}. Triggering Fallback...")
         else:
-            primary_failed = True
             logger.info(f"Circuit OPEN for {channel_key}; skipping primary directly to Fallback...")
 
-        # 2. Attempt Fallback (Angel One) if primary was skipped or failed
+        # 2. Fallback: NSE India (nsepython/scraper) if Angel One fails
         if not rows:
             try:
-                spot = self.nse_opt_primary.fetch_spot_price(underlying)
-                if spot <= 0:
-                    spot = self.angel_opt_fallback.fetch_spot_price(underlying)
-                if spot <= 0:
-                    spot = 24000.0 if underlying == "NIFTY" else 54000.0
-
-                step = 50.0 if underlying == "NIFTY" else 100.0
-                raw_rows = self.angel_opt_fallback.fetch(
-                    underlying=underlying,
-                    spot_price=spot,
-                    strike_step=step,
-                    max_expiries=2,
-                    captured_at=captured_at
-                )
-                v_res = validate_option_chain_batch(raw_rows, underlying, min_strikes_required=5)
+                raw_rows = self.nse_opt_fallback.fetch(underlying, max_expiries=2, captured_at=captured_at)
+                v_res = validate_option_chain_batch(raw_rows, underlying)
                 if v_res.is_valid:
                     rows = raw_rows
                     source_used = "fallback"

@@ -1,0 +1,351 @@
+{
+  "option_chain_snapshots": {
+    "total_rows": 168,
+    "sample_rows": [
+      {
+        "id": 168,
+        "underlying": "BANKNIFTY",
+        "expiry": "2026-09-29",
+        "strike": 53500,
+        "option_type": "CE",
+        "oi": 20010,
+        "change_in_oi": 0,
+        "volume": 45180,
+        "iv": null,
+        "ltp": 1072.4,
+        "spot_price": 54471.65,
+        "source": "angelone",
+        "snapshot_status": "complete",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "created_at": "2026-09-28 11:41:27.252948"
+      },
+      {
+        "id": 167,
+        "underlying": "BANKNIFTY",
+        "expiry": "2026-09-29",
+        "strike": 55100,
+        "option_type": "PE",
+        "oi": 72750,
+        "change_in_oi": 0,
+        "volume": 2817870,
+        "iv": null,
+        "ltp": 598,
+        "spot_price": 54471.65,
+        "source": "angelone",
+        "snapshot_status": "complete",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "created_at": "2026-09-28 11:41:27.252648"
+      },
+      {
+        "id": 166,
+        "underlying": "BANKNIFTY",
+        "expiry": "2026-09-29",
+        "strike": 53500,
+        "option_type": "PE",
+        "oi": 525060,
+        "change_in_oi": 0,
+        "volume": 8057550,
+        "iv": null,
+        "ltp": 23.55,
+        "spot_price": 54471.65,
+        "source": "angelone",
+        "snapshot_status": "complete",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "created_at": "2026-09-28 11:41:27.252263"
+      }
+    ]
+  },
+  "futures_snapshots": {
+    "total_rows": 108,
+    "sample_rows": [
+      {
+        "id": 108,
+        "underlying": "BANKNIFTY",
+        "expiry": "2026-09-29",
+        "open": 55405,
+        "high": 55462.8,
+        "low": 54505.8,
+        "close": 54560,
+        "volume": 683910,
+        "oi": 1114620,
+        "source": "angelone",
+        "snapshot_status": "complete",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "created_at": "2026-09-28 11:41:27.356798"
+      },
+      {
+        "id": 107,
+        "underlying": "BANKNIFTY",
+        "expiry": "2026-10-27",
+        "open": 55799.4,
+        "high": 55799.8,
+        "low": 54819,
+        "close": 54871.4,
+        "volume": 881700,
+        "oi": 1805850,
+        "source": "angelone",
+        "snapshot_status": "complete",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "created_at": "2026-09-28 11:41:27.355341"
+      },
+      {
+        "id": 106,
+        "underlying": "NIFTY",
+        "expiry": "2026-09-29",
+        "open": 23115,
+        "high": 23124.1,
+        "low": 22792.9,
+        "close": 22814.9,
+        "volume": 4549155,
+        "oi": 10349755,
+        "source": "angelone",
+        "snapshot_status": "complete",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "created_at": "2026-09-28 11:41:21.875199"
+      }
+    ]
+  },
+  "gap_log": {
+    "total_rows": 52,
+    "sample_rows": [
+      {
+        "id": 52,
+        "data_type": "option_chain",
+        "underlying": "BANKNIFTY",
+        "expected_timestamp": "2026-09-28 15:00:00.000917",
+        "reason": "validation_error",
+        "details": "Primary and Fallback failed: Fallback validation failed: Option chain batch is completely empty",
+        "retry_count": 0,
+        "resolved": 0,
+        "created_at": "2026-09-28 09:30:10.986271"
+      },
+      {
+        "id": 51,
+        "data_type": "option_chain",
+        "underlying": "NIFTY",
+        "expected_timestamp": "2026-09-28 15:00:00.000917",
+        "reason": "validation_error",
+        "details": "Primary and Fallback failed: Fallback validation failed: Option chain batch is completely empty",
+        "retry_count": 0,
+        "resolved": 0,
+        "created_at": "2026-09-28 09:30:05.475062"
+      },
+      {
+        "id": 50,
+        "data_type": "option_chain",
+        "underlying": "BANKNIFTY",
+        "expected_timestamp": "2026-09-28 14:45:00.000919",
+        "reason": "validation_error",
+        "details": "Primary and Fallback failed: Fallback validation failed: Option chain batch is completely empty",
+        "retry_count": 0,
+        "resolved": 0,
+        "created_at": "2026-09-28 09:15:10.212873"
+      }
+    ]
+  },
+  "retrieval_audit_log": {
+    "total_rows": 108,
+    "sample_rows": [
+      {
+        "id": 108,
+        "run_timestamp": "2026-09-28 17:10:59.418447",
+        "data_type": "futures",
+        "underlying": "BANKNIFTY",
+        "rows_expected": 2,
+        "rows_captured": 2,
+        "rows_rejected_incomplete": 0,
+        "rows_deduped": 0,
+        "source_used": "primary",
+        "severity": "OK",
+        "message": "Captured 2 futures rows, deduped 0 rows",
+        "created_at": "2026-09-28 11:41:27.356952"
+      },
+      {
+        "id": 107,
+        "run_timestamp": "2026-09-28 17:10:59.418447",
+        "data_type": "option_chain",
+        "underlying": "BANKNIFTY",
+        "rows_expected": 84,
+        "rows_captured": 84,
+        "rows_rejected_incomplete": 0,
+        "rows_deduped": 0,
+        "source_used": "fallback",
+        "severity": "OK",
+        "message": "Captured 84 rows, deduped 0 duplicate rows",
+        "created_at": "2026-09-28 11:41:27.253034"
+      },
+      {
+        "id": 106,
+        "run_timestamp": "2026-09-28 17:10:59.418447",
+        "data_type": "futures",
+        "underlying": "NIFTY",
+        "rows_expected": 2,
+        "rows_captured": 2,
+        "rows_rejected_incomplete": 0,
+        "rows_deduped": 0,
+        "source_used": "primary",
+        "severity": "OK",
+        "message": "Captured 2 futures rows, deduped 0 rows",
+        "created_at": "2026-09-28 11:41:21.875291"
+      }
+    ]
+  },
+  "analytics_oi_walls": {
+    "total_rows": 20,
+    "sample_rows": [
+      {
+        "id": 20,
+        "underlying": "BANKNIFTY",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "strike": 55500,
+        "option_type": "PE",
+        "oi": 372870,
+        "oi_change": 0,
+        "wall_rank": 5,
+        "wall_shift_direction": "new",
+        "created_at": "2026-09-28 11:41:27.258318"
+      },
+      {
+        "id": 19,
+        "underlying": "BANKNIFTY",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "strike": 55000,
+        "option_type": "PE",
+        "oi": 465930,
+        "oi_change": 0,
+        "wall_rank": 4,
+        "wall_shift_direction": "new",
+        "created_at": "2026-09-28 11:41:27.258318"
+      },
+      {
+        "id": 18,
+        "underlying": "BANKNIFTY",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "strike": 53500,
+        "option_type": "PE",
+        "oi": 525060,
+        "oi_change": 0,
+        "wall_rank": 3,
+        "wall_shift_direction": "new",
+        "created_at": "2026-09-28 11:41:27.258318"
+      }
+    ]
+  },
+  "analytics_pcr": {
+    "total_rows": 2,
+    "sample_rows": [
+      {
+        "id": 2,
+        "underlying": "BANKNIFTY",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "total_put_oi": 8397060,
+        "total_call_oi": 6995460,
+        "overall_pcr": 1.2004,
+        "atm_pcr": 1.2404,
+        "pcr_trend": "flat",
+        "sentiment_zone": "neutral",
+        "created_at": "2026-09-28 11:41:27.260960"
+      },
+      {
+        "id": 1,
+        "underlying": "NIFTY",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "total_put_oi": 125962900,
+        "total_call_oi": 151920535,
+        "overall_pcr": 0.8291,
+        "atm_pcr": 1.0391,
+        "pcr_trend": "flat",
+        "sentiment_zone": "neutral",
+        "created_at": "2026-09-28 11:41:18.461422"
+      }
+    ]
+  },
+  "analytics_futures_buildup": {
+    "total_rows": 54,
+    "sample_rows": [
+      {
+        "id": 54,
+        "underlying": "BANKNIFTY",
+        "expiry": "2026-10-27",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "price_change": 303,
+        "oi_change": 669480,
+        "buildup_type": "Long Buildup",
+        "confidence_pct": 95,
+        "created_at": "2026-09-28 11:41:27.360537"
+      },
+      {
+        "id": 53,
+        "underlying": "NIFTY",
+        "expiry": "2026-10-27",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "price_change": 95.2,
+        "oi_change": 2835560,
+        "buildup_type": "Long Buildup",
+        "confidence_pct": 95,
+        "created_at": "2026-09-28 11:41:21.884059"
+      },
+      {
+        "id": 52,
+        "underlying": "BANKNIFTY",
+        "expiry": "2026-10-27",
+        "captured_at": "2026-09-28 15:00:00.000917",
+        "price_change": 358.8,
+        "oi_change": 630450,
+        "buildup_type": "Long Buildup",
+        "confidence_pct": 95,
+        "created_at": "2026-09-28 09:30:11.145804"
+      }
+    ]
+  },
+  "analytics_iv": {
+    "total_rows": 2,
+    "sample_rows": [
+      {
+        "id": 2,
+        "underlying": "BANKNIFTY",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "atm_iv": 15,
+        "iv_percentile": 50,
+        "iv_skew": 0,
+        "iv_regime": "normal",
+        "created_at": "2026-09-28 11:41:27.261961"
+      },
+      {
+        "id": 1,
+        "underlying": "NIFTY",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "atm_iv": 15,
+        "iv_percentile": 50,
+        "iv_skew": 0,
+        "iv_regime": "normal",
+        "created_at": "2026-09-28 11:41:18.463157"
+      }
+    ]
+  },
+  "analytics_max_pain": {
+    "total_rows": 2,
+    "sample_rows": [
+      {
+        "id": 2,
+        "underlying": "BANKNIFTY",
+        "expiry": "2026-09-29",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "spot_price": 54471.65,
+        "max_pain_strike": 54800,
+        "distance_from_spot_pct": -0.6,
+        "created_at": "2026-09-28 11:41:27.262168"
+      },
+      {
+        "id": 1,
+        "underlying": "NIFTY",
+        "expiry": "2026-09-29",
+        "captured_at": "2026-09-28 17:10:59.418447",
+        "spot_price": 22780.25,
+        "max_pain_strike": 22900,
+        "distance_from_spot_pct": -0.53,
+        "created_at": "2026-09-28 11:41:18.463875"
+      }
+    ]
+  }
+}
