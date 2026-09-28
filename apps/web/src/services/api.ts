@@ -633,6 +633,14 @@ export async function getEquityPaperTrades() {
   return safeFetch(`${BASE}/fo/equity-trades`, undefined, fallback);
 }
 
+export async function getDailyHistory() {
+  const fallback = {
+    success: true,
+    records: []
+  };
+  return safeFetch(`${BASE}/fo/history`, undefined, fallback);
+}
+
 export async function getFoReadinessGates() {
   const fallback = {
     success: true,

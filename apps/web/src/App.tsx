@@ -9,6 +9,7 @@ import NewsIntelligence from './pages/NewsIntelligence';
 import CopilotTrading from './pages/CopilotTrading';
 import SandboxPage from './pages/Sandbox';
 import FnODashboard from './pages/FnODashboard';
+import BotMonitor from './pages/BotMonitor';
 import { TopNav } from './components/TopNav';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import {
@@ -110,6 +111,14 @@ export default function App() {
                 <span className="nav-pill nav-pill-hot">LIVE</span>
               </NavLink>
 
+              <NavLink to="/bot-monitor" className={({ isActive }) => (isActive ? 'active' : '')}>
+                <div className="nav-item-left">
+                  <IconBot size={16} className="nav-icon" />
+                  <span>Bot Sentinel</span>
+                </div>
+                <span className="nav-pill nav-pill-hot" style={{ background: 'rgba(0, 255, 136, 0.15)', color: '#00ff88', border: '1px solid rgba(0, 255, 136, 0.3)' }}>ONLINE</span>
+              </NavLink>
+
               <NavLink to="/watchlist" className={({ isActive }) => (isActive ? 'active' : '')}>
                 <div className="nav-item-left">
                   <IconCandlestick size={16} className="nav-icon" />
@@ -203,6 +212,8 @@ export default function App() {
             <ErrorBoundary>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/bot-monitor" element={<BotMonitor />} />
+                <Route path="/widget" element={<BotMonitor />} />
                 <Route path="/fno" element={<FnODashboard />} />
                 <Route path="/watchlist" element={<Watchlist />} />
                 <Route path="/portfolio" element={<Portfolio />} />
