@@ -22,6 +22,8 @@ if current_dir not in sys.path:
 logs_dir = os.path.join(current_dir, "logs")
 os.makedirs(logs_dir, exist_ok=True)
 
+from notifications.telegram_bot import TelegramNotifier
+
 # Configure logging to both console and date-stamped file
 log_filename = os.path.join(logs_dir, f"paper_trader_{datetime.now().strftime('%Y%m%d')}.log")
 logging.basicConfig(
@@ -66,6 +68,7 @@ def main():
     logger.info("================================================================")
 
     set_wake_lock(True)
+    telegram = TelegramNotifier()
 
     try:
         from main import cmd_auto_trade
@@ -73,10 +76,13 @@ def main():
         cmd_auto_trade(args)
     except KeyboardInterrupt:
         logger.info("Paper trading launcher stopped by user.")
+        telegram.send_bot_stopped("STOPPED_BY_USER")
     except Exception as e:
         logger.error(f"Paper trading launcher encountered an error: {e}", exc_info=True)
+        telegram.send_error_alert("LAUNCHER_CRASH", str(e))
     finally:
         set_wake_lock(False)
+        telegram.send_bot_stopped("SESSION_COMPLETE_WAKE_RELEASED")
         logger.info("Session complete. Exiting launcher.")
 
 if __name__ == "__main__":

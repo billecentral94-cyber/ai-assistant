@@ -20,6 +20,7 @@ from audit.reporter import DailyAuditReporter
 from strategy.signal_generator import SignalGenerator
 from strategy.paper_trader import PaperTrader
 from strategy.equity_intraday_trader import EquityIntradayTrader, EQUITY_UNIVERSE
+from notifications.telegram_bot import TelegramNotifier, archive_daily_record
 
 logging.basicConfig(
     level=logging.INFO,
@@ -238,6 +239,49 @@ def cmd_auto_trade(args):
     signal_gen = SignalGenerator()
     paper_trader = PaperTrader(signal_generator=signal_gen)
     equity_trader = EquityIntradayTrader()
+    telegram = TelegramNotifier()
+
+    cycle_count = 0
+
+    # ── Remote 2-Way Mobile Callbacks (/status, /today) ──
+    def get_mobile_status() -> str:
+        n_pos = len(paper_trader.open_positions)
+        eq_pos = len(equity_trader.open_positions)
+        tot_pnl = paper_trader.daily_pnl + equity_trader.daily_pnl
+        sign = "+" if tot_pnl >= 0 else ""
+        return (
+            f"📊 *ARTHA LIVE PORTFOLIO STATUS*\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"• *F&O Micro-Vault (₹5k):* ₹{paper_trader.current_capital:,.2f} (PnL: ₹{paper_trader.daily_pnl:+,.2f} | Open: {n_pos})\n"
+            f"• *Equity Vault (₹2.5k):* ₹{equity_trader.current_capital:,.2f} (PnL: ₹{equity_trader.daily_pnl:+,.2f} | Open: {eq_pos})\n"
+            f"• *Combined Today P&L:* *{sign}₹{tot_pnl:,.2f}*\n"
+            f"• *Completed Cycles:* #{cycle_count}\n"
+            f"• *Broker Link:* Angel One (Active)\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━"
+        )
+
+    def get_today_mobile_trades() -> str:
+        all_closed = paper_trader.closed_trades + equity_trader.closed_trades
+        if not all_closed:
+            return "📁 *TODAY'S TRADES:* No closed trades yet today."
+        lines = ["📜 *TODAY'S COMPLETED TRADES:*", "━━━━━━━━━━━━━━━━━━━━━━"]
+        for i, t in enumerate(all_closed, 1):
+            sym = t.get("symbol", "N/A")
+            pnl = t.get("net_pnl") or t.get("pnl", 0.0)
+            reason = t.get("exit_reason", "EXIT")
+            sign = "+" if pnl >= 0 else ""
+            lines.append(f"{i}. *{sym}* ➔ *{sign}₹{pnl:,.2f}* ({reason})")
+        tot = paper_trader.daily_pnl + equity_trader.daily_pnl
+        lines.append("━━━━━━━━━━━━━━━━━━━━━━")
+        lines.append(f"• *Total Daily P&L:* *{'+' if tot >= 0 else ''}₹{tot:,.2f}*")
+        return "\n".join(lines)
+
+    telegram.start_command_listener(status_fn=get_mobile_status, today_fn=get_today_mobile_trades)
+    telegram.send_bot_started({
+        "fo_capital": paper_trader.current_capital,
+        "eq_capital": equity_trader.current_capital,
+        "eq_purchasing_power": equity_trader.get_purchasing_power()
+    })
 
     # Try to load persisted state from previous session
     if paper_trader.load_state():
@@ -260,10 +304,15 @@ def cmd_auto_trade(args):
         logger.info("SIMULATE MODE: Running one immediate cycle (ignoring market hours)...")
         now_ist = datetime.now(IST)
         last_signal_dir = "NEUTRAL"
+        nifty_sig_text = "NEUTRAL"
+        banknifty_sig_text = "NEUTRAL"
         for sym in underlyings:
             sig = _run_trade_cycle(orchestrator, analytics_engine, signal_gen, paper_trader, sym, now_ist)
             if sym == "NIFTY" and sig:
                 last_signal_dir = sig.direction
+                nifty_sig_text = f"{sig.direction} ({sig.confluence_score}/5)"
+            elif sym == "BANKNIFTY" and sig:
+                banknifty_sig_text = f"{sig.direction} ({sig.confluence_score}/5)"
         paper_trader.save_state()
 
         eq_quotes = _fetch_equity_quotes(orchestrator.angel_opt_primary.session_mgr)
@@ -289,25 +338,62 @@ def cmd_auto_trade(args):
             last_audit_date = today
 
         if is_open:
-            logger.info(f"Market OPEN ({now_time} IST). Executing autonomous trade cycles...")
+            cycle_count += 1
+            logger.info(f"Market OPEN ({now_time} IST). Executing Cycle #{cycle_count}...")
+            prev_fo_open = len(paper_trader.open_positions)
+            prev_fo_closed = len(paper_trader.closed_trades)
 
             # 1. Execute F&O Options Cycle (₹5,000 threshold)
             last_signal_dir = "NEUTRAL"
+            nifty_sig_text = "NEUTRAL"
+            banknifty_sig_text = "NEUTRAL"
             for sym in underlyings:
-                sig = _run_trade_cycle(orchestrator, analytics_engine, signal_gen, paper_trader, sym, now_ist)
-                if sym == "NIFTY" and sig:
-                    last_signal_dir = sig.direction
+                try:
+                    sig = _run_trade_cycle(orchestrator, analytics_engine, signal_gen, paper_trader, sym, now_ist)
+                    if sym == "NIFTY" and sig:
+                        last_signal_dir = sig.direction
+                        nifty_sig_text = f"{sig.direction} ({sig.confluence_score}/5)"
+                    elif sym == "BANKNIFTY" and sig:
+                        banknifty_sig_text = f"{sig.direction} ({sig.confluence_score}/5)"
+                except Exception as fo_err:
+                    logger.error(f"F&O cycle error for {sym}: {fo_err}")
+                    telegram.send_error_alert(f"F&O Engine ({sym})", str(fo_err))
 
             paper_trader.save_state()
 
-            # 2. Execute Equity Marginal Intraday Cycle (₹2,500 capital with 5x leverage)
+            # Dispatch F&O order execution & closure alerts
+            if len(paper_trader.open_positions) > prev_fo_open:
+                telegram.send_order_executed(paper_trader.open_positions[-1])
+            if len(paper_trader.closed_trades) > prev_fo_closed:
+                telegram.send_trade_closed(paper_trader.closed_trades[-1])
+
+            # 2. Execute Equity Marginal Intraday Cycle (14 stocks)
+            eq_scan_summary = "Scanning 14 stocks (No new breakout)"
             try:
                 eq_quotes = _fetch_equity_quotes(orchestrator.angel_opt_primary.session_mgr)
                 if eq_quotes:
-                    equity_trader.process_cycle(eq_quotes, index_trend=last_signal_dir, timestamp=now_ist)
+                    eq_cycle = equity_trader.process_cycle(eq_quotes, index_trend=last_signal_dir, timestamp=now_ist)
                     equity_trader.save_state()
+                    for ev in eq_cycle.get("events", []):
+                        if ev["event"] == "EQUITY_POSITION_OPENED":
+                            telegram.send_order_executed(ev["position"])
+                            eq_scan_summary = f"Opened {ev['position']['symbol']}"
+                        elif ev["event"] == "EQUITY_POSITION_CLOSED":
+                            telegram.send_trade_closed(ev["trade"])
             except Exception as eq_err:
                 logger.error(f"Equity intraday cycle error: {eq_err}")
+                telegram.send_error_alert("Equity Scanner", str(eq_err))
+
+            # Send 15-minute cycle heartbeat push notification to mobile
+            telegram.send_cycle_heartbeat(
+                cycle_num=cycle_count,
+                time_str=now_time,
+                nifty_sig=nifty_sig_text,
+                banknifty_sig=banknifty_sig_text,
+                equity_scan_summary=eq_scan_summary,
+                open_positions_count=len(paper_trader.open_positions) + len(equity_trader.open_positions),
+                daily_pnl=round(paper_trader.daily_pnl + equity_trader.daily_pnl, 2)
+            )
 
             logger.info(
                 f"[F&O Vault] Capital: {paper_trader.current_capital:.2f} | "
@@ -323,12 +409,31 @@ def cmd_auto_trade(args):
             )
 
         elif now_time >= "15:35" and now_time < "16:00" and not eod_audit_done_today:
-            # ── EOD Readiness Gate Reconciliation ──
+            # ── EOD Readiness Gate Reconciliation & Archiving ──
             logger.info("=" * 56)
             logger.info("  EOD READINESS GATE RECONCILIATION")
             logger.info("=" * 56)
 
             _print_readiness_report(paper_trader)
+
+            # Archive permanent daily record
+            summary_payload = {
+                "date": str(today),
+                "total_pnl": round(paper_trader.daily_pnl + equity_trader.daily_pnl, 2),
+                "fo_pnl": round(paper_trader.daily_pnl, 2),
+                "equity_pnl": round(equity_trader.daily_pnl, 2),
+                "trades_count": len(paper_trader.closed_trades) + len(equity_trader.closed_trades),
+                "capital": round(paper_trader.current_capital + equity_trader.current_capital, 2),
+                "trades": paper_trader.closed_trades + equity_trader.closed_trades,
+                "gates": paper_trader.get_readiness_metrics()
+            }
+            telegram.send_daily_summary(summary_payload)
+            archive_daily_record(str(today), summary_payload)
+            try:
+                from generate_mobile_dashboard import generate as generate_dashboard
+                generate_dashboard()
+            except Exception:
+                pass
 
             # Also run the data gap audit
             try:

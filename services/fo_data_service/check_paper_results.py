@@ -173,6 +173,13 @@ def main():
 
     print("\n" + "=" * 76 + "\n")
 
+    # Auto-generate / refresh the mobile dashboard HTML
+    try:
+        from generate_mobile_dashboard import generate as generate_dashboard
+        generate_dashboard()
+    except Exception as e:
+        pass
+
 if __name__ == "__main__":
     main()
 

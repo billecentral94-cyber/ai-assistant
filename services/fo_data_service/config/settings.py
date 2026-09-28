@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     ANGELONE_API_KEY: str = Field(default="", description="Angel One SmartAPI Key")
     ANGELONE_TOTP_SECRET: str = Field(default="", description="Angel One TOTP Secret")
 
+    # Mobile Notifications & Remote Control (Telegram Bot)
+    TELEGRAM_BOT_TOKEN: str = Field(default="", description="Telegram Bot Token from @BotFather")
+    TELEGRAM_CHAT_ID: str = Field(default="", description="Telegram Chat ID for mobile alerts")
+
     # Underlyings locked to v1 scope
     UNDERLYINGS: List[str] = Field(default=["NIFTY", "BANKNIFTY"])
 
