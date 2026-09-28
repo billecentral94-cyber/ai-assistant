@@ -32,7 +32,7 @@ export default function BotMonitor() {
   });
 
   const [history, setHistory] = useState<any[]>([]);
-  const [widgetTab, setWidgetTab] = useState<'live' | 'history'>('live');
+  const [widgetTab, setWidgetTab] = useState<'live' | 'history'>('history');
   const [lastRefreshed, setLastRefreshed] = useState<string>('');
 
   const fetchData = async () => {
@@ -230,20 +230,40 @@ export default function BotMonitor() {
       {/* VIEW 2: DAILY HISTORY RECORDS */}
       {widgetTab === 'history' && (
         <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8, fontSize: 11 }}>
-          <div style={{ fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', fontSize: 10, marginBottom: 6 }}>
-            Archived Daily Sessions ({history.length})
+          <div style={{ fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', fontSize: 10, marginBottom: 8 }}>
+            Daily Sessions Performance
           </div>
+
+          {/* Today's Ongoing Session */}
+          <div style={{ padding: '8px', background: '#09101d', border: '1px dashed #00f0ff55', borderRadius: 5, marginBottom: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00ff88' }} />
+                <strong style={{ color: '#00f0ff' }}>Today's Live Session</strong>
+              </div>
+              <strong style={{ color: totalDailyPnl >= 0 ? '#00ff88' : '#ff3366', fontSize: 13 }}>
+                {totalDailyPnl >= 0 ? '+' : ''}₹{totalDailyPnl.toFixed(2)}
+              </strong>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: 10 }}>
+              <span>Closed: {allClosed.length} | Active: {totalOpen}</span>
+              <span>Vault: ₹{totalCapital.toFixed(2)}</span>
+            </div>
+          </div>
+
           {history.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '12px 0', color: '#94a3b8' }}>
-              No prior sessions archived yet.<br />
-              <span style={{ fontSize: 10, color: '#64748b' }}>Sessions auto-archive at 15:30 IST.</span>
+            <div style={{ textAlign: 'center', padding: '10px 0', color: '#64748b', fontSize: 10, borderTop: '1px solid #1a2233' }}>
+              Prior sessions auto-archive to permanent record at 15:30 IST.
             </div>
           ) : (
             <div>
+              <div style={{ color: '#64748b', fontSize: 9, textTransform: 'uppercase', marginBottom: 4, letterSpacing: 0.5 }}>
+                Archived Prior Days ({history.length})
+              </div>
               {history.map((row: any, idx: number) => (
                 <div key={idx} style={{ padding: '6px 0', borderBottom: '1px solid #1a2233' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-                    <strong style={{ color: '#00f0ff' }}>{row.date}</strong>
+                    <strong style={{ color: '#e2e8f0' }}>{row.date}</strong>
                     <strong style={{ color: row.total_pnl >= 0 ? '#00ff88' : '#ff3366' }}>
                       {row.total_pnl >= 0 ? '+' : ''}₹{row.total_pnl.toFixed(2)}
                     </strong>
