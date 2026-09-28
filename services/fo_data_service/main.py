@@ -136,7 +136,11 @@ def _run_trade_cycle(orchestrator, analytics_engine, signal_gen, paper_trader, u
 
         # 2. Get latest analytics from DB (OI walls, PCR, buildup, IV, max pain)
         analytics = analytics_engine.get_latest_analytics(underlying)
-        spot = analytics["spot_price"]
+        spot = analytics.get("spot_price", 0.0)
+
+        if spot <= 0:
+            spot = orchestrator.angel_opt_fallback.fetch_spot_price(underlying)
+            analytics["spot_price"] = spot
 
         if spot <= 0:
             logger.warning(f"[{underlying}] No spot price available. Skipping signal generation.")

@@ -100,7 +100,9 @@ class FetchOrchestrator:
             try:
                 spot = self.nse_opt_primary.fetch_spot_price(underlying)
                 if spot <= 0:
-                    spot = 24000.0 if underlying == "NIFTY" else 57000.0
+                    spot = self.angel_opt_fallback.fetch_spot_price(underlying)
+                if spot <= 0:
+                    spot = 24000.0 if underlying == "NIFTY" else 54000.0
 
                 step = 50.0 if underlying == "NIFTY" else 100.0
                 raw_rows = self.angel_opt_fallback.fetch(

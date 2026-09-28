@@ -28,6 +28,21 @@ class AngelOptionChainFetcher(BaseFetcher):
         self.futures_helper = AngelFuturesFetcher(session=self.session_mgr, timeout=timeout)
         self.timeout = timeout
 
+    def fetch_spot_price(self, underlying: str) -> float:
+        """Fetches live index spot price (NIFTY / BANKNIFTY) from Angel One SmartAPI."""
+        token = "26000" if underlying.upper() == "NIFTY" else "26009"
+        try:
+            headers = self.session_mgr._get_headers(with_auth=True)
+            payload = {"mode": "LTP", "exchangeTokens": {"NSE": [token]}}
+            resp = self.session_mgr.session.post(QUOTE_URL, json=payload, headers=headers, timeout=self.timeout)
+            data = resp.json()
+            fetched = data.get("data", {}).get("fetched", [])
+            if fetched:
+                return float(fetched[0].get("ltp", 0.0))
+        except Exception as e:
+            logger.warning(f"Failed to fetch Angel One spot for {underlying}: {e}")
+        return 0.0
+
     def get_active_option_tokens(
         self,
         underlying: str,
@@ -103,7 +118,7 @@ class AngelOptionChainFetcher(BaseFetcher):
 
         rows: List[OptionChainRow] = []
         for item in fetched_list:
-            token = str(item.get("token", ""))
+            token = str(item.get("symbolToken") or item.get("token") or "")
             if token not in token_info_map:
                 continue
 
