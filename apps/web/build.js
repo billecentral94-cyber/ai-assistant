@@ -45,7 +45,9 @@ const clientRoutes = [
   'ai-chat',
   'backtesting',
   'news',
-  'sandbox'
+  'sandbox',
+  'bot-monitor',
+  'widget'
 ];
 
 if (fs.existsSync(distDir)) {

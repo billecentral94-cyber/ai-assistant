@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import AIChat from './pages/AIChat';
 import Portfolio from './pages/Portfolio';
@@ -63,24 +63,32 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
   }
 }
 
-export default function App() {
+function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const location = useLocation();
+  const isWidgetRoute = location.pathname === '/widget';
+
+  if (isWidgetRoute) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#07090e' }}>
+        <BotMonitor isPermanentWidget={true} />
+      </div>
+    );
+  }
 
   return (
-    <ThemeProvider>
-      <BrowserRouter>
-        <div className="app-shell">
-        {/* Mobile Backdrop Overlay */}
-        {sidebarOpen && (
-          <div 
-            className="sidebar-backdrop" 
-            onClick={() => setSidebarOpen(false)}
-            aria-hidden="true" 
-          />
-        )}
+    <div className="app-shell">
+      {/* Mobile Backdrop Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="sidebar-backdrop" 
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true" 
+        />
+      )}
 
-        {/* Institutional Left Sidebar */}
-        <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+      {/* Institutional Left Sidebar */}
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           {/* Brand Header */}
           <div className="sidebar-brand">
             <div className="brand-icon-box">
@@ -227,7 +235,15 @@ export default function App() {
           </main>
         </div>
       </div>
-    </BrowserRouter>
-  </ThemeProvider>
+    );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <BrowserRouter>
+        <MainLayout />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }

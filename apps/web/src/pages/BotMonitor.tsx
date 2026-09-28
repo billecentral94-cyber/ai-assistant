@@ -15,10 +15,16 @@ import {
   getDailyHistory
 } from '../services/api';
 
-export default function BotMonitor() {
+interface BotMonitorProps {
+  isPermanentWidget?: boolean;
+}
+
+export default function BotMonitor({ isPermanentWidget }: BotMonitorProps) {
   const [searchParams] = useSearchParams();
+  const locationPath = typeof window !== 'undefined' ? window.location.pathname : '';
   const isWidgetParam = searchParams.get('widget') === 'true';
-  const [isWidgetMode, setIsWidgetMode] = useState<boolean>(isWidgetParam);
+  const isPermanent = Boolean(isPermanentWidget || locationPath === '/widget' || isWidgetParam);
+  const [isWidgetMode, setIsWidgetMode] = useState<boolean>(isPermanent);
 
   const [foState, setFoState] = useState<any>({
     current_capital: 5000,
@@ -68,7 +74,7 @@ export default function BotMonitor() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 6000);
+    const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -77,14 +83,16 @@ export default function BotMonitor() {
   const totalOpen = (foState?.open_positions?.length ?? 0) + (eqState?.open_positions?.length ?? 0);
   const allClosed = [...(foState?.closed_trades || []), ...(eqState?.closed_trades || [])];
 
-  // ── Compact Widget View (Optimized for iPhone Home Screen Embeds) ──────────
-  if (isWidgetMode) {
+  // ── Permanent Dedicated Widget View (Optimized for iPhone Home Screen) ─────
+  if (isPermanent || isWidgetMode) {
     return (
       <div style={{
         background: '#07090e',
         color: '#e2e8f0',
         padding: '12px',
         minHeight: '100vh',
+        maxWidth: 480,
+        margin: '0 auto',
         fontFamily: 'monospace, -apple-system, sans-serif'
       }}>
         {/* Widget Header */}
@@ -100,14 +108,14 @@ export default function BotMonitor() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
           <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8 }}>
             <div style={{ fontSize: 10, color: '#94a3b8', textTransform: 'uppercase' }}>Total Equity</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#00f0ff', marginTop: 2 }}>
+            <div style={{ fontSize: 17, fontWeight: 700, color: '#00f0ff', marginTop: 2 }}>
               ₹{totalCapital.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </div>
           </div>
 
           <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8 }}>
             <div style={{ fontSize: 10, color: '#94a3b8', textTransform: 'uppercase' }}>Today P&L</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: totalDailyPnl >= 0 ? '#00ff88' : '#ff3366', marginTop: 2 }}>
+            <div style={{ fontSize: 17, fontWeight: 700, color: totalDailyPnl >= 0 ? '#00ff88' : '#ff3366', marginTop: 2 }}>
               {totalDailyPnl >= 0 ? '+' : ''}₹{totalDailyPnl.toFixed(2)}
             </div>
           </div>
@@ -125,8 +133,8 @@ export default function BotMonitor() {
           </div>
         </div>
 
-        {/* Live Positions / Status */}
-        <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8, fontSize: 11 }}>
+        {/* Live Positions */}
+        <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8, marginBottom: 10, fontSize: 11 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <span style={{ fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', fontSize: 10 }}>Active Trades ({totalOpen})</span>
             <span style={{ color: '#00ff88', fontSize: 10 }}>Wake Lock Active</span>
@@ -148,22 +156,75 @@ export default function BotMonitor() {
           )}
         </div>
 
-        <button
-          onClick={() => setIsWidgetMode(false)}
-          style={{
-            width: '100%',
-            marginTop: 10,
-            background: 'transparent',
-            border: '1px solid #1a2233',
-            color: '#94a3b8',
-            fontSize: 10,
-            padding: 6,
-            borderRadius: 4,
-            cursor: 'pointer'
-          }}
-        >
-          Expand Full Terminal View
-        </button>
+        {/* Today's Executed Trades */}
+        <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8, marginBottom: 10, fontSize: 11 }}>
+          <div style={{ fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', fontSize: 10, marginBottom: 6 }}>
+            Today's Closed Trades ({allClosed.length})
+          </div>
+          {allClosed.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '6px 0', color: '#94a3b8', fontSize: 11 }}>
+              No trades closed yet today
+            </div>
+          ) : (
+            <div>
+              {allClosed.slice(-3).map((t: any, idx: number) => {
+                const pnl = t.net_pnl !== undefined ? t.net_pnl : (t.pnl || 0);
+                return (
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0', borderBottom: '1px solid #1a2233' }}>
+                    <span><b>{t.symbol}</b> ({t.exit_reason})</span>
+                    <strong style={{ color: pnl >= 0 ? '#00ff88' : '#ff3366' }}>
+                      {pnl >= 0 ? '+' : ''}₹{pnl.toFixed(2)}
+                    </strong>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* 3 Live Readiness Gates */}
+        <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8, fontSize: 11 }}>
+          <div style={{ fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', fontSize: 10, marginBottom: 6 }}>
+            3 Live Readiness Gates
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
+            <span style={{ color: '#94a3b8' }}>Gate 1 (Win Rate &gt;= 55%):</span>
+            <span style={{ color: gates?.gate_1_win_rate?.passed ? '#00ff88' : '#fbbf24' }}>
+              {gates?.gate_1_win_rate?.passed ? 'PASSED' : 'PENDING'}
+            </span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
+            <span style={{ color: '#94a3b8' }}>Gate 2 (PF &gt;= 1.5):</span>
+            <span style={{ color: gates?.gate_2_profit_factor?.passed ? '#00ff88' : '#fbbf24' }}>
+              {gates?.gate_2_profit_factor?.passed ? 'PASSED' : 'PENDING'}
+            </span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#94a3b8' }}>Gate 3 (DD &lt;= 4%):</span>
+            <span style={{ color: gates?.gate_3_max_drawdown?.passed ? '#00ff88' : '#fbbf24' }}>
+              {gates?.gate_3_max_drawdown?.passed ? 'PASSED' : 'PENDING'}
+            </span>
+          </div>
+        </div>
+
+        {!isPermanent && (
+          <button
+            onClick={() => setIsWidgetMode(false)}
+            style={{
+              width: '100%',
+              marginTop: 10,
+              background: 'transparent',
+              border: '1px solid #1a2233',
+              color: '#94a3b8',
+              fontSize: 10,
+              padding: 6,
+              borderRadius: 4,
+              cursor: 'pointer'
+            }}
+          >
+            Expand Full Terminal View
+          </button>
+        )}
       </div>
     );
   }
