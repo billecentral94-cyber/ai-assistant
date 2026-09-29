@@ -62,15 +62,20 @@ class PaperTrader:
 
         events = []
 
-        # 1. Manage Open Positions
+        # 1. Manage Open Positions (Strictly filter for the matching underlying)
         active_positions = []
         for pos in self.open_positions:
+            if pos.get("symbol") != underlying:
+                active_positions.append(pos)
+                continue
+
             entry = pos["entry_price"]
             sl = pos["stop_loss"]
             tp = pos["target_1"]
             direction = pos["direction"]
             lots = pos["lots"]
             qty = lots * self.lot_size
+            max_defined_risk = pos.get("max_risk", 300.0)
 
             should_close = False
             exit_reason = ""
@@ -100,16 +105,21 @@ class PaperTrader:
 
             if should_close:
                 pts = (exit_price - entry) if direction == "BULLISH" else (entry - exit_price)
-                gross_pnl = round(pts * qty * 0.50, 2)
+                gross_pnl = pts * qty * 0.50
+                # Capped defined risk for spreads: losses cannot exceed max defined debit (e.g. ₹300)
+                if gross_pnl < 0 and abs(gross_pnl) > max_defined_risk:
+                    gross_pnl = -max_defined_risk
+                gross_pnl = round(gross_pnl, 2)
+
                 # Slippage + brokerage
-                costs = round(80.0 + (entry + exit_price) * (self.slippage_pct / 100.0) * qty * 0.1, 2)
+                costs = round(20.0 + (entry + exit_price) * (self.slippage_pct / 100.0) * qty * 0.001, 2)
                 net_pnl = round(gross_pnl - costs, 2)
 
                 self.current_capital += net_pnl
                 self.daily_pnl += net_pnl
 
                 closed_trade = {
-                    "symbol": underlying,
+                    "symbol": pos["symbol"],
                     "direction": direction,
                     "entry_price": entry,
                     "exit_price": exit_price,
@@ -123,8 +133,6 @@ class PaperTrader:
                 }
                 self.closed_trades.append(closed_trade)
                 events.append({"event": "POSITION_CLOSED", "trade": closed_trade})
-            else:
-                active_positions.append(pos)
 
         self.open_positions = active_positions
 

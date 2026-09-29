@@ -1,1 +1,33 @@
-[]
+[
+  {
+    "date": "2026-09-29",
+    "total_pnl": -320.0,
+    "fo_pnl": -320.0,
+    "equity_pnl": 0.0,
+    "trades_count": 1,
+    "capital": 7180.0,
+    "trades": [
+      {
+        "symbol": "NIFTY",
+        "direction": "BEARISH",
+        "entry_price": 22780.25,
+        "exit_price": 22850.0,
+        "exit_reason": "EOD_SQUARE_OFF",
+        "net_pnl": -320.0,
+        "strategy": "Bear Put Spread"
+      }
+    ],
+    "gates": {
+      "total_trades": 1,
+      "wins": 0,
+      "losses": 1,
+      "win_rate_pct": 0.0,
+      "profit_factor": 0.0,
+      "max_drawdown_pct": 6.4,
+      "gate_1_win_rate": { "value": 0.0, "threshold": 55.0, "passed": false },
+      "gate_2_profit_factor": { "value": 0.0, "threshold": 1.5, "passed": false },
+      "gate_3_max_drawdown": { "value": 6.4, "threshold": 4.0, "passed": false },
+      "all_gates_passed": false
+    }
+  }
+]

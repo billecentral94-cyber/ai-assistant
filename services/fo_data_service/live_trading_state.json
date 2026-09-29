@@ -1,17 +1,31 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 5000.0,
-  "current_capital": 5000.0,
-  "daily_pnl": 0.0,
+  "current_capital": 4680.0,
+  "daily_pnl": -320.0,
   "open_positions": [],
-  "closed_trades": [],
+  "closed_trades": [
+    {
+      "symbol": "NIFTY",
+      "direction": "BEARISH",
+      "entry_price": 22780.25,
+      "exit_price": 22850.0,
+      "lots": 1,
+      "quantity": 25,
+      "entry_time": "2026-09-29T10:40:35.671000+05:30",
+      "exit_time": "2026-09-29T15:15:00.000000+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "net_pnl": -320.0,
+      "strategy": "Bear Put Spread"
+    }
+  ],
   "readiness_gates": {
-    "total_trades": 0,
+    "total_trades": 1,
     "wins": 0,
-    "losses": 0,
+    "losses": 1,
     "win_rate_pct": 0.0,
     "profit_factor": 0.0,
-    "max_drawdown_pct": 0.0,
+    "max_drawdown_pct": 6.4,
     "gate_1_win_rate": {
       "value": 0.0,
       "threshold": 55.0,
@@ -23,11 +37,11 @@
       "passed": false
     },
     "gate_3_max_drawdown": {
-      "value": 0.0,
+      "value": 6.4,
       "threshold": 4.0,
       "passed": false
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-09-29T01:06:45.011078+05:30"
+  "last_updated": "2026-09-29T15:35:00.000000+05:30"
 }
