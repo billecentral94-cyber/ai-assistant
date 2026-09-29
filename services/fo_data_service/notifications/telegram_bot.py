@@ -55,6 +55,14 @@ class TelegramNotifier:
         self._today_fn: Optional[Callable[[], str]] = None
         self._history_fn: Optional[Callable[[], str]] = None
 
+        # Dual-dispatch via ntfy.sh (zero setup, push sound alerts to iPhone)
+        try:
+            from notifications.ntfy_notifier import NtfyNotifier
+            self.ntfy = NtfyNotifier()
+        except Exception as e:
+            logger.warning(f"Could not initialize NtfyNotifier: {e}")
+            self.ntfy = None
+
     def send_message(self, text: str) -> bool:
         """Sends markdown formatted message to Telegram chat."""
         if not self.is_configured:
@@ -105,6 +113,8 @@ class TelegramNotifier:
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
             f"_Scanning 14 stocks + NIFTY/BANKNIFTY every 15m._"
         )
+        if self.ntfy:
+            self.ntfy.send_bot_started(vaults)
         return self.send_message(msg)
 
     def send_cycle_heartbeat(
@@ -133,6 +143,11 @@ class TelegramNotifier:
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
             f"_Next cycle scheduled in 15 minutes._"
         )
+        if self.ntfy:
+            self.ntfy.send_cycle_heartbeat(
+                cycle_num, time_str, nifty_sig, banknifty_sig,
+                equity_scan_summary, open_positions_count, daily_pnl
+            )
         return self.send_message(msg)
 
     def send_order_executed(self, trade: Dict[str, Any]) -> bool:
@@ -159,6 +174,8 @@ class TelegramNotifier:
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
             f"_Trailing stop-loss enabled._"
         )
+        if self.ntfy:
+            self.ntfy.send_order_executed(trade)
         return self.send_message(msg)
 
     def send_trade_closed(self, trade: Dict[str, Any]) -> bool:
@@ -168,7 +185,7 @@ class TelegramNotifier:
         reason = trade.get("exit_reason", "EXIT")
         entry = trade.get("entry_price", 0.0)
         exit_p = trade.get("exit_price", 0.0)
-        pnl = trade.get("net_pnl") or trade.get("pnl", 0.0)
+        pnl = trade.get("net_pnl") if trade.get("net_pnl") is not None else trade.get("pnl", 0.0)
         charges = trade.get("charges", 5.0)
 
         if reason == "TARGET":
@@ -192,6 +209,8 @@ class TelegramNotifier:
             f"• *Net Realized P&L:* *{sign}₹{pnl:,.2f}*\n"
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
         )
+        if self.ntfy:
+            self.ntfy.send_trade_closed(trade)
         return self.send_message(msg)
 
     def send_error_alert(self, context: str, error_msg: str) -> bool:
@@ -206,6 +225,8 @@ class TelegramNotifier:
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
             f"_Engine will attempt auto-recovery on next cycle._"
         )
+        if self.ntfy:
+            self.ntfy.send_error_alert(context, error_msg)
         return self.send_message(msg)
 
     def send_bot_stopped(self, reason: str, final_summary: Optional[Dict[str, Any]] = None) -> bool:
@@ -227,9 +248,13 @@ class TelegramNotifier:
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
             f"_Standing by for next trading session at 09:14 AM IST._"
         )
+        if self.ntfy:
+            self.ntfy.send_bot_stopped(reason)
         return self.send_message(msg)
 
     def send_daily_summary(self, summary: Dict[str, Any]) -> bool:
+        if self.ntfy:
+            self.ntfy.send_daily_summary(summary)
         """Dispatches EOD reconciliation summary with Live Readiness Gate status."""
         date_str = summary.get("date", time.strftime("%d-%b-%Y"))
         total_pnl = summary.get("total_pnl", 0.0)
