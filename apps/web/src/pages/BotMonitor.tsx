@@ -64,6 +64,31 @@ export default function BotMonitor() {
   const totalOpen = (foState?.open_positions?.length ?? 0) + (eqState?.open_positions?.length ?? 0);
   const allClosed = [...(foState?.closed_trades || []), ...(eqState?.closed_trades || [])];
 
+  // Liveness & Watchdog calculations
+  const lastUpdatedRaw = foState?.last_updated;
+  const lastUpdatedDate = lastUpdatedRaw ? new Date(lastUpdatedRaw) : null;
+  const now = new Date();
+  const minutesSinceHeartbeat = lastUpdatedDate 
+    ? Math.max(0, Math.floor((now.getTime() - lastUpdatedDate.getTime()) / 60000)) 
+    : 999;
+
+  const istFormatter = new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+  const currentISTTime = istFormatter.format(now);
+  const isMarketHours = currentISTTime >= '09:15' && currentISTTime <= '15:35';
+  const isPostMarket = currentISTTime > '15:35' || currentISTTime < '09:15';
+
+  const isStalled = isMarketHours && minutesSinceHeartbeat > 20;
+  const lastError = foState?.last_error;
+
+  const botTimeStr = lastUpdatedDate 
+    ? lastUpdatedDate.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false }) + ' IST'
+    : 'No pulse yet';
+
   return (
     <div style={{
       background: '#07090e',
@@ -74,14 +99,60 @@ export default function BotMonitor() {
       margin: '0 auto',
       fontFamily: 'monospace, -apple-system, sans-serif'
     }}>
-      {/* Widget Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+      {/* Widget Header with Engine Pulse Status */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 8px #00ff88' }} />
+          <span style={{
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            background: isStalled ? '#ef4444' : (isPostMarket ? '#818cf8' : '#00ff88'),
+            boxShadow: isStalled ? '0 0 8px #ef4444' : (isPostMarket ? '0 0 8px #818cf8' : '0 0 8px #00ff88')
+          }} />
           <strong style={{ fontSize: 13, color: '#00f0ff', letterSpacing: 0.5 }}>ARTHA SENTINEL</strong>
         </div>
-        <span style={{ fontSize: 10, color: '#94a3b8' }}>{lastRefreshed}</span>
+        <div style={{ textAlign: 'right' }}>
+          <span style={{ fontSize: 10, color: isStalled ? '#ef4444' : (isPostMarket ? '#818cf8' : '#00ff88'), fontWeight: 700 }}>
+            {isStalled ? '🔴 STALLED' : (isPostMarket ? 'POST-MARKET' : 'ONLINE')}
+          </span>
+          <div style={{ fontSize: 9, color: '#64748b' }}>Pulse: {botTimeStr}</div>
+        </div>
       </div>
+
+      {/* LIVENESS WATCHDOG ALERTS */}
+      {isStalled && (
+        <div style={{
+          background: 'rgba(239, 68, 68, 0.15)',
+          border: '1px solid #ef4444',
+          borderRadius: 6,
+          padding: '8px 10px',
+          marginBottom: 10,
+          fontSize: 11
+        }}>
+          <div style={{ color: '#ef4444', fontWeight: 700, marginBottom: 2 }}>
+            ⚠️ LAPTOP OFFLINE / SUSPENDED
+          </div>
+          <div style={{ color: '#fca5a5' }}>
+            No heartbeat since <b>{botTimeStr}</b> ({minutesSinceHeartbeat}m ago). Laptop may be asleep or Wi-Fi dropped!
+          </div>
+        </div>
+      )}
+
+      {lastError && (
+        <div style={{
+          background: 'rgba(245, 158, 11, 0.15)',
+          border: '1px solid #f59e0b',
+          borderRadius: 6,
+          padding: '8px 10px',
+          marginBottom: 10,
+          fontSize: 11
+        }}>
+          <div style={{ color: '#f59e0b', fontWeight: 700, marginBottom: 2 }}>
+            ⚠️ ENGINE ALERT
+          </div>
+          <div style={{ color: '#fcd34d' }}>{lastError}</div>
+        </div>
+      )}
 
       {/* Capital & PnL Matrix */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
