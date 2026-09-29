@@ -201,23 +201,29 @@ def _run_trade_cycle(orchestrator, analytics_engine, signal_gen, paper_trader, u
         return None
 
 
-def _fetch_equity_quotes(session_mgr, timeout: int = 10) -> Dict[str, Dict[str, Any]]:
-    """Fetches real-time LTP, High, Low, Open quotes for multi-sector equity cash universe from Angel One."""
+def _fetch_equity_quotes(session_mgr, timeout: int = 12) -> Dict[str, Dict[str, Any]]:
+    """Fetches real-time LTP, High, Low, Open quotes for multi-sector equity cash universe from Angel One with retry."""
     token_map = {item["token"]: item["symbol"] for item in EQUITY_UNIVERSE}
-    try:
-        headers = session_mgr._get_headers(with_auth=True)
-        payload = {"mode": "FULL", "exchangeTokens": {"NSE": list(token_map.keys())}}
-        resp = session_mgr.session.post(
-            "https://apiconnect.angelbroking.com/rest/secure/angelbroking/market/v1/quote/",
-            json=payload,
-            headers=headers,
-            timeout=timeout
-        )
-        data = resp.json().get("data", {}).get("fetched", [])
-        return {token_map[item["symbolToken"]]: item for item in data if item.get("symbolToken") in token_map}
-    except Exception as e:
-        logger.warning(f"Failed to fetch equity quotes from Angel One: {e}")
-        return {}
+    for attempt in range(2):
+        try:
+            headers = session_mgr._get_headers(with_auth=True)
+            payload = {"mode": "FULL", "exchangeTokens": {"NSE": list(token_map.keys())}}
+            resp = session_mgr.session.post(
+                "https://apiconnect.angelbroking.com/rest/secure/angelbroking/market/v1/quote/",
+                json=payload,
+                headers=headers,
+                timeout=timeout
+            )
+            data = resp.json().get("data", {}).get("fetched", [])
+            quotes = {token_map[item["symbolToken"]]: item for item in data if item.get("symbolToken") in token_map}
+            if quotes:
+                return quotes
+        except Exception as e:
+            if attempt == 0:
+                time.sleep(2)
+                continue
+            logger.warning(f"Failed to fetch equity quotes from Angel One: {e}")
+    return {}
 
 
 def cmd_auto_trade(args):
