@@ -52,11 +52,14 @@ class SignalGenerator:
         account_capital: float = 500000.0,
         step_size: float = 50.0,
         lot_size: int = 25,
-        timestamp: Optional[datetime] = None
+        timestamp: Optional[datetime] = None,
+        market_context: Optional[Dict[str, Any]] = None
     ) -> Signal:
         """
         Evaluates 5 confluence factors and constructs a structured Signal.
+        market_context (optional): dict with rolling_range, chop_detected, session_vwap_bias
         """
+
         now = timestamp or datetime.now()
 
         # Extract analytics inputs
@@ -151,6 +154,31 @@ class SignalGenerator:
             confluence_score = max(bullish_score, bearish_score)
             confluences = bullish_reasons if bullish_score >= bearish_score else bearish_reasons
             is_actionable = False
+
+        # 3b. CHOP FILTER: Suppress all directional trades when 30-min range is too narrow
+        ctx = market_context or {}
+        chop_detected = ctx.get("chop_detected", False)
+        vwap_bias = ctx.get("session_vwap_bias", "NEUTRAL")
+        rolling_range = ctx.get("rolling_range", 0.0)
+
+        if chop_detected and is_actionable:
+            is_actionable = False
+            confluences.append(
+                f"[CHOP FILTER] 30m range {rolling_range:.0f} pts below threshold -- trade suppressed"
+            )
+
+        # 3c. VWAP DIRECTIONAL GATE: Only allow trades aligned with intraday VWAP bias
+        if is_actionable and vwap_bias != "NEUTRAL":
+            if direction == "BULLISH" and vwap_bias == "BELOW":
+                is_actionable = False
+                confluences.append(
+                    "[VWAP GATE] Spot BELOW session midpoint -- Bullish trade blocked"
+                )
+            elif direction == "BEARISH" and vwap_bias == "ABOVE":
+                is_actionable = False
+                confluences.append(
+                    "[VWAP GATE] Spot ABOVE session midpoint -- Bearish trade blocked"
+                )
 
         # 4. Entry, Stop Loss & Targets (Proximity-sorted with minimum buffer and max cap)
         entry_price = spot_price

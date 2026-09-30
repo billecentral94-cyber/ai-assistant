@@ -164,6 +164,14 @@ def _run_trade_cycle(orchestrator, analytics_engine, signal_gen, paper_trader, u
             logger.warning(f"[{underlying}] No spot price available. Skipping signal generation.")
             return
 
+        # 2b. Get market context for chop filter + VWAP gate
+        market_ctx = analytics_engine.get_market_context(underlying)
+        if market_ctx.get("chop_detected"):
+            logger.info(
+                f"[{underlying}] CHOP detected: 30m range = {market_ctx['rolling_range']:.0f} pts. "
+                f"VWAP bias: {market_ctx['session_vwap_bias']}"
+            )
+
         # 3. Generate confluence signal (requires >= 3/5 factors)
         signal = signal_gen.generate_signal(
             underlying=underlying,
@@ -176,7 +184,8 @@ def _run_trade_cycle(orchestrator, analytics_engine, signal_gen, paper_trader, u
             account_capital=paper_trader.current_capital,
             step_size=step,
             lot_size=lot_size,
-            timestamp=now_ist
+            timestamp=now_ist,
+            market_context=market_ctx
         )
 
         logger.info(
@@ -258,7 +267,9 @@ def cmd_auto_trade(args):
     orchestrator = FetchOrchestrator()
     analytics_engine = orchestrator.analytics_engine
     signal_gen = SignalGenerator()
-    paper_trader = PaperTrader(signal_generator=signal_gen)
+    # Pass Angel One session for live option LTP lookups (Fix 2: real spread pricing)
+    angel_session = orchestrator.angel_opt_primary.session_mgr
+    paper_trader = PaperTrader(signal_generator=signal_gen, angel_session=angel_session)
     equity_trader = EquityIntradayTrader()
     telegram = TelegramNotifier()
 

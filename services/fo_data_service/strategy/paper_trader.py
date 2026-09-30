@@ -3,6 +3,7 @@ Live Paper Trading Execution Engine.
 Simulates real-world order execution against live market snapshots with trailing stops,
 risk guardrails, and automated EOD square-offs.
 Includes 3 Live Readiness Gates evaluation and atomic state persistence.
+Uses real option leg LTPs from Angel One SmartAPI for accurate spread P&L marking.
 """
 
 import json
@@ -19,10 +20,13 @@ from .self_improver import load_adaptive_config
 logger = logging.getLogger(__name__)
 IST = pytz.timezone("Asia/Kolkata")
 
+QUOTE_URL = "https://apiconnect.angelbroking.com/rest/secure/angelbroking/market/v1/quote/"
+
 
 class PaperTrader:
     """
     Simulates paper execution during market hours (09:15 - 15:30 IST).
+    Uses live Angel One option LTPs for spread P&L when session is available.
     """
 
     def __init__(
@@ -31,7 +35,8 @@ class PaperTrader:
         risk_manager: Optional[RiskManager] = None,
         initial_capital: float = 5000.0,
         lot_size: int = 25,
-        slippage_pct: float = 0.05
+        slippage_pct: float = 0.05,
+        angel_session=None
     ):
         self.signal_generator = signal_generator or SignalGenerator()
         self.risk_manager = risk_manager or RiskManager()
@@ -39,11 +44,118 @@ class PaperTrader:
         self.current_capital = initial_capital
         self.lot_size = lot_size
         self.slippage_pct = slippage_pct
+        self.angel_session = angel_session  # AngelOneSession for live LTP lookups
 
         self.open_positions: List[Dict[str, Any]] = []
         self.closed_trades: List[Dict[str, Any]] = []
         self.daily_pnl = 0.0
         self.last_stop_times: Dict[str, datetime] = {}
+
+        # Cache: maps "SYMBOL STRIKE CE/PE" -> Angel One token string
+        self._token_cache: Dict[str, str] = {}
+        self._scrip_master: Optional[List[Dict[str, Any]]] = None
+
+    def _lookup_option_token(self, underlying: str, strike: float, option_type: str) -> Optional[str]:
+        """Looks up Angel One instrument token for a specific option contract from scrip master."""
+        if self.angel_session is None:
+            return None
+
+        cache_key = f"{underlying}_{strike}_{option_type}"
+        if cache_key in self._token_cache:
+            return self._token_cache[cache_key]
+
+        try:
+            if self._scrip_master is None:
+                import requests
+                resp = requests.get(
+                    "https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json",
+                    timeout=30
+                )
+                resp.raise_for_status()
+                self._scrip_master = resp.json()
+
+            from dateutil import parser as date_parser
+            today = datetime.now(IST).date()
+
+            for item in self._scrip_master:
+                if (
+                    item.get("exch_seg") == "NFO"
+                    and item.get("name") == underlying.upper()
+                    and item.get("instrumenttype") == "OPTIDX"
+                ):
+                    symbol = item.get("symbol", "")
+                    if not symbol.endswith(option_type):
+                        continue
+
+                    raw_strike = float(item.get("strike", "0"))
+                    item_strike = raw_strike / 100.0 if raw_strike > 100000 else raw_strike
+                    if abs(item_strike - strike) > 0.01:
+                        continue
+
+                    exp_d = date_parser.parse(item.get("expiry", "")).date()
+                    if exp_d >= today:
+                        token = item.get("token")
+                        self._token_cache[cache_key] = token
+                        return token
+        except Exception as e:
+            logger.warning(f"Token lookup failed for {cache_key}: {e}")
+
+        return None
+
+    def _fetch_option_ltp(self, token: str) -> Optional[float]:
+        """Fetches live LTP for a single option token from Angel One SmartAPI."""
+        if self.angel_session is None or not token:
+            return None
+        try:
+            headers = self.angel_session._get_headers(with_auth=True)
+            payload = {"mode": "LTP", "exchangeTokens": {"NFO": [str(token)]}}
+            resp = self.angel_session.session.post(QUOTE_URL, json=payload, headers=headers, timeout=10)
+            data = resp.json()
+            fetched = data.get("data", {}).get("fetched", [])
+            if fetched:
+                return float(fetched[0].get("ltp", 0.0))
+        except Exception as e:
+            logger.warning(f"Option LTP fetch failed for token {token}: {e}")
+        return None
+
+    def _get_spread_premium(self, legs: List[Dict[str, Any]], underlying: str) -> Optional[Dict[str, Any]]:
+        """
+        Fetches real LTPs for all legs of a spread and returns premium details.
+        Returns dict with buy_premium, sell_premium, net_debit, leg_details or None if fetch fails.
+        """
+        if self.angel_session is None or not legs:
+            return None
+
+        leg_details = []
+        for leg in legs:
+            strike = leg.get("strike", 0)
+            opt_type = leg.get("option_type", "")
+            action = leg.get("action", "")
+            token = self._lookup_option_token(underlying, strike, opt_type)
+            if token is None:
+                return None  # Can't price all legs; fall back to theoretical
+            ltp = self._fetch_option_ltp(token)
+            if ltp is None or ltp <= 0:
+                return None
+            leg_details.append({
+                "strike": strike,
+                "option_type": opt_type,
+                "action": action,
+                "token": token,
+                "ltp": ltp
+            })
+
+        buy_premium = sum(d["ltp"] for d in leg_details if d["action"] == "BUY")
+        sell_premium = sum(d["ltp"] for d in leg_details if d["action"] == "SELL")
+        net_debit = round(buy_premium - sell_premium, 2)
+
+        return {
+            "buy_premium": round(buy_premium, 2),
+            "sell_premium": round(sell_premium, 2),
+            "net_debit": net_debit,
+            "leg_details": leg_details
+        }
+
 
     def process_cycle(
         self,
@@ -131,9 +243,37 @@ class PaperTrader:
                     exit_price = tp
 
             if should_close:
-                pts = (exit_price - entry) if direction == "BULLISH" else (entry - exit_price)
-                gross_pnl = pts * qty * 0.50
-                # Capped defined risk for spreads: losses cannot exceed max defined debit (e.g. ₹300)
+                # --- LIVE LTP SPREAD P&L (replaces theoretical pts * 0.50 proxy) ---
+                entry_premium = pos.get("entry_premium_info")
+                exit_premium = None
+
+                if entry_premium and self.angel_session:
+                    # Fetch current LTPs for spread legs at exit
+                    legs = entry_premium.get("leg_details", [])
+                    exit_premium = self._get_spread_premium(
+                        [{"strike": l["strike"], "option_type": l["option_type"], "action": l["action"]} for l in legs],
+                        underlying
+                    )
+
+                if entry_premium and exit_premium:
+                    # Real spread P&L: (exit_sell - exit_buy) - (entry_buy - entry_sell)
+                    # For debit spread: entry paid net_debit, exit receives inverse
+                    entry_debit = entry_premium["net_debit"]  # buy - sell at entry
+                    exit_debit = exit_premium["net_debit"]      # buy - sell at exit (should be negative = credit)
+                    # P&L = -(exit_debit) - entry_debit (i.e., we close the spread)
+                    # Simplified: value at exit - cost at entry
+                    spread_pnl_per_unit = -(exit_debit) - entry_debit
+                    gross_pnl = round(spread_pnl_per_unit * qty, 2)
+                    logger.info(
+                        f"[{underlying}] Live LTP P&L: entry_debit={entry_debit}, "
+                        f"exit_debit={exit_debit}, spread_pnl/unit={spread_pnl_per_unit:.2f}"
+                    )
+                else:
+                    # Fallback: theoretical delta proxy (0.50)
+                    pts = (exit_price - entry) if direction == "BULLISH" else (entry - exit_price)
+                    gross_pnl = pts * qty * 0.50
+
+                # Capped defined risk for spreads: losses cannot exceed max defined debit (e.g. Rs 300)
                 if gross_pnl < 0 and abs(gross_pnl) > max_defined_risk:
                     gross_pnl = -max_defined_risk
                 gross_pnl = round(gross_pnl, 2)
@@ -194,6 +334,21 @@ class PaperTrader:
                     logger.info(f"[{underlying}] Skipped entry: Post-loss cooldown active ({rem_mins} mins remaining).")
 
             if allowed and signal.position_size.get("lots", 0) > 0:
+                # Capture live option leg premiums at entry for accurate P&L
+                entry_premium_info = None
+                strategy_legs = signal.recommended_strategy.get("legs", [])
+                if strategy_legs and self.angel_session:
+                    entry_premium_info = self._get_spread_premium(strategy_legs, underlying)
+                    if entry_premium_info:
+                        logger.info(
+                            f"[{underlying}] Live entry premiums: "
+                            f"Buy={entry_premium_info['buy_premium']}, "
+                            f"Sell={entry_premium_info['sell_premium']}, "
+                            f"Net Debit={entry_premium_info['net_debit']}"
+                        )
+                    else:
+                        logger.info(f"[{underlying}] Could not fetch live LTPs; will use theoretical P&L proxy.")
+
                 new_pos = {
                     "symbol": underlying,
                     "direction": signal.direction,
@@ -203,7 +358,8 @@ class PaperTrader:
                     "target_1": signal.target_1,
                     "lots": signal.position_size["lots"],
                     "entry_time": now.isoformat(),
-                    "strategy_name": signal.recommended_strategy["strategy_name"]
+                    "strategy_name": signal.recommended_strategy["strategy_name"],
+                    "entry_premium_info": entry_premium_info
                 }
                 self.open_positions.append(new_pos)
                 events.append({"event": "POSITION_OPENED", "position": new_pos})

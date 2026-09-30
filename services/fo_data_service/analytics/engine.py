@@ -255,3 +255,89 @@ class AnalyticsEngine:
 
         return result
 
+    def get_market_context(self, underlying: str) -> Dict[str, Any]:
+        """
+        Computes intraday market context for chop/VWAP filtering.
+        Returns:
+            rolling_range: High - Low of underlying over recent snapshots (30-min proxy)
+            session_vwap_bias: 'ABOVE' if spot > session midpoint, 'BELOW' if spot < midpoint, 'NEUTRAL' otherwise
+            chop_detected: True if range is below threshold (BN < 80, Nifty < 40)
+            spot_price: latest spot
+            session_high / session_low / session_open: intraday OHLC from futures snapshots
+        """
+        from datetime import timedelta
+        context: Dict[str, Any] = {
+            "rolling_range": 0.0,
+            "session_vwap_bias": "NEUTRAL",
+            "chop_detected": False,
+            "spot_price": 0.0,
+            "session_high": 0.0,
+            "session_low": 0.0,
+            "session_open": 0.0,
+        }
+
+        chop_threshold = 40.0 if underlying.upper() == "NIFTY" else 80.0
+
+        with get_db_session(self.engine) as session:
+            today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
+            # Get all today's futures snapshots for intraday H/L/O
+            today_futures = (
+                session.query(FuturesSnapshot)
+                .filter(
+                    FuturesSnapshot.underlying == underlying,
+                    FuturesSnapshot.captured_at >= today_start
+                )
+                .order_by(FuturesSnapshot.captured_at)
+                .all()
+            )
+
+            if today_futures:
+                # Session open = first snapshot's open price
+                context["session_open"] = float(today_futures[0].open)
+
+                # Intraday high = max of all highs, low = min of all lows
+                all_highs = [float(f.high) for f in today_futures]
+                all_lows = [float(f.low) for f in today_futures if float(f.low) > 0]
+                context["session_high"] = max(all_highs) if all_highs else 0.0
+                context["session_low"] = min(all_lows) if all_lows else 0.0
+
+                # Latest close as spot
+                latest = today_futures[-1]
+                context["spot_price"] = float(latest.close)
+
+                # Rolling range from recent 2 snapshots (approx 30 min with 15-min cycles)
+                recent = today_futures[-2:] if len(today_futures) >= 2 else today_futures
+                recent_high = max(float(f.high) for f in recent)
+                recent_low = min(float(f.low) for f in recent if float(f.low) > 0)
+                context["rolling_range"] = round(recent_high - recent_low, 2)
+
+                # VWAP proxy: simple midpoint of session range, compare spot
+                session_mid = (context["session_high"] + context["session_low"]) / 2.0
+                spot = context["spot_price"]
+                if session_mid > 0:
+                    if spot > session_mid:
+                        context["session_vwap_bias"] = "ABOVE"
+                    elif spot < session_mid:
+                        context["session_vwap_bias"] = "BELOW"
+
+            # Fallback: use option chain spot if no futures data
+            if context["spot_price"] == 0:
+                opt = (
+                    session.query(OptionChainSnapshot.spot_price)
+                    .filter_by(underlying=underlying)
+                    .order_by(desc(OptionChainSnapshot.captured_at))
+                    .first()
+                )
+                if opt:
+                    context["spot_price"] = float(opt[0])
+
+            # Chop detection
+            if context["rolling_range"] > 0:
+                context["chop_detected"] = context["rolling_range"] < chop_threshold
+            else:
+                # Not enough data to determine range (first cycle of day) — allow trading
+                context["chop_detected"] = False
+
+        return context
+
