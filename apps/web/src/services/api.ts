@@ -608,7 +608,7 @@ export async function getFoNews(query: string = 'NSE Nifty F&O news') {
 export async function getFoPaperTrades() {
   const fallback = {
     success: true,
-    engine_status: 'ACTIVE',
+    engine_status: 'MARKET_CLOSED',
     initial_capital: 5000,
     current_capital: 4358.40,
     daily_pnl: -321.60,
@@ -637,6 +637,72 @@ export async function getFoPaperTrades() {
         strategy: 'Bear Put Spread'
       },
       {
+        symbol: 'BANKNIFTY',
+        direction: 'BEARISH',
+        entry_price: 54707.9,
+        exit_price: 54700.0,
+        lots: 1,
+        quantity: 25,
+        exit_reason: 'TARGET_1',
+        net_pnl: 77.38,
+        strategy: 'Bear Put Spread'
+      },
+      {
+        symbol: 'BANKNIFTY',
+        direction: 'BEARISH',
+        entry_price: 54702.8,
+        exit_price: 54700.0,
+        lots: 1,
+        quantity: 25,
+        exit_reason: 'TARGET_1',
+        net_pnl: 13.63,
+        strategy: 'Bear Put Spread'
+      },
+      {
+        symbol: 'BANKNIFTY',
+        direction: 'BULLISH',
+        entry_price: 54700.2,
+        exit_price: 54700.0,
+        lots: 1,
+        quantity: 25,
+        exit_reason: 'STOP_LOSS',
+        net_pnl: -23.87,
+        strategy: 'Bull Call Spread'
+      },
+      {
+        symbol: 'BANKNIFTY',
+        direction: 'BULLISH',
+        entry_price: 54700.95,
+        exit_price: 54700.0,
+        lots: 1,
+        quantity: 25,
+        exit_reason: 'STOP_LOSS',
+        net_pnl: -33.24,
+        strategy: 'Bull Call Spread'
+      },
+      {
+        symbol: 'BANKNIFTY',
+        direction: 'BULLISH',
+        entry_price: 54701.5,
+        exit_price: 54700.0,
+        lots: 1,
+        quantity: 25,
+        exit_reason: 'STOP_LOSS',
+        net_pnl: -40.12,
+        strategy: 'Bull Call Spread'
+      },
+      {
+        symbol: 'BANKNIFTY',
+        direction: 'BULLISH',
+        entry_price: 54701.55,
+        exit_price: 54700.0,
+        lots: 1,
+        quantity: 25,
+        exit_reason: 'STOP_LOSS',
+        net_pnl: -40.75,
+        strategy: 'Bull Call Spread'
+      },
+      {
         symbol: 'NIFTY',
         direction: 'BULLISH',
         entry_price: 22752.3,
@@ -646,6 +712,28 @@ export async function getFoPaperTrades() {
         exit_reason: 'STOP_LOSS',
         net_pnl: -49.32,
         strategy: 'Bull Call Spread'
+      },
+      {
+        symbol: 'BANKNIFTY',
+        direction: 'BULLISH',
+        entry_price: 54704.65,
+        exit_price: 54700.0,
+        lots: 1,
+        quantity: 25,
+        exit_reason: 'STOP_LOSS',
+        net_pnl: -79.50,
+        strategy: 'Bull Call Spread'
+      },
+      {
+        symbol: 'NIFTY',
+        direction: 'BEARISH',
+        entry_price: 22683.1,
+        exit_price: 23200.0,
+        lots: 1,
+        quantity: 25,
+        exit_reason: 'STOP_LOSS',
+        net_pnl: -320.57,
+        strategy: 'Bear Put Spread'
       }
     ],
     last_updated: new Date().toISOString()
@@ -656,36 +744,13 @@ export async function getFoPaperTrades() {
 export async function getEquityPaperTrades() {
   const fallback = {
     success: true,
-    engine_status: 'ACTIVE',
+    engine_status: 'MARKET_CLOSED',
     initial_capital: 2500,
-    current_capital: 2545.25,
-    daily_pnl: 45.25,
+    current_capital: 2576.40,
+    daily_pnl: 76.40,
     leverage_multiplier: 5.0,
-    purchasing_power: 12726.25,
-    open_positions: [
-      {
-        symbol: 'BHARTIARTL',
-        direction: 'SHORT',
-        entry_price: 1773.0,
-        stop_loss: 1785.41,
-        target_1: 1741.97,
-        risk_points: 12.41,
-        quantity: 3,
-        entry_time: '2026-09-30T09:18:33.682141+05:30',
-        strategy_name: 'MOMENTUM_BREAKOUT'
-      },
-      {
-        symbol: 'ICICIBANK',
-        direction: 'BUY',
-        entry_price: 1326.4,
-        stop_loss: 1317.12,
-        target_1: 1349.6,
-        risk_points: 9.28,
-        quantity: 4,
-        entry_time: '2026-09-30T11:29:02.681734+05:30',
-        strategy_name: 'MOMENTUM_BREAKOUT'
-      }
-    ],
+    purchasing_power: 12882.00,
+    open_positions: [],
     closed_trades: [
       {
         symbol: 'ICICIBANK',
@@ -695,6 +760,26 @@ export async function getEquityPaperTrades() {
         quantity: 4,
         exit_reason: 'TARGET',
         net_pnl: 85.54,
+        strategy: 'MOMENTUM_BREAKOUT'
+      },
+      {
+        symbol: 'BHARTIARTL',
+        direction: 'SHORT',
+        entry_price: 1773.0,
+        exit_price: 1754.3,
+        quantity: 3,
+        exit_reason: 'EOD_SQUARE_OFF',
+        net_pnl: 50.43,
+        strategy: 'MOMENTUM_BREAKOUT'
+      },
+      {
+        symbol: 'ICICIBANK',
+        direction: 'BUY',
+        entry_price: 1326.4,
+        exit_price: 1323.0,
+        quantity: 4,
+        exit_reason: 'EOD_SQUARE_OFF',
+        net_pnl: -19.28,
         strategy: 'MOMENTUM_BREAKOUT'
       },
       {
@@ -717,6 +802,31 @@ export async function getDailyHistory() {
   const fallback = {
     success: true,
     records: [
+      {
+        date: '2026-09-30',
+        total_pnl: -245.20,
+        fo_pnl: -321.60,
+        equity_pnl: 76.40,
+        trades_count: 15,
+        capital: 6934.80,
+        trades: [
+          { symbol: 'ICICIBANK', direction: 'BUY', exit_reason: 'TARGET', net_pnl: 85.54 },
+          { symbol: 'BHARTIARTL', direction: 'SHORT', exit_reason: 'EOD_SQUARE_OFF', net_pnl: 50.43 },
+          { symbol: 'ICICIBANK', direction: 'BUY', exit_reason: 'EOD_SQUARE_OFF', net_pnl: -19.28 },
+          { symbol: 'INFY', direction: 'SHORT', exit_reason: 'STOP_LOSS', net_pnl: -40.29 },
+          { symbol: 'BANKNIFTY', direction: 'BEARISH', exit_reason: 'TARGET_1', net_pnl: 96.13 },
+          { symbol: 'BANKNIFTY', direction: 'BEARISH', exit_reason: 'TARGET_1', net_pnl: 78.63 },
+          { symbol: 'BANKNIFTY', direction: 'BEARISH', exit_reason: 'TARGET_1', net_pnl: 77.38 },
+          { symbol: 'BANKNIFTY', direction: 'BEARISH', exit_reason: 'TARGET_1', net_pnl: 13.63 },
+          { symbol: 'BANKNIFTY', direction: 'BULLISH', exit_reason: 'STOP_LOSS', net_pnl: -23.87 },
+          { symbol: 'BANKNIFTY', direction: 'BULLISH', exit_reason: 'STOP_LOSS', net_pnl: -33.24 },
+          { symbol: 'BANKNIFTY', direction: 'BULLISH', exit_reason: 'STOP_LOSS', net_pnl: -40.12 },
+          { symbol: 'BANKNIFTY', direction: 'BULLISH', exit_reason: 'STOP_LOSS', net_pnl: -40.75 },
+          { symbol: 'NIFTY', direction: 'BULLISH', exit_reason: 'STOP_LOSS', net_pnl: -49.32 },
+          { symbol: 'BANKNIFTY', direction: 'BULLISH', exit_reason: 'STOP_LOSS', net_pnl: -79.50 },
+          { symbol: 'NIFTY', direction: 'BEARISH', exit_reason: 'STOP_LOSS', net_pnl: -320.57 }
+        ]
+      },
       {
         date: '2026-09-29',
         total_pnl: -320.0,
@@ -744,17 +854,17 @@ export async function getDailyHistory() {
 export async function getFoReadinessGates() {
   const fallback = {
     success: true,
-    engine_status: 'ACTIVE',
-    total_trades: 4,
-    wins: 3,
-    losses: 1,
-    win_rate_pct: 75.0,
-    profit_factor: 2.14,
-    max_drawdown_pct: 1.8,
-    gate_1_win_rate: { value: 75.0, threshold: 55.0, passed: true },
-    gate_2_profit_factor: { value: 2.14, threshold: 1.5, passed: true },
-    gate_3_max_drawdown: { value: 1.8, threshold: 4.0, passed: true },
-    all_gates_passed: true,
+    engine_status: 'OBSERVATION_MODE',
+    total_trades: 11,
+    wins: 4,
+    losses: 7,
+    win_rate_pct: 36.36,
+    profit_factor: 0.45,
+    max_drawdown_pct: 8.96,
+    gate_1_win_rate: { value: 36.36, threshold: 55.0, passed: false },
+    gate_2_profit_factor: { value: 0.45, threshold: 1.5, passed: false },
+    gate_3_max_drawdown: { value: 8.96, threshold: 4.0, passed: false },
+    all_gates_passed: false,
     last_updated: new Date().toISOString()
   };
   return safeFetch(`${BASE}/fo/readiness-gates`, undefined, fallback);
