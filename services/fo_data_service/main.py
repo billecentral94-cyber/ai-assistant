@@ -340,6 +340,9 @@ def cmd_auto_trade(args):
         # Reset daily state on new trading day
         if last_audit_date != today:
             paper_trader.reset_daily()
+            equity_trader.reset_daily()
+            paper_trader.save_state()
+            equity_trader.save_state()
             eod_audit_done_today = False
             last_audit_date = today
 

@@ -311,3 +311,9 @@ class EquityIntradayTrader:
         except Exception as e:
             logger.warning(f"Failed to load equity state: {e}")
             return False
+
+    def reset_daily(self) -> None:
+        """Reset daily PnL counter and trades for a new trading session."""
+        self.daily_pnl = 0.0
+        self.closed_trades = []
+        self.open_positions = []
