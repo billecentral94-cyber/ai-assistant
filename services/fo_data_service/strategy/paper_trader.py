@@ -14,6 +14,7 @@ import logging
 
 from .signal_generator import SignalGenerator, Signal
 from .risk_manager import RiskManager
+from .self_improver import load_adaptive_config
 
 logger = logging.getLogger(__name__)
 IST = pytz.timezone("Asia/Kolkata")
@@ -42,6 +43,7 @@ class PaperTrader:
         self.open_positions: List[Dict[str, Any]] = []
         self.closed_trades: List[Dict[str, Any]] = []
         self.daily_pnl = 0.0
+        self.last_stop_times: Dict[str, datetime] = {}
 
     def process_cycle(
         self,
@@ -61,6 +63,12 @@ class PaperTrader:
         is_eod = now_time >= "15:15"
 
         events = []
+        adaptive_cfg = load_adaptive_config()
+        trail_enabled = adaptive_cfg.get("trailing_stop_enabled", True)
+        trail_trigger = float(adaptive_cfg.get("trail_trigger_ratio", 1.2))
+        trail_lock = float(adaptive_cfg.get("trail_lock_ratio", 0.5))
+        cooldown_mins = int(adaptive_cfg.get("cooldown_minutes_after_stop", 20))
+        max_daily_trades = int(adaptive_cfg.get("max_daily_fo_trades", 6))
 
         # 1. Manage Open Positions (Strictly filter for the matching underlying)
         active_positions = []
@@ -76,7 +84,26 @@ class PaperTrader:
             lots = pos["lots"]
             qty = lots * self.lot_size
             max_defined_risk = pos.get("max_risk", 300.0)
+            orig_risk_pts = abs(entry - pos.get("initial_stop_loss", sl))
 
+            # Adaptive Trailing Profit Ratchet
+            if trail_enabled and orig_risk_pts > 0:
+                if direction == "BULLISH":
+                    favorable_pts = current_spot - entry
+                    if favorable_pts >= (orig_risk_pts * trail_trigger):
+                        trailed_sl = round(entry + (orig_risk_pts * trail_lock), 2)
+                        if trailed_sl > pos["stop_loss"]:
+                            pos["stop_loss"] = trailed_sl
+                            logger.info(f"[{underlying}] Trailed SL locked to {trailed_sl} (+{orig_risk_pts * trail_lock:.1f} pts)")
+                elif direction == "BEARISH":
+                    favorable_pts = entry - current_spot
+                    if favorable_pts >= (orig_risk_pts * trail_trigger):
+                        trailed_sl = round(entry - (orig_risk_pts * trail_lock), 2)
+                        if trailed_sl < pos["stop_loss"]:
+                            pos["stop_loss"] = trailed_sl
+                            logger.info(f"[{underlying}] Trailed SL locked to {trailed_sl} (+{orig_risk_pts * trail_lock:.1f} pts)")
+
+            sl = pos["stop_loss"]
             should_close = False
             exit_reason = ""
             exit_price = current_spot
@@ -118,6 +145,9 @@ class PaperTrader:
                 self.current_capital += net_pnl
                 self.daily_pnl += net_pnl
 
+                if exit_reason == "STOP_LOSS":
+                    self.last_stop_times[underlying] = now
+
                 closed_trade = {
                     "symbol": pos["symbol"],
                     "direction": direction,
@@ -148,12 +178,28 @@ class PaperTrader:
                 current_drawdown_pct=current_dd_pct
             )
 
+            # Adaptive Guard 1: Enforce Daily Max F&O Trades Cap
+            if allowed and len(self.closed_trades) >= max_daily_trades:
+                allowed = False
+                logger.info(f"[{underlying}] Skipped entry: Daily F&O trades limit ({max_daily_trades}) reached.")
+
+            # Adaptive Guard 2: Enforce Post-Loss Cooldown Timer
+            last_stop = self.last_stop_times.get(underlying)
+            if allowed and last_stop is not None:
+                elapsed_seconds = (now - last_stop).total_seconds()
+                cooldown_seconds = cooldown_mins * 60
+                if elapsed_seconds < cooldown_seconds:
+                    allowed = False
+                    rem_mins = int((cooldown_seconds - elapsed_seconds) / 60) + 1
+                    logger.info(f"[{underlying}] Skipped entry: Post-loss cooldown active ({rem_mins} mins remaining).")
+
             if allowed and signal.position_size.get("lots", 0) > 0:
                 new_pos = {
                     "symbol": underlying,
                     "direction": signal.direction,
                     "entry_price": signal.entry_price,
                     "stop_loss": signal.stop_loss,
+                    "initial_stop_loss": signal.stop_loss,
                     "target_1": signal.target_1,
                     "lots": signal.position_size["lots"],
                     "entry_time": now.isoformat(),

@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 
 from .trade_recommender import recommend_hedged_strategy
 from .risk_manager import RiskManager
+from .self_improver import load_adaptive_config
 
 
 @dataclass
@@ -118,6 +119,13 @@ class SignalGenerator:
         if iv_percentile <= 60.0:
             bearish_reasons.append(f"IV Percentile reasonable ({iv_percentile:.1f}%)")
 
+        # Load persistent adaptive parameters
+        adaptive_cfg = load_adaptive_config()
+        min_stop = float(adaptive_cfg.get("min_stop_distance", {}).get(underlying, step_size * 1.5))
+        max_stop = float(adaptive_cfg.get("max_stop_distance", {}).get(underlying, step_size * 3.0))
+        min_target = float(adaptive_cfg.get("min_target_distance", {}).get(underlying, step_size * 2.0))
+        counter_trend_min_confluence = int(adaptive_cfg.get("min_confluence_counter_trend", 4))
+
         # 3. Determine Overall Direction & Confluence
         bullish_score = len(bullish_reasons)
         bearish_score = len(bearish_reasons)
@@ -126,40 +134,72 @@ class SignalGenerator:
             direction = "BULLISH"
             confluence_score = bullish_score
             confluences = bullish_reasons
-            is_actionable = True
+            # Counter-trend guard: require stricter confluence if PCR or Futures are heavily bearish
+            is_counter_trend = (buildup_type in ("Short Buildup", "Long Unwinding") or overall_pcr < 0.85)
+            required_score = counter_trend_min_confluence if is_counter_trend else 3
+            is_actionable = (confluence_score >= required_score)
         elif bearish_score >= 3 and bearish_score > bullish_score:
             direction = "BEARISH"
             confluence_score = bearish_score
             confluences = bearish_reasons
-            is_actionable = True
+            # Counter-trend guard: require stricter confluence if PCR or Futures are heavily bullish
+            is_counter_trend = (buildup_type in ("Long Buildup", "Short Covering") or overall_pcr > 1.15)
+            required_score = counter_trend_min_confluence if is_counter_trend else 3
+            is_actionable = (confluence_score >= required_score)
         else:
             direction = "NEUTRAL"
             confluence_score = max(bullish_score, bearish_score)
             confluences = bullish_reasons if bullish_score >= bearish_score else bearish_reasons
             is_actionable = False
 
-        # 4. Entry, Stop Loss & Targets
+        # 4. Entry, Stop Loss & Targets (Proximity-sorted with minimum buffer and max cap)
         entry_price = spot_price
         if direction == "BULLISH":
-            # SL placed below nearest strong Put wall or 2 steps down
-            pe_strikes_under = [w.get("strike") for w in pe_walls if w.get("strike") < spot_price]
-            stop_loss = pe_strikes_under[0] if pe_strikes_under else (spot_price - step_size * 2)
-            # Targets based on Call walls above
-            ce_strikes_over = [w.get("strike") for w in ce_walls if w.get("strike") > spot_price]
-            target_1 = ce_strikes_over[0] if ce_strikes_over else (spot_price + step_size * 3)
-            target_2 = ce_strikes_over[1] if len(ce_strikes_over) > 1 else (spot_price + step_size * 5)
+            # Find Put strikes below spot, sorted by PROXIMITY (highest strike < spot)
+            pe_strikes_under = sorted(
+                [float(w.get("strike", 0)) for w in pe_walls if float(w.get("strike", 0)) < spot_price],
+                reverse=True
+            )
+            # Pick a strike that gives AT LEAST min_stop distance
+            valid_sl_strikes = [s for s in pe_strikes_under if (spot_price - s) >= min_stop]
+            if valid_sl_strikes:
+                stop_loss = max(valid_sl_strikes[0], spot_price - max_stop)
+            else:
+                stop_loss = spot_price - min_stop
+
+            # Targets based on Call walls above, sorted by proximity (lowest strike > spot)
+            ce_strikes_over = sorted(
+                [float(w.get("strike", 0)) for w in ce_walls if float(w.get("strike", 0)) > spot_price]
+            )
+            valid_tp_strikes = [s for s in ce_strikes_over if (s - spot_price) >= min_target]
+            target_1 = valid_tp_strikes[0] if valid_tp_strikes else (spot_price + min_target)
+            target_2 = target_1 + step_size * 2
+
         elif direction == "BEARISH":
-            # SL placed above nearest strong Call wall or 2 steps up
-            ce_strikes_over = [w.get("strike") for w in ce_walls if w.get("strike") > spot_price]
-            stop_loss = ce_strikes_over[0] if ce_strikes_over else (spot_price + step_size * 2)
-            # Targets based on Put walls below
-            pe_strikes_under = [w.get("strike") for w in pe_walls if w.get("strike") < spot_price]
-            target_1 = pe_strikes_under[0] if pe_strikes_under else (spot_price - step_size * 3)
-            target_2 = pe_strikes_under[1] if len(pe_strikes_under) > 1 else (spot_price - step_size * 5)
+            # Find Call strikes above spot, sorted by PROXIMITY (lowest strike > spot)
+            ce_strikes_over = sorted(
+                [float(w.get("strike", 0)) for w in ce_walls if float(w.get("strike", 0)) > spot_price]
+            )
+            # Pick a strike that gives AT LEAST min_stop distance
+            valid_sl_strikes = [s for s in ce_strikes_over if (s - spot_price) >= min_stop]
+            if valid_sl_strikes:
+                stop_loss = min(valid_sl_strikes[0], spot_price + max_stop)
+            else:
+                stop_loss = spot_price + min_stop
+
+            # Targets based on Put walls below, sorted by proximity (highest strike < spot)
+            pe_strikes_under = sorted(
+                [float(w.get("strike", 0)) for w in pe_walls if float(w.get("strike", 0)) < spot_price],
+                reverse=True
+            )
+            valid_tp_strikes = [s for s in pe_strikes_under if (spot_price - s) >= min_target]
+            target_1 = valid_tp_strikes[0] if valid_tp_strikes else (spot_price - min_target)
+            target_2 = target_1 - step_size * 2
+
         else:
-            stop_loss = spot_price - step_size * 2
-            target_1 = spot_price + step_size * 2
-            target_2 = spot_price + step_size * 4
+            stop_loss = spot_price - min_stop
+            target_1 = spot_price + min_target
+            target_2 = spot_price + min_target * 1.5
 
         risk_distance = abs(entry_price - stop_loss)
         reward_distance = abs(target_1 - entry_price)

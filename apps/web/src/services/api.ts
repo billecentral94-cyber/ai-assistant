@@ -869,3 +869,36 @@ export async function getFoReadinessGates() {
   };
   return safeFetch(`${BASE}/fo/readiness-gates`, undefined, fallback);
 }
+
+export async function getAdaptiveParameters() {
+  const fallback = {
+    success: true,
+    version: 1,
+    last_optimized_at: '2026-09-30T16:16:25.384997+05:30',
+    min_stop_distance: {
+      NIFTY: 35.0,
+      BANKNIFTY: 90.0
+    },
+    max_stop_distance: {
+      NIFTY: 75.0,
+      BANKNIFTY: 200.0
+    },
+    min_target_distance: {
+      NIFTY: 50.0,
+      BANKNIFTY: 130.0
+    },
+    cooldown_minutes_after_stop: 20,
+    min_confluence_counter_trend: 4,
+    trailing_stop_enabled: true,
+    trail_trigger_ratio: 1.2,
+    trail_lock_ratio: 0.5,
+    max_daily_fo_trades: 6,
+    reasons_applied: [
+      "Detected 6 micro-stop whipsaws (loss in <40 pts). Enforced minimum stop cushion: Bank Nifty >= 90 pts, Nifty >= 35 pts.",
+      "Detected 1 extreme stop blowout(s) (>250 Bank Nifty / >120 Nifty pts). Capped maximum stop distance: Bank Nifty <= 200 pts, Nifty <= 75 pts.",
+      "Detected 2 rapid-fire re-entry churn(s) (<2 mins apart). Set post-loss cooldown to 20 minutes and capped max daily F&O trades to 6.",
+      "Strong directional skew: Bearish win rate was 80.0% vs Bullish 0.0%. Counter-trend Bullish setups now require strict 4/5 confluence + EMA confirmation."
+    ]
+  };
+  return safeFetch(`${BASE}/fo/adaptive-parameters`, undefined, fallback);
+}

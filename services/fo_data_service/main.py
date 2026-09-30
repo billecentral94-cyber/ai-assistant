@@ -20,6 +20,7 @@ from audit.reporter import DailyAuditReporter
 from strategy.signal_generator import SignalGenerator
 from strategy.paper_trader import PaperTrader
 from strategy.equity_intraday_trader import EquityIntradayTrader, EQUITY_UNIVERSE
+from strategy.self_improver import SelfImprover
 from notifications.telegram_bot import TelegramNotifier, archive_daily_record
 
 logging.basicConfig(
@@ -59,6 +60,20 @@ def cmd_eod_audit(args):
     reporter = DailyAuditReporter()
     report = reporter.generate_report(target_date)
     print("\n" + report["report_text"] + "\n")
+
+
+def cmd_self_improve(args):
+    """Runs autonomous post-market diagnostic and adapts strategy parameters."""
+    logger.info("Executing Autonomous Self-Improvement & Parameter Adaptation cycle...")
+    improver = SelfImprover()
+    analysis = improver.analyze_session()
+    report = improver.format_report(analysis)
+    print("\n" + report + "\n")
+    try:
+        telegram = TelegramNotifier()
+        telegram.send_message(report)
+    except Exception as e:
+        logger.warning(f"Failed to send Telegram self-improvement alert: {e}")
 
 
 def cmd_run(args):
@@ -444,6 +459,16 @@ def cmd_auto_trade(args):
             except Exception:
                 pass
 
+            # ── Autonomous Self-Improvement & Parameter Adaptation ──
+            try:
+                improver = SelfImprover()
+                analysis = improver.analyze_session(paper_trader.closed_trades)
+                improvement_report = improver.format_report(analysis)
+                logger.info("\n" + improvement_report + "\n")
+                telegram.send_message(improvement_report)
+            except Exception as imp_err:
+                logger.error(f"Self-improvement engine error: {imp_err}")
+
             # Also run the data gap audit
             try:
                 reporter = DailyAuditReporter()
@@ -555,6 +580,12 @@ def main():
         help="Run one immediate cycle ignoring market hours, then exit (for testing)"
     )
 
+    # self-improve command (Post-market diagnostic & adaptation)
+    subparsers.add_parser(
+        "self-improve",
+        help="Run autonomous post-market diagnostic and parameter adaptation"
+    )
+
     args = parser.parse_args()
 
     if args.command == "init-db":
@@ -569,6 +600,8 @@ def main():
         cmd_run_once(args)
     elif args.command == "auto-trade":
         cmd_auto_trade(args)
+    elif args.command == "self-improve":
+        cmd_self_improve(args)
     else:
         parser.print_help()
 
