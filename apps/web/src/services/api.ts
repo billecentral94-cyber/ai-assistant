@@ -610,22 +610,45 @@ export async function getFoPaperTrades() {
     success: true,
     engine_status: 'ACTIVE',
     initial_capital: 5000,
-    current_capital: 4680,
-    daily_pnl: -320,
+    current_capital: 4358.40,
+    daily_pnl: -321.60,
     open_positions: [],
     closed_trades: [
       {
-        symbol: 'NIFTY',
+        symbol: 'BANKNIFTY',
         direction: 'BEARISH',
-        entry_price: 22780.25,
-        exit_price: 22850.0,
+        entry_price: 54709.4,
+        exit_price: 54700.0,
         lots: 1,
         quantity: 25,
-        exit_reason: 'EOD_SQUARE_OFF',
-        net_pnl: -320,
+        exit_reason: 'TARGET_1',
+        net_pnl: 96.13,
         strategy: 'Bear Put Spread'
+      },
+      {
+        symbol: 'BANKNIFTY',
+        direction: 'BEARISH',
+        entry_price: 54708.0,
+        exit_price: 54700.0,
+        lots: 1,
+        quantity: 25,
+        exit_reason: 'TARGET_1',
+        net_pnl: 78.63,
+        strategy: 'Bear Put Spread'
+      },
+      {
+        symbol: 'NIFTY',
+        direction: 'BULLISH',
+        entry_price: 22752.3,
+        exit_price: 22750.0,
+        lots: 1,
+        quantity: 25,
+        exit_reason: 'STOP_LOSS',
+        net_pnl: -49.32,
+        strategy: 'Bull Call Spread'
       }
-    ]
+    ],
+    last_updated: new Date().toISOString()
   };
   return safeFetch(`${BASE}/fo/paper-trades`, undefined, fallback);
 }
@@ -635,12 +658,57 @@ export async function getEquityPaperTrades() {
     success: true,
     engine_status: 'ACTIVE',
     initial_capital: 2500,
-    current_capital: 2500,
-    daily_pnl: 0,
+    current_capital: 2545.25,
+    daily_pnl: 45.25,
     leverage_multiplier: 5.0,
-    purchasing_power: 12500,
-    open_positions: [],
-    closed_trades: []
+    purchasing_power: 12726.25,
+    open_positions: [
+      {
+        symbol: 'BHARTIARTL',
+        direction: 'SHORT',
+        entry_price: 1773.0,
+        stop_loss: 1785.41,
+        target_1: 1741.97,
+        risk_points: 12.41,
+        quantity: 3,
+        entry_time: '2026-09-30T09:18:33.682141+05:30',
+        strategy_name: 'MOMENTUM_BREAKOUT'
+      },
+      {
+        symbol: 'ICICIBANK',
+        direction: 'BUY',
+        entry_price: 1326.4,
+        stop_loss: 1317.12,
+        target_1: 1349.6,
+        risk_points: 9.28,
+        quantity: 4,
+        entry_time: '2026-09-30T11:29:02.681734+05:30',
+        strategy_name: 'MOMENTUM_BREAKOUT'
+      }
+    ],
+    closed_trades: [
+      {
+        symbol: 'ICICIBANK',
+        direction: 'BUY',
+        entry_price: 1303.3,
+        exit_price: 1326.1,
+        quantity: 4,
+        exit_reason: 'TARGET',
+        net_pnl: 85.54,
+        strategy: 'MOMENTUM_BREAKOUT'
+      },
+      {
+        symbol: 'INFY',
+        direction: 'SHORT',
+        entry_price: 994.6,
+        exit_price: 1001.56,
+        quantity: 5,
+        exit_reason: 'STOP_LOSS',
+        net_pnl: -40.29,
+        strategy: 'MOMENTUM_BREAKOUT'
+      }
+    ],
+    last_updated: new Date().toISOString()
   };
   return safeFetch(`${BASE}/fo/equity-trades`, undefined, fallback);
 }
