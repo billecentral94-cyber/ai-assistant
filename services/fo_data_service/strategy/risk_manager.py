@@ -1,7 +1,7 @@
 """
 Institutional Capital Protection and Risk Management Engine.
 Enforces fractional Kelly position sizing (capped at 1.5%), daily loss kill switches (2.0%),
-maximum concurrent position limits, and portfolio drawdown circuit breakers (8.0%).
+maximum concurrent position limits, and portfolio drawdown circuit breakers (25.0%).
 """
 
 import math
@@ -20,9 +20,9 @@ class RiskManager:
         self,
         max_risk_per_trade_pct: float = 1.5,     # Max 1.5% capital risk per trade
         daily_loss_limit_pct: float = 2.0,       # Max 2.0% daily loss before Kill Switch
-        max_drawdown_limit_pct: float = 8.0,     # Max 8.0% drawdown before Observation Mode
+        max_drawdown_limit_pct: float = 25.0,    # Max 25% drawdown before Observation Mode (micro-account realistic)
         max_open_positions: int = 3,             # Max 3 concurrent positions
-        recovery_drawdown_threshold_pct: float = 5.0
+        recovery_drawdown_threshold_pct: float = 15.0
     ):
         self.max_risk_per_trade_pct = max_risk_per_trade_pct
         self.daily_loss_limit_pct = daily_loss_limit_pct
