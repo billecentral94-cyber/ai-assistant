@@ -93,31 +93,72 @@ export default function BotMonitor() {
     ? lastUpdatedDate.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false }) + ' IST'
     : 'No pulse yet';
 
-  return (
-    <div style={{
+  // Shared styles
+  const S = {
+    container: {
       background: '#07090e',
       color: '#e2e8f0',
-      padding: '12px',
+      padding: '12px 12px env(safe-area-inset-bottom, 12px)',
+      paddingTop: 'max(12px, env(safe-area-inset-top))',
       minHeight: '100vh',
-      maxWidth: 480,
+      width: '100%',
+      maxWidth: 520,
       margin: '0 auto',
-      fontFamily: 'monospace, -apple-system, sans-serif'
-    }}>
+      fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, monospace',
+      WebkitTextSizeAdjust: '100%' as any,
+      overflowX: 'hidden' as const,
+    },
+    card: {
+      background: '#0d121c',
+      border: '1px solid #1a2233',
+      borderRadius: 8,
+      padding: '10px 10px',
+      marginBottom: 10,
+      fontSize: 12,
+    },
+    label: { fontSize: 10, color: '#94a3b8', textTransform: 'uppercase' as const, letterSpacing: 0.3 },
+    bigNum: { fontSize: 18, fontWeight: 700, marginTop: 2 },
+    row: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 },
+    tabBtn: (active: boolean) => ({
+      flex: 1,
+      padding: '10px 4px',
+      background: active ? 'rgba(0, 240, 255, 0.15)' : '#0d121c',
+      border: active ? '1px solid #00f0ff' : '1px solid #1a2233',
+      color: active ? '#00f0ff' : '#94a3b8',
+      borderRadius: 6,
+      fontSize: 11,
+      fontWeight: 700 as const,
+      cursor: 'pointer',
+      minHeight: 42,
+      WebkitTapHighlightColor: 'transparent',
+      touchAction: 'manipulation' as const,
+    }),
+    tradeRow: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      padding: '6px 0',
+      borderBottom: '1px solid #1a2233',
+      gap: 8,
+      flexWrap: 'wrap' as const,
+    },
+  };
+
+  return (
+    <div style={S.container}>
       {/* Widget Header with Engine Pulse Status */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ ...S.row, marginBottom: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
           <span style={{
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
+            width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
             background: isStalled ? '#ef4444' : (isPostMarket ? '#818cf8' : '#00ff88'),
             boxShadow: isStalled ? '0 0 8px #ef4444' : (isPostMarket ? '0 0 8px #818cf8' : '0 0 8px #00ff88')
           }} />
-          <strong style={{ fontSize: 13, color: '#00f0ff', letterSpacing: 0.5 }}>ARTHA SENTINEL</strong>
+          <strong style={{ fontSize: 13, color: '#00f0ff', letterSpacing: 0.5, whiteSpace: 'nowrap' }}>ARTHA SENTINEL</strong>
         </div>
-        <div style={{ textAlign: 'right' }}>
+        <div style={{ textAlign: 'right', flexShrink: 0 }}>
           <span style={{ fontSize: 10, color: isStalled ? '#ef4444' : (isPostMarket ? '#818cf8' : '#00ff88'), fontWeight: 700 }}>
-            {isStalled ? '🔴 STALLED' : (isPostMarket ? 'POST-MARKET' : 'ONLINE')}
+            {isStalled ? 'STALLED' : (isPostMarket ? 'POST-MARKET' : 'ONLINE')}
           </span>
           <div style={{ fontSize: 9, color: '#64748b' }}>Pulse: {botTimeStr}</div>
         </div>
@@ -134,9 +175,9 @@ export default function BotMonitor() {
           fontSize: 11
         }}>
           <div style={{ color: '#ef4444', fontWeight: 700, marginBottom: 2 }}>
-            ⚠️ LAPTOP OFFLINE / SUSPENDED
+            LAPTOP OFFLINE / SUSPENDED
           </div>
-          <div style={{ color: '#fca5a5' }}>
+          <div style={{ color: '#fca5a5', lineHeight: 1.4 }}>
             No heartbeat since <b>{botTimeStr}</b> ({minutesSinceHeartbeat}m ago). Laptop may be asleep or Wi-Fi dropped!
           </div>
         </div>
@@ -151,91 +192,50 @@ export default function BotMonitor() {
           marginBottom: 10,
           fontSize: 11
         }}>
-          <div style={{ color: '#f59e0b', fontWeight: 700, marginBottom: 2 }}>
-            ⚠️ ENGINE ALERT
-          </div>
-          <div style={{ color: '#fcd34d' }}>{lastError}</div>
+          <div style={{ color: '#f59e0b', fontWeight: 700, marginBottom: 2 }}>ENGINE ALERT</div>
+          <div style={{ color: '#fcd34d', wordBreak: 'break-word' }}>{lastError}</div>
         </div>
       )}
 
       {/* Capital & PnL Matrix */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
-        <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8 }}>
-          <div style={{ fontSize: 10, color: '#94a3b8', textTransform: 'uppercase' }}>Total Equity</div>
-          <div style={{ fontSize: 17, fontWeight: 700, color: '#00f0ff', marginTop: 2 }}>
-            ₹{totalCapital.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+        <div style={S.card}>
+          <div style={S.label}>Total Equity</div>
+          <div style={{ ...S.bigNum, color: '#00f0ff' }}>
+            {'\u20B9'}{totalCapital.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
         </div>
 
-        <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8 }}>
-          <div style={{ fontSize: 10, color: '#94a3b8', textTransform: 'uppercase' }}>Today P&L</div>
-          <div style={{ fontSize: 17, fontWeight: 700, color: totalDailyPnl >= 0 ? '#00ff88' : '#ff3366', marginTop: 2 }}>
-            {totalDailyPnl >= 0 ? '+' : ''}₹{totalDailyPnl.toFixed(2)}
+        <div style={S.card}>
+          <div style={S.label}>Today P&L</div>
+          <div style={{ ...S.bigNum, color: totalDailyPnl >= 0 ? '#00ff88' : '#ff3366' }}>
+            {totalDailyPnl >= 0 ? '+' : ''}{'\u20B9'}{totalDailyPnl.toFixed(2)}
           </div>
         </div>
       </div>
 
       {/* Sub-Vaults Breakdown */}
-      <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8, marginBottom: 10, fontSize: 11 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-          <span style={{ color: '#94a3b8' }}>F&O Micro-Vault (1 Lot):</span>
-          <strong>₹{(foState?.current_capital ?? 5000).toFixed(2)}</strong>
+      <div style={{ ...S.card, fontSize: 11 }}>
+        <div style={{ ...S.row, marginBottom: 4 }}>
+          <span style={{ color: '#94a3b8', fontSize: 11 }}>F&O Vault:</span>
+          <strong>{'\u20B9'}{(foState?.current_capital ?? 5000).toFixed(2)}</strong>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: '#94a3b8' }}>Equity Intraday (5x Power):</span>
-          <strong style={{ color: '#00f0ff' }}>₹{(eqState?.purchasing_power ?? 12500).toFixed(2)}</strong>
+        <div style={S.row}>
+          <span style={{ color: '#94a3b8', fontSize: 11 }}>Equity (5x):</span>
+          <strong style={{ color: '#00f0ff' }}>{'\u20B9'}{(eqState?.purchasing_power ?? 12500).toFixed(2)}</strong>
         </div>
       </div>
 
-      {/* Navigation Pills (Inside Widget Card) */}
+      {/* Navigation Tabs — mobile-friendly touch targets */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
-        <button
-          onClick={() => setWidgetTab('live')}
-          style={{
-            flex: 1,
-            padding: '6px 0',
-            background: widgetTab === 'live' ? 'rgba(0, 240, 255, 0.15)' : '#0d121c',
-            border: widgetTab === 'live' ? '1px solid #00f0ff' : '1px solid #1a2233',
-            color: widgetTab === 'live' ? '#00f0ff' : '#94a3b8',
-            borderRadius: 4,
-            fontSize: 10,
-            fontWeight: 700,
-            cursor: 'pointer'
-          }}
-        >
-          Live Telemetry
+        <button onClick={() => setWidgetTab('live')} style={S.tabBtn(widgetTab === 'live')}>
+          Live
         </button>
-        <button
-          onClick={() => setWidgetTab('history')}
-          style={{
-            flex: 1,
-            padding: '6px 0',
-            background: widgetTab === 'history' ? 'rgba(0, 240, 255, 0.15)' : '#0d121c',
-            border: widgetTab === 'history' ? '1px solid #00f0ff' : '1px solid #1a2233',
-            color: widgetTab === 'history' ? '#00f0ff' : '#94a3b8',
-            borderRadius: 4,
-            fontSize: 10,
-            fontWeight: 700,
-            cursor: 'pointer'
-          }}
-        >
+        <button onClick={() => setWidgetTab('history')} style={S.tabBtn(widgetTab === 'history')}>
           History ({history.length})
         </button>
-        <button
-          onClick={() => setWidgetTab('adaptive')}
-          style={{
-            flex: 1,
-            padding: '6px 0',
-            background: widgetTab === 'adaptive' ? 'rgba(0, 240, 255, 0.15)' : '#0d121c',
-            border: widgetTab === 'adaptive' ? '1px solid #00f0ff' : '1px solid #1a2233',
-            color: widgetTab === 'adaptive' ? '#00f0ff' : '#94a3b8',
-            borderRadius: 4,
-            fontSize: 10,
-            fontWeight: 700,
-            cursor: 'pointer'
-          }}
-        >
-          Adaptive Brain
+        <button onClick={() => setWidgetTab('adaptive')} style={S.tabBtn(widgetTab === 'adaptive')}>
+          Brain
         </button>
       </div>
 
@@ -243,22 +243,22 @@ export default function BotMonitor() {
       {widgetTab === 'live' && (
         <>
           {/* Live Positions */}
-          <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8, marginBottom: 10, fontSize: 11 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <span style={{ fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', fontSize: 10 }}>Active Trades ({totalOpen})</span>
+          <div style={S.card}>
+            <div style={{ ...S.row, marginBottom: 6 }}>
+              <span style={{ ...S.label, fontWeight: 700 }}>Active Trades ({totalOpen})</span>
               <span style={{ color: '#00ff88', fontSize: 10 }}>Wake Lock Active</span>
             </div>
 
             {totalOpen === 0 ? (
-              <div style={{ textAlign: 'center', padding: '6px 0', color: '#94a3b8', fontSize: 11 }}>
+              <div style={{ textAlign: 'center', padding: '8px 0', color: '#94a3b8', fontSize: 11 }}>
                 Zero open risk (All squared off at 15:15 IST)
               </div>
             ) : (
               <div>
                 {[...(foState?.open_positions || []), ...(eqState?.open_positions || [])].map((p: any, idx: number) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0', borderBottom: '1px solid #1a2233' }}>
-                    <span><b>{p.symbol}</b> ({p.direction})</span>
-                    <span style={{ color: '#00f0ff' }}>SL: ₹{p.stop_loss} | TP: ₹{p.target || p.target_1}</span>
+                  <div key={idx} style={S.tradeRow}>
+                    <span style={{ fontWeight: 600, minWidth: 0 }}>{p.symbol} <span style={{ color: '#94a3b8', fontWeight: 400 }}>({p.direction})</span></span>
+                    <span style={{ color: '#00f0ff', fontSize: 10, whiteSpace: 'nowrap' }}>SL: {'\u20B9'}{p.stop_loss}</span>
                   </div>
                 ))}
               </div>
@@ -266,23 +266,26 @@ export default function BotMonitor() {
           </div>
 
           {/* Today's Executed Trades */}
-          <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8, marginBottom: 10, fontSize: 11 }}>
-            <div style={{ fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', fontSize: 10, marginBottom: 6 }}>
-              Today's Closed Trades ({allClosed.length})
+          <div style={S.card}>
+            <div style={{ ...S.label, fontWeight: 700, marginBottom: 6 }}>
+              Closed Today ({allClosed.length})
             </div>
             {allClosed.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '6px 0', color: '#94a3b8', fontSize: 11 }}>
+              <div style={{ textAlign: 'center', padding: '8px 0', color: '#94a3b8', fontSize: 11 }}>
                 No trades closed yet today
               </div>
             ) : (
               <div>
-                {allClosed.slice(-4).map((t: any, idx: number) => {
+                {allClosed.slice(-6).map((t: any, idx: number) => {
                   const pnl = t.net_pnl !== undefined ? t.net_pnl : (t.pnl || 0);
                   return (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0', borderBottom: '1px solid #1a2233' }}>
-                      <span><b>{t.symbol}</b> ({t.exit_reason})</span>
-                      <strong style={{ color: pnl >= 0 ? '#00ff88' : '#ff3366' }}>
-                        {pnl >= 0 ? '+' : ''}₹{pnl.toFixed(2)}
+                    <div key={idx} style={S.tradeRow}>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontWeight: 600, fontSize: 11 }}>{t.symbol}</div>
+                        <div style={{ color: '#64748b', fontSize: 9 }}>{t.exit_reason}</div>
+                      </div>
+                      <strong style={{ color: pnl >= 0 ? '#00ff88' : '#ff3366', whiteSpace: 'nowrap', fontSize: 12 }}>
+                        {pnl >= 0 ? '+' : ''}{'\u20B9'}{pnl.toFixed(2)}
                       </strong>
                     </div>
                   );
@@ -292,76 +295,68 @@ export default function BotMonitor() {
           </div>
 
           {/* 3 Live Readiness Gates */}
-          <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8, fontSize: 11 }}>
-            <div style={{ fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', fontSize: 10, marginBottom: 6 }}>
-              3 Live Readiness Gates
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-              <span style={{ color: '#94a3b8' }}>Gate 1 (Win Rate &gt;= 55%):</span>
-              <span style={{ color: gates?.gate_1_win_rate?.passed ? '#00ff88' : '#fbbf24' }}>
-                {gates?.gate_1_win_rate?.passed ? 'PASSED' : 'PENDING'}
-              </span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-              <span style={{ color: '#94a3b8' }}>Gate 2 (PF &gt;= 1.5):</span>
-              <span style={{ color: gates?.gate_2_profit_factor?.passed ? '#00ff88' : '#fbbf24' }}>
-                {gates?.gate_2_profit_factor?.passed ? 'PASSED' : 'PENDING'}
-              </span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#94a3b8' }}>Gate 3 (DD &lt;= 4%):</span>
-              <span style={{ color: gates?.gate_3_max_drawdown?.passed ? '#00ff88' : '#fbbf24' }}>
-                {gates?.gate_3_max_drawdown?.passed ? 'PASSED' : 'PENDING'}
-              </span>
-            </div>
+          <div style={S.card}>
+            <div style={{ ...S.label, fontWeight: 700, marginBottom: 6 }}>3 Readiness Gates</div>
+            {[
+              { label: 'Win Rate >= 55%', gate: gates?.gate_1_win_rate },
+              { label: 'PF >= 1.5', gate: gates?.gate_2_profit_factor },
+              { label: 'DD <= 4%', gate: gates?.gate_3_max_drawdown },
+            ].map((g, i) => (
+              <div key={i} style={{ ...S.row, marginBottom: 2, fontSize: 11 }}>
+                <span style={{ color: '#94a3b8' }}>{g.label}</span>
+                <span style={{ color: g.gate?.passed ? '#00ff88' : '#fbbf24', fontWeight: 600 }}>
+                  {g.gate?.passed ? 'PASSED' : 'PENDING'}
+                </span>
+              </div>
+            ))}
           </div>
         </>
       )}
 
       {/* VIEW 2: DAILY HISTORY RECORDS */}
       {widgetTab === 'history' && (
-        <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8, fontSize: 11 }}>
-          <div style={{ fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', fontSize: 10, marginBottom: 8 }}>
-            Daily Sessions Performance
+        <div style={S.card}>
+          <div style={{ ...S.label, fontWeight: 700, marginBottom: 8 }}>
+            Daily Sessions
           </div>
 
           {/* Today's Ongoing Session */}
-          <div style={{ padding: '8px', background: '#09101d', border: '1px dashed #00f0ff55', borderRadius: 5, marginBottom: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+          <div style={{ padding: 8, background: '#09101d', border: '1px dashed #00f0ff55', borderRadius: 6, marginBottom: 8 }}>
+            <div style={{ ...S.row, marginBottom: 4 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00ff88' }} />
-                <strong style={{ color: '#00f0ff' }}>Today's Live Session</strong>
+                <strong style={{ color: '#00f0ff', fontSize: 12 }}>Today Live</strong>
               </div>
-              <strong style={{ color: totalDailyPnl >= 0 ? '#00ff88' : '#ff3366', fontSize: 13 }}>
-                {totalDailyPnl >= 0 ? '+' : ''}₹{totalDailyPnl.toFixed(2)}
+              <strong style={{ color: totalDailyPnl >= 0 ? '#00ff88' : '#ff3366', fontSize: 14 }}>
+                {totalDailyPnl >= 0 ? '+' : ''}{'\u20B9'}{totalDailyPnl.toFixed(2)}
               </strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: 10 }}>
-              <span>Closed: {allClosed.length} | Active: {totalOpen}</span>
-              <span>Vault: ₹{totalCapital.toFixed(2)}</span>
+            <div style={{ ...S.row, color: '#94a3b8', fontSize: 10 }}>
+              <span>Closed: {allClosed.length} | Open: {totalOpen}</span>
+              <span>{'\u20B9'}{totalCapital.toFixed(0)}</span>
             </div>
           </div>
 
           {history.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '10px 0', color: '#64748b', fontSize: 10, borderTop: '1px solid #1a2233' }}>
-              Prior sessions auto-archive to permanent record at 15:30 IST.
+              Prior sessions auto-archive at 15:30 IST.
             </div>
           ) : (
             <div>
               <div style={{ color: '#64748b', fontSize: 9, textTransform: 'uppercase', marginBottom: 4, letterSpacing: 0.5 }}>
-                Archived Prior Days ({history.length})
+                Archived ({history.length})
               </div>
               {history.map((row: any, idx: number) => (
-                <div key={idx} style={{ padding: '6px 0', borderBottom: '1px solid #1a2233' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-                    <strong style={{ color: '#e2e8f0' }}>{row.date}</strong>
-                    <strong style={{ color: row.total_pnl >= 0 ? '#00ff88' : '#ff3366' }}>
-                      {row.total_pnl >= 0 ? '+' : ''}₹{row.total_pnl.toFixed(2)}
+                <div key={idx} style={{ padding: '8px 0', borderBottom: '1px solid #1a2233' }}>
+                  <div style={{ ...S.row, marginBottom: 3 }}>
+                    <strong style={{ color: '#e2e8f0', fontSize: 12 }}>{row.date}</strong>
+                    <strong style={{ color: row.total_pnl >= 0 ? '#00ff88' : '#ff3366', fontSize: 13 }}>
+                      {row.total_pnl >= 0 ? '+' : ''}{'\u20B9'}{row.total_pnl.toFixed(2)}
                     </strong>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: 10 }}>
-                    <span>Trades: {row.trades_count}</span>
-                    <span>F&O: ₹{row.fo_pnl.toFixed(2)} | EQ: ₹{row.equity_pnl.toFixed(2)}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: 10, flexWrap: 'wrap', gap: 2 }}>
+                    <span>{row.trades_count} trades</span>
+                    <span>F&O: {'\u20B9'}{row.fo_pnl?.toFixed(0)} | EQ: {'\u20B9'}{row.equity_pnl?.toFixed(0)}</span>
                   </div>
                 </div>
               ))}
@@ -370,44 +365,35 @@ export default function BotMonitor() {
         </div>
       )}
 
-      {/* VIEW 3: ADAPTIVE BRAIN (SELF-IMPROVEMENT GUARDRAILS) */}
+      {/* VIEW 3: ADAPTIVE BRAIN */}
       {widgetTab === 'adaptive' && (
-        <div style={{ background: '#0d121c', border: '1px solid #1a2233', borderRadius: 6, padding: 8, fontSize: 11 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontWeight: 700, textTransform: 'uppercase', color: '#00f0ff', fontSize: 10, letterSpacing: 0.5 }}>
-              Self-Improvement Engine
-            </span>
+        <div style={S.card}>
+          <div style={{ ...S.row, marginBottom: 8 }}>
+            <span style={{ ...S.label, color: '#00f0ff', fontWeight: 700 }}>Self-Improvement Engine</span>
             <span style={{ fontSize: 9, color: '#00ff88', background: 'rgba(0, 255, 136, 0.1)', padding: '2px 6px', borderRadius: 3, border: '1px solid #00ff8855' }}>
-              AUTO-OPTIMIZED
+              AUTO
             </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 8 }}>
-            <div style={{ background: '#09101d', border: '1px solid #1e293b', borderRadius: 4, padding: 6 }}>
-              <div style={{ color: '#94a3b8', fontSize: 9 }}>BANK NIFTY STOP</div>
-              <strong style={{ color: '#f8fafc', fontSize: 12 }}>90 – 200 pts</strong>
-              <div style={{ color: '#64748b', fontSize: 8 }}>Anti-whipsaw cushion</div>
-            </div>
-            <div style={{ background: '#09101d', border: '1px solid #1e293b', borderRadius: 4, padding: 6 }}>
-              <div style={{ color: '#94a3b8', fontSize: 9 }}>NIFTY STOP</div>
-              <strong style={{ color: '#f8fafc', fontSize: 12 }}>35 – 75 pts</strong>
-              <div style={{ color: '#64748b', fontSize: 8 }}>Anti-blowout cap</div>
-            </div>
-            <div style={{ background: '#09101d', border: '1px solid #1e293b', borderRadius: 4, padding: 6 }}>
-              <div style={{ color: '#94a3b8', fontSize: 9 }}>POST-LOSS COOLDOWN</div>
-              <strong style={{ color: '#f8fafc', fontSize: 12 }}>20 mins</strong>
-              <div style={{ color: '#64748b', fontSize: 8 }}>Anti-churn lockout</div>
-            </div>
-            <div style={{ background: '#09101d', border: '1px solid #1e293b', borderRadius: 4, padding: 6 }}>
-              <div style={{ color: '#94a3b8', fontSize: 9 }}>TRAILING PROFIT</div>
-              <strong style={{ color: '#00ff88', fontSize: 12 }}>Active (1.2x R)</strong>
-              <div style={{ color: '#64748b', fontSize: 8 }}>Ratchet to breakeven</div>
-            </div>
+          {/* Adaptive param cards — responsive: 2-col on wide, 1-col on very narrow */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 6, marginBottom: 8 }}>
+            {[
+              { label: 'BN STOP', value: '90-200 pts', sub: 'Anti-whipsaw' },
+              { label: 'NIFTY STOP', value: '35-75 pts', sub: 'Anti-blowout' },
+              { label: 'COOLDOWN', value: '20 mins', sub: 'Anti-churn' },
+              { label: 'TRAILING', value: 'ON (1.2x R)', sub: 'Lock profits', color: '#00ff88' },
+            ].map((item, i) => (
+              <div key={i} style={{ background: '#09101d', border: '1px solid #1e293b', borderRadius: 6, padding: '8px 8px' }}>
+                <div style={{ color: '#94a3b8', fontSize: 9, marginBottom: 2 }}>{item.label}</div>
+                <strong style={{ color: item.color || '#f8fafc', fontSize: 13 }}>{item.value}</strong>
+                <div style={{ color: '#64748b', fontSize: 8 }}>{item.sub}</div>
+              </div>
+            ))}
           </div>
 
           <div style={{ borderTop: '1px solid #1a2233', paddingTop: 6 }}>
             <div style={{ color: '#94a3b8', fontSize: 9, textTransform: 'uppercase', marginBottom: 4, fontWeight: 700 }}>
-              Learned Post-Market Adaptations
+              Learned Adaptations
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {(adaptive?.reasons_applied || [
@@ -416,7 +402,16 @@ export default function BotMonitor() {
                 "Detected 2 rapid-fire re-entry churns. Set post-loss cooldown to 20 minutes and capped max daily trades to 6.",
                 "Strong directional skew: Counter-trend setups now require strict 4/5 confluence + EMA confirmation."
               ]).map((reason: string, rIdx: number) => (
-                <div key={rIdx} style={{ background: '#09101d', border: '1px solid #1a2233', borderRadius: 4, padding: '4px 6px', fontSize: 9, color: '#cbd5e1', lineHeight: 1.3 }}>
+                <div key={rIdx} style={{
+                  background: '#09101d',
+                  border: '1px solid #1a2233',
+                  borderRadius: 4,
+                  padding: '6px 8px',
+                  fontSize: 10,
+                  color: '#cbd5e1',
+                  lineHeight: 1.4,
+                  wordBreak: 'break-word' as const,
+                }}>
                   <span style={{ color: '#00f0ff', fontWeight: 700 }}>[ADAPTED]</span> {reason}
                 </div>
               ))}

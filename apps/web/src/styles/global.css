@@ -1041,10 +1041,35 @@ tr:not(.tv-lightweight-charts tr):hover td {
   }
 
   /* Touch Target Sizing (Apple Human Interface Guidelines 44px min) */
-  button:not(.nav-item),
-  select,
-  input {
+  button:not(.nav-item):not([style]) {
     min-height: 40px;
     font-size: 14px;
+  }
+
+  /* Stat values scale down on mobile */
+  .stat-value {
+    font-size: 20px;
+  }
+
+  h2 {
+    font-size: 18px;
+    gap: 8px;
+  }
+
+  p.description {
+    font-size: 13px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+/* iPhone safe area insets */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 }
