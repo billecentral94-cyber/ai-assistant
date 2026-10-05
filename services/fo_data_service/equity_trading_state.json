@@ -1,60 +1,48 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2576.4,
-  "daily_pnl": 76.4,
+  "current_capital": 2609.43,
+  "daily_pnl": 1.82,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 12882.0,
+  "purchasing_power": 13047.15,
   "open_positions": [],
   "closed_trades": [
     {
-      "symbol": "INFY",
-      "direction": "SHORT",
-      "entry_price": 994.6,
-      "exit_price": 1001.56,
-      "quantity": 5,
-      "entry_time": "2026-09-30T09:15:23.349662+05:30",
-      "exit_time": "2026-09-30T09:18:33.682141+05:30",
+      "symbol": "COALINDIA",
+      "direction": "BUY",
+      "entry_price": 428.45,
+      "exit_price": 425.45,
+      "quantity": 13,
+      "entry_time": "2026-10-05T09:15:00.000058+05:30",
+      "exit_time": "2026-10-05T10:38:30.322755+05:30",
       "exit_reason": "STOP_LOSS",
-      "net_pnl": -40.29,
-      "charges": 5.49
+      "net_pnl": -44.83,
+      "charges": 5.83
     },
     {
-      "symbol": "ICICIBANK",
+      "symbol": "SBIN",
       "direction": "BUY",
-      "entry_price": 1303.3,
-      "exit_price": 1326.1,
-      "quantity": 4,
-      "entry_time": "2026-09-30T09:15:00.000025+05:30",
-      "exit_time": "2026-09-30T11:29:02.681734+05:30",
-      "exit_reason": "TARGET",
-      "net_pnl": 85.54,
-      "charges": 5.66
+      "entry_price": 960.15,
+      "exit_price": 958.3,
+      "quantity": 6,
+      "entry_time": "2026-10-05T09:15:18.451414+05:30",
+      "exit_time": "2026-10-05T15:15:09.918523+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "net_pnl": -17.05,
+      "charges": 5.95
     },
     {
-      "symbol": "BHARTIARTL",
+      "symbol": "HDFCBANK",
       "direction": "SHORT",
-      "entry_price": 1773.0,
-      "exit_price": 1754.3,
-      "quantity": 3,
-      "entry_time": "2026-09-30T09:18:33.682141+05:30",
-      "exit_time": "2026-09-30T15:15:03.260899+05:30",
+      "entry_price": 713.25,
+      "exit_price": 704.55,
+      "quantity": 8,
+      "entry_time": "2026-10-05T10:38:53.105411+05:30",
+      "exit_time": "2026-10-05T15:15:09.918523+05:30",
       "exit_reason": "EOD_SQUARE_OFF",
-      "net_pnl": 50.43,
-      "charges": 5.67
-    },
-    {
-      "symbol": "ICICIBANK",
-      "direction": "BUY",
-      "entry_price": 1326.4,
-      "exit_price": 1323.0,
-      "quantity": 4,
-      "entry_time": "2026-09-30T11:29:02.681734+05:30",
-      "exit_time": "2026-09-30T15:15:03.260899+05:30",
-      "exit_reason": "EOD_SQUARE_OFF",
-      "net_pnl": -19.28,
-      "charges": 5.68
+      "net_pnl": 63.7,
+      "charges": 5.9
     }
   ],
-  "last_updated": "2026-09-30T15:29:59.360480+05:30"
+  "last_updated": "2026-10-05T15:29:52.616368+05:30"
 }

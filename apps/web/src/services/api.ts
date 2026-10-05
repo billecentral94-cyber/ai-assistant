@@ -603,290 +603,259 @@ export async function getFoNews(query: string = 'NSE Nifty F&O news') {
   return safeFetch(`${BASE}/fo/news?q=${encodeURIComponent(query)}`, undefined, { success: true, query, results: [] });
 }
 
-// ── Autonomous Paper Trading Engine ─────────────────────────────────────────
+// ── Autonomous Paper Trading Engine & Live Cloud Sync ───────────────────────
+
+const RAW_GITHUB_BASE = 'https://raw.githubusercontent.com/billecentral94-cyber/ai-assistant/main/services/fo_data_service';
+
+/**
+ * Smart fetcher for live bot telemetry:
+ * 1. Tries local Express backend `/api/fo/...` (used during local dev)
+ * 2. If unreachable (e.g. on Vercel deployment), fetches LIVE state directly from GitHub raw repository
+ * 3. Falls back to pre-seeded state only if offline/network failure
+ */
+async function fetchLiveBotState<T>(localUrl: string, githubPath: string, fallback: T): Promise<T> {
+  // 1. Try local endpoint first
+  try {
+    const res = await fetch(localUrl, { signal: AbortSignal.timeout(3000) });
+    if (res.ok && (res.headers.get('content-type') || '').includes('application/json')) {
+      return await res.json();
+    }
+  } catch {
+    // Local unavailable (e.g. running on Vercel)
+  }
+
+  // 2. Fetch directly from GitHub Raw with cache-buster for real-time live data
+  try {
+    const githubUrl = `${RAW_GITHUB_BASE}/${githubPath}?_t=${Date.now()}`;
+    const ghRes = await fetch(githubUrl, { signal: AbortSignal.timeout(5000) });
+    if (ghRes.ok) {
+      const data = await ghRes.json();
+      return data;
+    }
+  } catch (err) {
+    console.warn(`[Live Bot Sync] Failed to fetch ${githubPath} from GitHub:`, err);
+  }
+
+  // 3. Fallback
+  return fallback;
+}
 
 export async function getFoPaperTrades() {
   const fallback = {
-    success: true,
-    engine_status: 'MARKET_CLOSED',
-    initial_capital: 5000,
-    current_capital: 4358.40,
-    daily_pnl: -321.60,
+    engine_status: 'ACTIVE',
+    initial_capital: 5000.0,
+    current_capital: 11767.25,
+    daily_pnl: 6767.25,
     open_positions: [],
     closed_trades: [
       {
         symbol: 'BANKNIFTY',
         direction: 'BEARISH',
-        entry_price: 54709.4,
-        exit_price: 54700.0,
+        entry_price: 54477.35,
+        exit_price: 54000.0,
         lots: 1,
         quantity: 25,
+        entry_time: '2026-10-05T11:52:02.602298+05:30',
+        exit_time: '2026-10-05T11:52:13.491461+05:30',
         exit_reason: 'TARGET_1',
-        net_pnl: 96.13,
+        net_pnl: 5945.51,
         strategy: 'Bear Put Spread'
       },
       {
         symbol: 'BANKNIFTY',
         direction: 'BEARISH',
-        entry_price: 54708.0,
-        exit_price: 54700.0,
+        entry_price: 54000.0,
+        exit_price: 54200.0,
         lots: 1,
         quantity: 25,
-        exit_reason: 'TARGET_1',
-        net_pnl: 78.63,
+        entry_time: '2026-10-05T11:52:13.491461+05:30',
+        exit_time: '2026-10-05T11:52:18.713791+05:30',
+        exit_reason: 'STOP_LOSS',
+        net_pnl: -321.35,
         strategy: 'Bear Put Spread'
       },
       {
-        symbol: 'BANKNIFTY',
-        direction: 'BEARISH',
-        entry_price: 54707.9,
-        exit_price: 54700.0,
+        symbol: 'NIFTY',
+        direction: 'BULLISH',
+        entry_price: 22555.55,
+        exit_price: 22700.0,
         lots: 1,
         quantity: 25,
+        entry_time: '2026-10-05T14:32:50.745450+05:30',
+        exit_time: '2026-10-05T14:32:57.463089+05:30',
         exit_reason: 'TARGET_1',
-        net_pnl: 77.38,
-        strategy: 'Bear Put Spread'
-      },
-      {
-        symbol: 'BANKNIFTY',
-        direction: 'BEARISH',
-        entry_price: 54702.8,
-        exit_price: 54700.0,
-        lots: 1,
-        quantity: 25,
-        exit_reason: 'TARGET_1',
-        net_pnl: 13.63,
-        strategy: 'Bear Put Spread'
-      },
-      {
-        symbol: 'BANKNIFTY',
-        direction: 'BULLISH',
-        entry_price: 54700.2,
-        exit_price: 54700.0,
-        lots: 1,
-        quantity: 25,
-        exit_reason: 'STOP_LOSS',
-        net_pnl: -23.87,
-        strategy: 'Bull Call Spread'
-      },
-      {
-        symbol: 'BANKNIFTY',
-        direction: 'BULLISH',
-        entry_price: 54700.95,
-        exit_price: 54700.0,
-        lots: 1,
-        quantity: 25,
-        exit_reason: 'STOP_LOSS',
-        net_pnl: -33.24,
-        strategy: 'Bull Call Spread'
-      },
-      {
-        symbol: 'BANKNIFTY',
-        direction: 'BULLISH',
-        entry_price: 54701.5,
-        exit_price: 54700.0,
-        lots: 1,
-        quantity: 25,
-        exit_reason: 'STOP_LOSS',
-        net_pnl: -40.12,
-        strategy: 'Bull Call Spread'
-      },
-      {
-        symbol: 'BANKNIFTY',
-        direction: 'BULLISH',
-        entry_price: 54701.55,
-        exit_price: 54700.0,
-        lots: 1,
-        quantity: 25,
-        exit_reason: 'STOP_LOSS',
-        net_pnl: -40.75,
+        net_pnl: 1785.06,
         strategy: 'Bull Call Spread'
       },
       {
         symbol: 'NIFTY',
         direction: 'BULLISH',
-        entry_price: 22752.3,
-        exit_price: 22750.0,
+        entry_price: 24000.0,
+        exit_price: 23925.0,
         lots: 1,
         quantity: 25,
+        entry_time: '2026-10-05T14:32:57.463089+05:30',
+        exit_time: '2026-10-05T14:33:03.559317+05:30',
         exit_reason: 'STOP_LOSS',
-        net_pnl: -49.32,
+        net_pnl: -320.60,
         strategy: 'Bull Call Spread'
       },
       {
         symbol: 'BANKNIFTY',
-        direction: 'BULLISH',
-        entry_price: 54704.65,
-        exit_price: 54700.0,
-        lots: 1,
-        quantity: 25,
-        exit_reason: 'STOP_LOSS',
-        net_pnl: -79.50,
-        strategy: 'Bull Call Spread'
-      },
-      {
-        symbol: 'NIFTY',
         direction: 'BEARISH',
-        entry_price: 22683.1,
-        exit_price: 23200.0,
+        entry_price: 54698.5,
+        exit_price: 54713.6,
         lots: 1,
         quantity: 25,
-        exit_reason: 'STOP_LOSS',
-        net_pnl: -320.57,
+        entry_time: '2026-10-05T15:14:46.167201+05:30',
+        exit_time: '2026-10-05T15:15:09.918523+05:30',
+        exit_reason: 'EOD_SQUARE_OFF',
+        net_pnl: -321.37,
         strategy: 'Bear Put Spread'
       }
     ],
-    last_updated: new Date().toISOString()
+    readiness_gates: {
+      total_trades: 5,
+      wins: 2,
+      losses: 3,
+      win_rate_pct: 40.0,
+      profit_factor: 8.02,
+      max_drawdown_pct: 5.17,
+      gate_1_win_rate: { value: 40.0, threshold: 55.0, passed: false },
+      gate_2_profit_factor: { value: 8.02, threshold: 1.5, passed: true },
+      gate_3_max_drawdown: { value: 5.17, threshold: 4.0, passed: false },
+      all_gates_passed: false
+    },
+    last_updated: '2026-10-05T15:35:11.523933+05:30'
   };
-  return safeFetch(`${BASE}/fo/paper-trades`, undefined, fallback);
+
+  return fetchLiveBotState(`${BASE}/fo/paper-trades`, 'live_trading_state.json', fallback);
 }
 
 export async function getEquityPaperTrades() {
   const fallback = {
-    success: true,
-    engine_status: 'MARKET_CLOSED',
-    initial_capital: 2500,
-    current_capital: 2576.40,
-    daily_pnl: 76.40,
+    engine_status: 'ACTIVE',
+    initial_capital: 2500.0,
+    current_capital: 2609.43,
+    daily_pnl: 1.82,
     leverage_multiplier: 5.0,
-    purchasing_power: 12882.00,
+    purchasing_power: 13047.15,
     open_positions: [],
     closed_trades: [
       {
-        symbol: 'ICICIBANK',
+        symbol: 'COALINDIA',
         direction: 'BUY',
-        entry_price: 1303.3,
-        exit_price: 1326.1,
-        quantity: 4,
-        exit_reason: 'TARGET',
-        net_pnl: 85.54,
-        strategy: 'MOMENTUM_BREAKOUT'
-      },
-      {
-        symbol: 'BHARTIARTL',
-        direction: 'SHORT',
-        entry_price: 1773.0,
-        exit_price: 1754.3,
-        quantity: 3,
-        exit_reason: 'EOD_SQUARE_OFF',
-        net_pnl: 50.43,
-        strategy: 'MOMENTUM_BREAKOUT'
-      },
-      {
-        symbol: 'ICICIBANK',
-        direction: 'BUY',
-        entry_price: 1326.4,
-        exit_price: 1323.0,
-        quantity: 4,
-        exit_reason: 'EOD_SQUARE_OFF',
-        net_pnl: -19.28,
-        strategy: 'MOMENTUM_BREAKOUT'
-      },
-      {
-        symbol: 'INFY',
-        direction: 'SHORT',
-        entry_price: 994.6,
-        exit_price: 1001.56,
-        quantity: 5,
+        entry_price: 428.45,
+        exit_price: 425.45,
+        quantity: 13,
+        entry_time: '2026-10-05T09:15:00.000058+05:30',
+        exit_time: '2026-10-05T10:38:30.322755+05:30',
         exit_reason: 'STOP_LOSS',
-        net_pnl: -40.29,
-        strategy: 'MOMENTUM_BREAKOUT'
+        net_pnl: -44.83,
+        charges: 5.83
+      },
+      {
+        symbol: 'SBIN',
+        direction: 'BUY',
+        entry_price: 960.15,
+        exit_price: 958.30,
+        quantity: 6,
+        entry_time: '2026-10-05T09:15:18.451414+05:30',
+        exit_time: '2026-10-05T15:15:09.918523+05:30',
+        exit_reason: 'EOD_SQUARE_OFF',
+        net_pnl: -17.05,
+        charges: 5.95
+      },
+      {
+        symbol: 'HDFCBANK',
+        direction: 'SHORT',
+        entry_price: 713.25,
+        exit_price: 704.55,
+        quantity: 8,
+        entry_time: '2026-10-05T10:38:53.105411+05:30',
+        exit_time: '2026-10-05T15:15:09.918523+05:30',
+        exit_reason: 'EOD_SQUARE_OFF',
+        net_pnl: 63.70,
+        charges: 5.90
       }
     ],
-    last_updated: new Date().toISOString()
+    last_updated: '2026-10-05T15:29:52.616368+05:30'
   };
-  return safeFetch(`${BASE}/fo/equity-trades`, undefined, fallback);
+
+  return fetchLiveBotState(`${BASE}/fo/equity-trades`, 'equity_trading_state.json', fallback);
 }
 
 export async function getDailyHistory() {
   const fallback = {
-    success: true,
     records: [
+      {
+        date: '2026-10-05',
+        total_pnl: 6769.07,
+        fo_pnl: 6767.25,
+        equity_pnl: 1.82,
+        trades_count: 8,
+        capital: 14376.68
+      },
+      {
+        date: '2026-10-01',
+        total_pnl: 31.21,
+        fo_pnl: 0.0,
+        equity_pnl: 31.21,
+        trades_count: 8,
+        capital: 6966.01
+      },
       {
         date: '2026-09-30',
         total_pnl: -245.20,
         fo_pnl: -321.60,
         equity_pnl: 76.40,
         trades_count: 15,
-        capital: 6934.80,
-        trades: [
-          { symbol: 'ICICIBANK', direction: 'BUY', exit_reason: 'TARGET', net_pnl: 85.54 },
-          { symbol: 'BHARTIARTL', direction: 'SHORT', exit_reason: 'EOD_SQUARE_OFF', net_pnl: 50.43 },
-          { symbol: 'ICICIBANK', direction: 'BUY', exit_reason: 'EOD_SQUARE_OFF', net_pnl: -19.28 },
-          { symbol: 'INFY', direction: 'SHORT', exit_reason: 'STOP_LOSS', net_pnl: -40.29 },
-          { symbol: 'BANKNIFTY', direction: 'BEARISH', exit_reason: 'TARGET_1', net_pnl: 96.13 },
-          { symbol: 'BANKNIFTY', direction: 'BEARISH', exit_reason: 'TARGET_1', net_pnl: 78.63 },
-          { symbol: 'BANKNIFTY', direction: 'BEARISH', exit_reason: 'TARGET_1', net_pnl: 77.38 },
-          { symbol: 'BANKNIFTY', direction: 'BEARISH', exit_reason: 'TARGET_1', net_pnl: 13.63 },
-          { symbol: 'BANKNIFTY', direction: 'BULLISH', exit_reason: 'STOP_LOSS', net_pnl: -23.87 },
-          { symbol: 'BANKNIFTY', direction: 'BULLISH', exit_reason: 'STOP_LOSS', net_pnl: -33.24 },
-          { symbol: 'BANKNIFTY', direction: 'BULLISH', exit_reason: 'STOP_LOSS', net_pnl: -40.12 },
-          { symbol: 'BANKNIFTY', direction: 'BULLISH', exit_reason: 'STOP_LOSS', net_pnl: -40.75 },
-          { symbol: 'NIFTY', direction: 'BULLISH', exit_reason: 'STOP_LOSS', net_pnl: -49.32 },
-          { symbol: 'BANKNIFTY', direction: 'BULLISH', exit_reason: 'STOP_LOSS', net_pnl: -79.50 },
-          { symbol: 'NIFTY', direction: 'BEARISH', exit_reason: 'STOP_LOSS', net_pnl: -320.57 }
-        ]
+        capital: 6934.80
       },
       {
         date: '2026-09-29',
-        total_pnl: -320.0,
-        fo_pnl: -320.0,
+        total_pnl: -320.00,
+        fo_pnl: -320.00,
         equity_pnl: 0.0,
         trades_count: 1,
-        capital: 7180.0,
-        trades: [
-          {
-            symbol: 'NIFTY',
-            direction: 'BEARISH',
-            entry_price: 22780.25,
-            exit_price: 22850.0,
-            exit_reason: 'EOD_SQUARE_OFF',
-            net_pnl: -320.0,
-            strategy: 'Bear Put Spread'
-          }
-        ]
+        capital: 7180.00
       }
     ]
   };
-  return safeFetch(`${BASE}/fo/history`, undefined, fallback);
+
+  const res = await fetchLiveBotState<any>(`${BASE}/fo/history`, 'daily_records.json', null);
+  if (Array.isArray(res)) {
+    return { records: res.slice().reverse() };
+  }
+  if (res?.records) {
+    return res;
+  }
+  return fallback;
 }
 
 export async function getFoReadinessGates() {
-  const fallback = {
-    success: true,
-    engine_status: 'OBSERVATION_MODE',
-    total_trades: 11,
-    wins: 4,
-    losses: 7,
-    win_rate_pct: 36.36,
-    profit_factor: 0.45,
-    max_drawdown_pct: 8.96,
-    gate_1_win_rate: { value: 36.36, threshold: 55.0, passed: false },
-    gate_2_profit_factor: { value: 0.45, threshold: 1.5, passed: false },
-    gate_3_max_drawdown: { value: 8.96, threshold: 4.0, passed: false },
-    all_gates_passed: false,
-    last_updated: new Date().toISOString()
+  const foState = await getFoPaperTrades();
+  return foState?.readiness_gates || {
+    total_trades: 0,
+    wins: 0,
+    losses: 0,
+    win_rate_pct: 0,
+    profit_factor: 0,
+    max_drawdown_pct: 0,
+    gate_1_win_rate: { value: 0, threshold: 55, passed: false },
+    gate_2_profit_factor: { value: 0, threshold: 1.5, passed: false },
+    gate_3_max_drawdown: { value: 0, threshold: 4.0, passed: false },
+    all_gates_passed: false
   };
-  return safeFetch(`${BASE}/fo/readiness-gates`, undefined, fallback);
 }
 
 export async function getAdaptiveParameters() {
   const fallback = {
-    success: true,
     version: 1,
     last_optimized_at: '2026-09-30T16:16:25.384997+05:30',
-    min_stop_distance: {
-      NIFTY: 35.0,
-      BANKNIFTY: 90.0
-    },
-    max_stop_distance: {
-      NIFTY: 75.0,
-      BANKNIFTY: 200.0
-    },
-    min_target_distance: {
-      NIFTY: 50.0,
-      BANKNIFTY: 130.0
-    },
+    min_stop_distance: { NIFTY: 35.0, BANKNIFTY: 90.0 },
+    max_stop_distance: { NIFTY: 75.0, BANKNIFTY: 200.0 },
+    min_target_distance: { NIFTY: 50.0, BANKNIFTY: 130.0 },
     cooldown_minutes_after_stop: 20,
     min_confluence_counter_trend: 4,
     trailing_stop_enabled: true,
@@ -894,11 +863,13 @@ export async function getAdaptiveParameters() {
     trail_lock_ratio: 0.5,
     max_daily_fo_trades: 6,
     reasons_applied: [
-      "Detected 6 micro-stop whipsaws (loss in <40 pts). Enforced minimum stop cushion: Bank Nifty >= 90 pts, Nifty >= 35 pts.",
-      "Detected 1 extreme stop blowout(s) (>250 Bank Nifty / >120 Nifty pts). Capped maximum stop distance: Bank Nifty <= 200 pts, Nifty <= 75 pts.",
-      "Detected 2 rapid-fire re-entry churn(s) (<2 mins apart). Set post-loss cooldown to 20 minutes and capped max daily F&O trades to 6.",
-      "Strong directional skew: Bearish win rate was 80.0% vs Bullish 0.0%. Counter-trend Bullish setups now require strict 4/5 confluence + EMA confirmation."
+      "Detected 6 micro-stop whipsaws. Enforced minimum stop cushion: Bank Nifty >= 90 pts, Nifty >= 35 pts.",
+      "Detected 1 extreme stop blowout. Capped maximum stop distance: Bank Nifty <= 200 pts, Nifty <= 75 pts.",
+      "Detected 2 rapid-fire re-entry churns. Set post-loss cooldown to 20 minutes and capped max daily F&O trades to 6.",
+      "Strong directional skew: Counter-trend setups now require strict 4/5 confluence + EMA confirmation."
     ]
   };
-  return safeFetch(`${BASE}/fo/adaptive-parameters`, undefined, fallback);
+
+  return fetchLiveBotState(`${BASE}/fo/adaptive-parameters`, 'config/adaptive_parameters.json', fallback);
 }
+

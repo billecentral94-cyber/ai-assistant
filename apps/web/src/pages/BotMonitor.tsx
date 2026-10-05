@@ -216,13 +216,33 @@ export default function BotMonitor() {
 
       {/* Sub-Vaults Breakdown */}
       <div style={{ ...S.card, fontSize: 11 }}>
-        <div style={{ ...S.row, marginBottom: 4 }}>
-          <span style={{ color: '#94a3b8', fontSize: 11 }}>F&O Vault:</span>
-          <strong>{'\u20B9'}{(foState?.current_capital ?? 5000).toFixed(2)}</strong>
+        <div style={{ ...S.row, marginBottom: 5 }}>
+          <span style={{ color: '#94a3b8' }}>F&O Vault (1 Lot):</span>
+          <div style={{ textAlign: 'right' }}>
+            <strong>{'\u20B9'}{(foState?.current_capital ?? 5000).toFixed(2)}</strong>
+            <span style={{
+              marginLeft: 6,
+              fontSize: 10,
+              fontWeight: 700,
+              color: (foState?.daily_pnl ?? 0) >= 0 ? '#00ff88' : '#ff3366'
+            }}>
+              {(foState?.daily_pnl ?? 0) >= 0 ? '+' : ''}{'\u20B9'}{(foState?.daily_pnl ?? 0).toFixed(2)}
+            </span>
+          </div>
         </div>
         <div style={S.row}>
-          <span style={{ color: '#94a3b8', fontSize: 11 }}>Equity (5x):</span>
-          <strong style={{ color: '#00f0ff' }}>{'\u20B9'}{(eqState?.purchasing_power ?? 12500).toFixed(2)}</strong>
+          <span style={{ color: '#94a3b8' }}>Equity Intraday:</span>
+          <div style={{ textAlign: 'right' }}>
+            <strong>{'\u20B9'}{(eqState?.current_capital ?? 2500).toFixed(2)}</strong>
+            <span style={{
+              marginLeft: 6,
+              fontSize: 10,
+              fontWeight: 700,
+              color: (eqState?.daily_pnl ?? 0) >= 0 ? '#00ff88' : '#ff3366'
+            }}>
+              {(eqState?.daily_pnl ?? 0) >= 0 ? '+' : ''}{'\u20B9'}{(eqState?.daily_pnl ?? 0).toFixed(2)}
+            </span>
+          </div>
         </div>
       </div>
 

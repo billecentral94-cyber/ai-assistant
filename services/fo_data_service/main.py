@@ -4,10 +4,13 @@ Provides commands for running live retrieval, market-hour dry-runs, EOD gap audi
 autonomous paper trading, and DB init.
 """
 
+import os
 import sys
 import argparse
 import logging
 import time
+import threading
+import subprocess
 from datetime import datetime, date
 from typing import Dict, Any
 import pytz
@@ -28,6 +31,48 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
 logger = logging.getLogger("fo_data_service")
+
+
+def sync_telemetry_to_cloud():
+    """
+    Non-blocking background thread to push updated JSON state files to GitHub.
+    Ensures mobile widget at https://ai-assistant-v4w4.vercel.app/widget
+    receives real-time live PnL and trade updates without blocking bot execution.
+    """
+    def _push():
+        try:
+            root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            subprocess.run(
+                ["git", "add", 
+                 "services/fo_data_service/live_trading_state.json",
+                 "services/fo_data_service/equity_trading_state.json",
+                 "services/fo_data_service/daily_records.json",
+                 "services/fo_data_service/config/adaptive_parameters.json"],
+                cwd=root_dir,
+                capture_output=True,
+                timeout=15
+            )
+            time_str = datetime.now(IST).strftime("%H:%M:%S")
+            subprocess.run(
+                ["git", "commit", "-m", f"telemetry: live state sync {time_str}"],
+                cwd=root_dir,
+                capture_output=True,
+                timeout=15
+            )
+            res = subprocess.run(
+                ["git", "push", "origin", "main"],
+                cwd=root_dir,
+                capture_output=True,
+                timeout=30
+            )
+            if res.returncode == 0:
+                logger.info(f"[Cloud Sync] Pushed live telemetry to GitHub ({time_str} IST).")
+            else:
+                logger.debug(f"[Cloud Sync] Push notice: {res.stderr.decode('utf-8', errors='replace')[:80]}")
+        except Exception as e:
+            logger.debug(f"[Cloud Sync] Background git push skipped: {e}")
+
+    threading.Thread(target=_push, daemon=True).start()
 
 
 def cmd_init_db(args):
@@ -443,6 +488,9 @@ def cmd_auto_trade(args):
                 f"Closed: {len(equity_trader.closed_trades)}"
             )
 
+            # Sync live state to cloud for real-time mobile widget telemetry
+            sync_telemetry_to_cloud()
+
         elif now_time >= "15:35" and now_time < "16:00" and not eod_audit_done_today:
             # ── EOD Readiness Gate Reconciliation & Archiving ──
             logger.info("=" * 56)
@@ -469,6 +517,8 @@ def cmd_auto_trade(args):
                 generate_dashboard()
             except Exception:
                 pass
+
+            sync_telemetry_to_cloud()
 
             # ── Autonomous Self-Improvement & Parameter Adaptation ──
             try:

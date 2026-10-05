@@ -266,5 +266,270 @@
       },
       "all_gates_passed": false
     }
+  },
+  {
+    "date": "2026-10-01",
+    "total_pnl": 31.21,
+    "fo_pnl": 0.0,
+    "equity_pnl": 31.21,
+    "trades_count": 8,
+    "capital": 6966.01,
+    "trades": [
+      {
+        "symbol": "M&M",
+        "direction": "SHORT",
+        "entry_price": 2894.6,
+        "exit_price": 2884.47,
+        "quantity": 2,
+        "entry_time": "2026-10-01T09:15:00.000054+05:30",
+        "exit_time": "2026-10-01T09:34:02.535199+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": 14.29,
+        "charges": 5.97
+      },
+      {
+        "symbol": "BHARTIARTL",
+        "direction": "SHORT",
+        "entry_price": 1740.7,
+        "exit_price": 1752.88,
+        "quantity": 3,
+        "entry_time": "2026-10-01T09:15:19.200291+05:30",
+        "exit_time": "2026-10-01T09:40:50.810016+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": -42.18,
+        "charges": 5.64
+      },
+      {
+        "symbol": "COALINDIA",
+        "direction": "SHORT",
+        "entry_price": 420.05,
+        "exit_price": 422.99,
+        "quantity": 13,
+        "entry_time": "2026-10-01T09:34:02.535199+05:30",
+        "exit_time": "2026-10-01T12:12:44.115564+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": -44.01,
+        "charges": 5.79
+      },
+      {
+        "symbol": "TATASTEEL",
+        "direction": "SHORT",
+        "entry_price": 180.86,
+        "exit_price": 177.69,
+        "quantity": 31,
+        "entry_time": "2026-10-01T12:12:54.933607+05:30",
+        "exit_time": "2026-10-01T12:47:41.300887+05:30",
+        "exit_reason": "TARGET",
+        "net_pnl": 92.44,
+        "charges": 5.83
+      },
+      {
+        "symbol": "ITC",
+        "direction": "SHORT",
+        "entry_price": 260.65,
+        "exit_price": 256.1,
+        "quantity": 21,
+        "entry_time": "2026-10-01T09:40:57.236413+05:30",
+        "exit_time": "2026-10-01T12:58:28.830390+05:30",
+        "exit_reason": "TARGET",
+        "net_pnl": 89.79,
+        "charges": 5.76
+      },
+      {
+        "symbol": "TATASTEEL",
+        "direction": "SHORT",
+        "entry_price": 177.28,
+        "exit_price": 178.52,
+        "quantity": 34,
+        "entry_time": "2026-10-01T12:58:28.830390+05:30",
+        "exit_time": "2026-10-01T13:06:51.800466+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": -48.29,
+        "charges": 6.13
+      },
+      {
+        "symbol": "TATASTEEL",
+        "direction": "SHORT",
+        "entry_price": 178.54,
+        "exit_price": 177.91,
+        "quantity": 33,
+        "entry_time": "2026-10-01T13:06:51.800466+05:30",
+        "exit_time": "2026-10-01T14:53:35.387668+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": 14.76,
+        "charges": 6.03
+      },
+      {
+        "symbol": "M&M",
+        "direction": "SHORT",
+        "entry_price": 2834.3,
+        "exit_price": 2854.14,
+        "quantity": 2,
+        "entry_time": "2026-10-01T12:47:41.300887+05:30",
+        "exit_time": "2026-10-01T14:54:32.948833+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": -45.59,
+        "charges": 5.91
+      }
+    ],
+    "gates": {
+      "total_trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate_pct": 0.0,
+      "profit_factor": 0.0,
+      "max_drawdown_pct": 0.0,
+      "gate_1_win_rate": {
+        "value": 0.0,
+        "threshold": 55.0,
+        "passed": false
+      },
+      "gate_2_profit_factor": {
+        "value": 0.0,
+        "threshold": 1.5,
+        "passed": false
+      },
+      "gate_3_max_drawdown": {
+        "value": 0.0,
+        "threshold": 4.0,
+        "passed": false
+      },
+      "all_gates_passed": false
+    }
+  },
+  {
+    "date": "2026-10-05",
+    "total_pnl": 6769.07,
+    "fo_pnl": 6767.25,
+    "equity_pnl": 1.82,
+    "trades_count": 8,
+    "capital": 14376.68,
+    "trades": [
+      {
+        "symbol": "BANKNIFTY",
+        "direction": "BEARISH",
+        "entry_price": 54477.35,
+        "exit_price": 54000.0,
+        "lots": 1,
+        "quantity": 25,
+        "entry_time": "2026-10-05T11:52:02.602298+05:30",
+        "exit_time": "2026-10-05T11:52:13.491461+05:30",
+        "exit_reason": "TARGET_1",
+        "net_pnl": 5945.51,
+        "strategy": "Bear Put Spread"
+      },
+      {
+        "symbol": "BANKNIFTY",
+        "direction": "BEARISH",
+        "entry_price": 54000.0,
+        "exit_price": 54200.0,
+        "lots": 1,
+        "quantity": 25,
+        "entry_time": "2026-10-05T11:52:13.491461+05:30",
+        "exit_time": "2026-10-05T11:52:18.713791+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": -321.35,
+        "strategy": "Bear Put Spread"
+      },
+      {
+        "symbol": "NIFTY",
+        "direction": "BULLISH",
+        "entry_price": 22555.55,
+        "exit_price": 22700.0,
+        "lots": 1,
+        "quantity": 25,
+        "entry_time": "2026-10-05T14:32:50.745450+05:30",
+        "exit_time": "2026-10-05T14:32:57.463089+05:30",
+        "exit_reason": "TARGET_1",
+        "net_pnl": 1785.06,
+        "strategy": "Bull Call Spread"
+      },
+      {
+        "symbol": "NIFTY",
+        "direction": "BULLISH",
+        "entry_price": 24000.0,
+        "exit_price": 23925.0,
+        "lots": 1,
+        "quantity": 25,
+        "entry_time": "2026-10-05T14:32:57.463089+05:30",
+        "exit_time": "2026-10-05T14:33:03.559317+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": -320.6,
+        "strategy": "Bull Call Spread"
+      },
+      {
+        "symbol": "BANKNIFTY",
+        "direction": "BEARISH",
+        "entry_price": 54698.5,
+        "exit_price": 54713.6,
+        "lots": 1,
+        "quantity": 25,
+        "entry_time": "2026-10-05T15:14:46.167201+05:30",
+        "exit_time": "2026-10-05T15:15:09.918523+05:30",
+        "exit_reason": "EOD_SQUARE_OFF",
+        "net_pnl": -321.37,
+        "strategy": "Bear Put Spread"
+      },
+      {
+        "symbol": "COALINDIA",
+        "direction": "BUY",
+        "entry_price": 428.45,
+        "exit_price": 425.45,
+        "quantity": 13,
+        "entry_time": "2026-10-05T09:15:00.000058+05:30",
+        "exit_time": "2026-10-05T10:38:30.322755+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": -44.83,
+        "charges": 5.83
+      },
+      {
+        "symbol": "SBIN",
+        "direction": "BUY",
+        "entry_price": 960.15,
+        "exit_price": 958.3,
+        "quantity": 6,
+        "entry_time": "2026-10-05T09:15:18.451414+05:30",
+        "exit_time": "2026-10-05T15:15:09.918523+05:30",
+        "exit_reason": "EOD_SQUARE_OFF",
+        "net_pnl": -17.05,
+        "charges": 5.95
+      },
+      {
+        "symbol": "HDFCBANK",
+        "direction": "SHORT",
+        "entry_price": 713.25,
+        "exit_price": 704.55,
+        "quantity": 8,
+        "entry_time": "2026-10-05T10:38:53.105411+05:30",
+        "exit_time": "2026-10-05T15:15:09.918523+05:30",
+        "exit_reason": "EOD_SQUARE_OFF",
+        "net_pnl": 63.7,
+        "charges": 5.9
+      }
+    ],
+    "gates": {
+      "total_trades": 5,
+      "wins": 2,
+      "losses": 3,
+      "win_rate_pct": 40.0,
+      "profit_factor": 8.02,
+      "max_drawdown_pct": 5.17,
+      "gate_1_win_rate": {
+        "value": 40.0,
+        "threshold": 55.0,
+        "passed": false
+      },
+      "gate_2_profit_factor": {
+        "value": 8.02,
+        "threshold": 1.5,
+        "passed": true
+      },
+      "gate_3_max_drawdown": {
+        "value": 5.17,
+        "threshold": 4.0,
+        "passed": false
+      },
+      "all_gates_passed": false
+    }
   }
 ]
