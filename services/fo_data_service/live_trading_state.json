@@ -7,63 +7,31 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 22676.8,
-      "stop_loss": 22601.8,
-      "initial_stop_loss": 22601.8,
+      "entry_price": 22677.1,
+      "stop_loss": 22602.1,
+      "initial_stop_loss": 22602.1,
       "target_1": 22750.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:28:01.611024+05:30",
+      "entry_time": "2026-10-06T11:28:04.645558+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 174.9,
-        "sell_premium": 124.45,
-        "net_debit": 50.45,
+        "buy_premium": 174.5,
+        "sell_premium": 124.4,
+        "net_debit": 50.1,
         "leg_details": [
           {
             "strike": 22700.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "44620",
-            "ltp": 174.9
+            "ltp": 174.5
           },
           {
             "strike": 22800.0,
             "option_type": "CE",
             "action": "SELL",
             "token": "44624",
-            "ltp": 124.45
-          }
-        ]
-      }
-    },
-    {
-      "symbol": "BANKNIFTY",
-      "direction": "BULLISH",
-      "entry_price": 54992.8,
-      "stop_loss": 54792.8,
-      "initial_stop_loss": 54792.8,
-      "target_1": 55500.0,
-      "lots": 1,
-      "entry_time": "2026-10-06T11:28:01.611024+05:30",
-      "strategy_name": "Bull Call Spread",
-      "entry_premium_info": {
-        "buy_premium": 918.9,
-        "sell_premium": 807.0,
-        "net_debit": 111.9,
-        "leg_details": [
-          {
-            "strike": 55000.0,
-            "option_type": "CE",
-            "action": "BUY",
-            "token": "49441",
-            "ltp": 918.9
-          },
-          {
-            "strike": 55200.0,
-            "option_type": "CE",
-            "action": "SELL",
-            "token": "49446",
-            "ltp": 807.0
+            "ltp": 124.4
           }
         ]
       }
@@ -94,5 +62,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-06T11:28:03.685287+05:30"
+  "last_updated": "2026-10-06T11:28:06.226938+05:30"
 }
