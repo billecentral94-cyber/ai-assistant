@@ -12,26 +12,26 @@
       "initial_stop_loss": 22603.5,
       "target_1": 22750.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:39:24.509863+05:30",
+      "entry_time": "2026-10-06T11:39:28.115765+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 176.0,
-        "sell_premium": 125.0,
-        "net_debit": 51.0,
+        "buy_premium": 175.65,
+        "sell_premium": 125.3,
+        "net_debit": 50.35,
         "leg_details": [
           {
             "strike": 22700.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "44620",
-            "ltp": 176.0
+            "ltp": 175.65
           },
           {
             "strike": 22800.0,
             "option_type": "CE",
             "action": "SELL",
             "token": "44624",
-            "ltp": 125.0
+            "ltp": 125.3
           }
         ]
       }
@@ -39,24 +39,24 @@
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 54979.15,
-      "stop_loss": 54779.15,
-      "initial_stop_loss": 54779.15,
+      "entry_price": 54981.0,
+      "stop_loss": 54781.0,
+      "initial_stop_loss": 54781.0,
       "target_1": 55500.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:39:24.509863+05:30",
+      "entry_time": "2026-10-06T11:39:28.115765+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 919.65,
+        "buy_premium": 921.15,
         "sell_premium": 808.6,
-        "net_debit": 111.05,
+        "net_debit": 112.55,
         "leg_details": [
           {
             "strike": 55000.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "49441",
-            "ltp": 919.65
+            "ltp": 921.15
           },
           {
             "strike": 55200.0,
@@ -94,5 +94,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-06T11:39:26.316959+05:30"
+  "last_updated": "2026-10-06T11:39:29.467612+05:30"
 }
