@@ -18,13 +18,22 @@ const webDir = path.join(rootDir, 'apps', 'web');
 // 1. Ensure apps/web has node_modules
 const webNodeModules = path.join(webDir, 'node_modules');
 if (!fs.existsSync(webNodeModules)) {
-  console.log('[Vercel Build] Installing dependencies in apps/web...');
-  execSync('npm install --prefer-offline --no-audit', { cwd: webDir, stdio: 'inherit' });
+  try {
+    console.log('[Vercel Build] Installing dependencies in apps/web...');
+    execSync('npm install --prefer-offline --no-audit', { cwd: webDir, stdio: 'inherit' });
+  } catch (err) {
+    console.warn('[Vercel Build] apps/web npm install notice (will use root packages):', err.message);
+  }
 }
 
 // 2. Run web build
 console.log('[Vercel Build] Building web application with Vite...');
-execSync('npm run build', { cwd: webDir, stdio: 'inherit' });
+try {
+  execSync('npm run build', { cwd: webDir, stdio: 'inherit' });
+} catch (e) {
+  console.log('[Vercel Build] Primary build failed, attempting fallback build...');
+  execSync('npx vite build', { cwd: webDir, stdio: 'inherit' });
+}
 
 // 3. Sync output to root ./dist so Vercel finds it regardless of project root setting
 const webDist = path.join(webDir, 'dist');
