@@ -54,7 +54,7 @@ def sync_telemetry_to_cloud():
             )
             time_str = datetime.now(IST).strftime("%H:%M:%S")
             subprocess.run(
-                ["git", "commit", "-m", f"telemetry: live state sync {time_str}"],
+                ["git", "commit", "-m", f"telemetry: live state sync {time_str} [skip ci]"],
                 cwd=root_dir,
                 capture_output=True,
                 timeout=15

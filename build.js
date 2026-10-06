@@ -51,7 +51,9 @@ const clientRoutes = [
   'ai-chat',
   'backtesting',
   'news',
-  'sandbox'
+  'sandbox',
+  'bot-monitor',
+  'widget'
 ];
 
 for (const dir of [webDist, rootDist]) {
