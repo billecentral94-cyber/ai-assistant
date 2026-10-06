@@ -7,63 +7,31 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 22675.05,
-      "stop_loss": 22600.05,
-      "initial_stop_loss": 22600.05,
+      "entry_price": 22674.9,
+      "stop_loss": 22600.0,
+      "initial_stop_loss": 22600.0,
       "target_1": 22750.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:31:00.078962+05:30",
+      "entry_time": "2026-10-06T11:31:03.700455+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 173.1,
-        "sell_premium": 123.65,
-        "net_debit": 49.45,
+        "buy_premium": 61.4,
+        "sell_premium": 147.4,
+        "net_debit": -86.0,
         "leg_details": [
           {
-            "strike": 22700.0,
+            "strike": 22650.0,
             "option_type": "CE",
             "action": "BUY",
-            "token": "44620",
-            "ltp": 173.1
+            "token": "40704",
+            "ltp": 61.4
           },
           {
-            "strike": 22800.0,
+            "strike": 22750.0,
             "option_type": "CE",
             "action": "SELL",
-            "token": "44624",
-            "ltp": 123.65
-          }
-        ]
-      }
-    },
-    {
-      "symbol": "BANKNIFTY",
-      "direction": "BULLISH",
-      "entry_price": 54976.05,
-      "stop_loss": 54776.05,
-      "initial_stop_loss": 54776.05,
-      "target_1": 55500.0,
-      "lots": 1,
-      "entry_time": "2026-10-06T11:31:00.078962+05:30",
-      "strategy_name": "Bull Call Spread",
-      "entry_premium_info": {
-        "buy_premium": 914.5,
-        "sell_premium": 802.05,
-        "net_debit": 112.45,
-        "leg_details": [
-          {
-            "strike": 55000.0,
-            "option_type": "CE",
-            "action": "BUY",
-            "token": "49441",
-            "ltp": 914.5
-          },
-          {
-            "strike": 55200.0,
-            "option_type": "CE",
-            "action": "SELL",
-            "token": "49446",
-            "ltp": 802.05
+            "token": "44622",
+            "ltp": 147.4
           }
         ]
       }
@@ -94,5 +62,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-06T11:31:02.675458+05:30"
+  "last_updated": "2026-10-06T11:31:05.283288+05:30"
 }
