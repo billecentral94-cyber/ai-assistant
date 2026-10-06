@@ -2,47 +2,24 @@
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
   "current_capital": 2609.43,
-  "daily_pnl": 1.82,
+  "daily_pnl": 0.0,
   "leverage_multiplier": 5.0,
   "purchasing_power": 13047.15,
-  "open_positions": [],
-  "closed_trades": [
+  "open_positions": [
     {
-      "symbol": "COALINDIA",
+      "symbol": "RELIANCE",
       "direction": "BUY",
-      "entry_price": 428.45,
-      "exit_price": 425.45,
-      "quantity": 13,
-      "entry_time": "2026-10-05T09:15:00.000058+05:30",
-      "exit_time": "2026-10-05T10:38:30.322755+05:30",
-      "exit_reason": "STOP_LOSS",
-      "net_pnl": -44.83,
-      "charges": 5.83
-    },
-    {
-      "symbol": "SBIN",
-      "direction": "BUY",
-      "entry_price": 960.15,
-      "exit_price": 958.3,
-      "quantity": 6,
-      "entry_time": "2026-10-05T09:15:18.451414+05:30",
-      "exit_time": "2026-10-05T15:15:09.918523+05:30",
-      "exit_reason": "EOD_SQUARE_OFF",
-      "net_pnl": -17.05,
-      "charges": 5.95
-    },
-    {
-      "symbol": "HDFCBANK",
-      "direction": "SHORT",
-      "entry_price": 713.25,
-      "exit_price": 704.55,
-      "quantity": 8,
-      "entry_time": "2026-10-05T10:38:53.105411+05:30",
-      "exit_time": "2026-10-05T15:15:09.918523+05:30",
-      "exit_reason": "EOD_SQUARE_OFF",
-      "net_pnl": 63.7,
-      "charges": 5.9
+      "entry_price": 1216.2,
+      "stop_loss": 1207.69,
+      "target": 1237.48,
+      "risk_points": 8.51,
+      "quantity": 4,
+      "entry_time": "2026-10-06T11:27:03.210808+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 115.7
     }
   ],
-  "last_updated": "2026-10-05T15:29:52.616368+05:30"
+  "closed_trades": [],
+  "last_updated": "2026-10-06T11:27:17.440377+05:30"
 }
