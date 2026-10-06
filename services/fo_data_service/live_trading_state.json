@@ -7,31 +7,31 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 22680.1,
-      "stop_loss": 22605.1,
-      "initial_stop_loss": 22605.1,
+      "entry_price": 22679.5,
+      "stop_loss": 22604.5,
+      "initial_stop_loss": 22604.5,
       "target_1": 22750.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:38:58.892326+05:30",
+      "entry_time": "2026-10-06T11:39:04.200918+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 175.0,
-        "sell_premium": 125.05,
-        "net_debit": 49.95,
+        "buy_premium": 174.65,
+        "sell_premium": 124.6,
+        "net_debit": 50.05,
         "leg_details": [
           {
             "strike": 22700.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "44620",
-            "ltp": 175.0
+            "ltp": 174.65
           },
           {
             "strike": 22800.0,
             "option_type": "CE",
             "action": "SELL",
             "token": "44624",
-            "ltp": 125.05
+            "ltp": 124.6
           }
         ]
       }
@@ -39,17 +39,17 @@
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 54985.0,
-      "stop_loss": 54785.0,
-      "initial_stop_loss": 54785.0,
+      "entry_price": 54986.85,
+      "stop_loss": 54786.85,
+      "initial_stop_loss": 54786.85,
       "target_1": 55500.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:38:58.892326+05:30",
+      "entry_time": "2026-10-06T11:39:04.200918+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
         "buy_premium": 919.25,
-        "sell_premium": 807.05,
-        "net_debit": 112.2,
+        "sell_premium": 808.4,
+        "net_debit": 110.85,
         "leg_details": [
           {
             "strike": 55000.0,
@@ -63,7 +63,7 @@
             "option_type": "CE",
             "action": "SELL",
             "token": "49446",
-            "ltp": 807.05
+            "ltp": 808.4
           }
         ]
       }
@@ -94,5 +94,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-06T11:39:01.304844+05:30"
+  "last_updated": "2026-10-06T11:39:06.179075+05:30"
 }
