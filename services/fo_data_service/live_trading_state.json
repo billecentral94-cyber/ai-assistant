@@ -7,31 +7,63 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 22681.05,
-      "stop_loss": 22606.05,
-      "initial_stop_loss": 22606.05,
+      "entry_price": 22680.9,
+      "stop_loss": 22605.9,
+      "initial_stop_loss": 22605.9,
       "target_1": 22750.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:40:46.172380+05:30",
+      "entry_time": "2026-10-06T11:40:48.435275+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 176.3,
-        "sell_premium": 125.5,
-        "net_debit": 50.8,
+        "buy_premium": 176.45,
+        "sell_premium": 126.35,
+        "net_debit": 50.1,
         "leg_details": [
           {
             "strike": 22700.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "44620",
-            "ltp": 176.3
+            "ltp": 176.45
           },
           {
             "strike": 22800.0,
             "option_type": "CE",
             "action": "SELL",
             "token": "44624",
-            "ltp": 125.5
+            "ltp": 126.35
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "BANKNIFTY",
+      "direction": "BULLISH",
+      "entry_price": 54984.45,
+      "stop_loss": 54784.45,
+      "initial_stop_loss": 54784.45,
+      "target_1": 55500.0,
+      "lots": 1,
+      "entry_time": "2026-10-06T11:40:48.435275+05:30",
+      "strategy_name": "Bull Call Spread",
+      "entry_premium_info": {
+        "buy_premium": 921.8,
+        "sell_premium": 810.6,
+        "net_debit": 111.2,
+        "leg_details": [
+          {
+            "strike": 55000.0,
+            "option_type": "CE",
+            "action": "BUY",
+            "token": "49441",
+            "ltp": 921.8
+          },
+          {
+            "strike": 55200.0,
+            "option_type": "CE",
+            "action": "SELL",
+            "token": "49446",
+            "ltp": 810.6
           }
         ]
       }
@@ -62,5 +94,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-06T11:40:47.488190+05:30"
+  "last_updated": "2026-10-06T11:40:50.568949+05:30"
 }
