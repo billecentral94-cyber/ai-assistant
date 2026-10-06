@@ -7,31 +7,63 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 22674.65,
+      "entry_price": 22674.5,
       "stop_loss": 22600.0,
       "initial_stop_loss": 22600.0,
       "target_1": 22750.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:30:53.697817+05:30",
+      "entry_time": "2026-10-06T11:30:56.832701+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 61.1,
-        "sell_premium": 147.3,
-        "net_debit": -86.2,
+        "buy_premium": 62.15,
+        "sell_premium": 147.5,
+        "net_debit": -85.35,
         "leg_details": [
           {
             "strike": 22650.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "40704",
-            "ltp": 61.1
+            "ltp": 62.15
           },
           {
             "strike": 22750.0,
             "option_type": "CE",
             "action": "SELL",
             "token": "44622",
-            "ltp": 147.3
+            "ltp": 147.5
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "BANKNIFTY",
+      "direction": "BULLISH",
+      "entry_price": 54980.2,
+      "stop_loss": 54780.2,
+      "initial_stop_loss": 54780.2,
+      "target_1": 55500.0,
+      "lots": 1,
+      "entry_time": "2026-10-06T11:30:56.832701+05:30",
+      "strategy_name": "Bull Call Spread",
+      "entry_premium_info": {
+        "buy_premium": 915.8,
+        "sell_premium": 802.05,
+        "net_debit": 113.75,
+        "leg_details": [
+          {
+            "strike": 55000.0,
+            "option_type": "CE",
+            "action": "BUY",
+            "token": "49441",
+            "ltp": 915.8
+          },
+          {
+            "strike": 55200.0,
+            "option_type": "CE",
+            "action": "SELL",
+            "token": "49446",
+            "ltp": 802.05
           }
         ]
       }
@@ -62,5 +94,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-06T11:30:55.896550+05:30"
+  "last_updated": "2026-10-06T11:30:58.302875+05:30"
 }
