@@ -531,5 +531,89 @@
       },
       "all_gates_passed": false
     }
+  },
+  {
+    "date": "2026-10-06",
+    "total_pnl": -248.28,
+    "fo_pnl": -303.23,
+    "equity_pnl": 54.95,
+    "trades_count": 4,
+    "capital": 14128.4,
+    "trades": [
+      {
+        "symbol": "NIFTY",
+        "direction": "BULLISH",
+        "entry_price": 24000.0,
+        "exit_price": 23925.0,
+        "lots": 1,
+        "quantity": 25,
+        "entry_time": "2026-10-06T12:45:00.002667+05:30",
+        "exit_time": "2026-10-06T13:00:00.004424+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": 18.15,
+        "strategy": "Bull Call Spread"
+      },
+      {
+        "symbol": "BANKNIFTY",
+        "direction": "BULLISH",
+        "entry_price": 55024.25,
+        "exit_price": 54993.75,
+        "lots": 1,
+        "quantity": 25,
+        "entry_time": "2026-10-06T15:00:00.009402+05:30",
+        "exit_time": "2026-10-06T15:15:00.002020+05:30",
+        "exit_reason": "EOD_SQUARE_OFF",
+        "net_pnl": -321.38,
+        "strategy": "Bull Call Spread"
+      },
+      {
+        "symbol": "COALINDIA",
+        "direction": "SHORT",
+        "entry_price": 417.0,
+        "exit_price": 411.2,
+        "quantity": 14,
+        "entry_time": "2026-10-06T11:53:12.835545+05:30",
+        "exit_time": "2026-10-06T15:15:00.002020+05:30",
+        "exit_reason": "EOD_SQUARE_OFF",
+        "net_pnl": 75.22,
+        "charges": 5.98
+      },
+      {
+        "symbol": "INFY",
+        "direction": "SHORT",
+        "entry_price": 1006.15,
+        "exit_price": 1009.1,
+        "quantity": 5,
+        "entry_time": "2026-10-06T12:15:00.013901+05:30",
+        "exit_time": "2026-10-06T15:15:00.002020+05:30",
+        "exit_reason": "EOD_SQUARE_OFF",
+        "net_pnl": -20.27,
+        "charges": 5.52
+      }
+    ],
+    "gates": {
+      "total_trades": 2,
+      "wins": 1,
+      "losses": 1,
+      "win_rate_pct": 50.0,
+      "profit_factor": 0.06,
+      "max_drawdown_pct": 6.4,
+      "gate_1_win_rate": {
+        "value": 50.0,
+        "threshold": 55.0,
+        "passed": false
+      },
+      "gate_2_profit_factor": {
+        "value": 0.06,
+        "threshold": 1.5,
+        "passed": false
+      },
+      "gate_3_max_drawdown": {
+        "value": 6.4,
+        "threshold": 4.0,
+        "passed": false
+      },
+      "all_gates_passed": false
+    }
   }
 ]

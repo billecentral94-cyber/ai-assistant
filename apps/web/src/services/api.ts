@@ -789,6 +789,14 @@ export async function getDailyHistory() {
   const fallback = {
     records: [
       {
+        date: '2026-10-06',
+        total_pnl: -248.28,
+        fo_pnl: -303.23,
+        equity_pnl: 54.95,
+        trades_count: 4,
+        capital: 14128.40
+      },
+      {
         date: '2026-10-05',
         total_pnl: 6769.07,
         fo_pnl: 6767.25,
