@@ -295,6 +295,42 @@ def _fetch_equity_quotes(session_mgr, timeout: int = 12) -> Dict[str, Dict[str, 
     return {}
 
 
+def _hardware_wake_sleep(seconds: float):
+    """
+    Sleeps for the given seconds while guaranteeing that Windows 11 Modern Standby
+    (S0 Low Power Idle) wakes the CPU even when the laptop lid is closed.
+    Uses native Win32 SetWaitableTimer with fResume=True.
+    """
+    if os.name != 'nt' or seconds <= 0:
+        time.sleep(max(seconds, 0.1))
+        return
+
+    import ctypes
+    kernel32 = ctypes.windll.kernel32
+    timer = kernel32.CreateWaitableTimerW(None, False, None)
+    if not timer:
+        time.sleep(seconds)
+        return
+
+    try:
+        duetime = ctypes.c_longlong(int(-seconds * 10_000_000))
+        success = kernel32.SetWaitableTimer(
+            timer,
+            ctypes.byref(duetime),
+            0,
+            None,
+            None,
+            True  # fResume = True forces CPU to wake up from S0 standby!
+        )
+        if success:
+            kernel32.SetThreadExecutionState(0x80000000 | 0x00000001 | 0x00000040)
+            kernel32.WaitForSingleObject(timer, 0xFFFFFFFF)
+        else:
+            time.sleep(seconds)
+    finally:
+        kernel32.CloseHandle(timer)
+
+
 def cmd_auto_trade(args):
     """
     Starts the fully autonomous paper trading daemon.
@@ -544,42 +580,7 @@ def cmd_auto_trade(args):
         else:
             logger.info(f"Market CLOSED ({reason}). Standing by...")
 
-def _hardware_wake_sleep(seconds: float):
-    """
-    Sleeps for the given seconds while guaranteeing that Windows 11 Modern Standby
-    (S0 Low Power Idle) wakes the CPU even when the laptop lid is closed.
-    Uses native Win32 SetWaitableTimer with fResume=True.
-    """
-    if os.name != 'nt' or seconds <= 0:
-        time.sleep(max(seconds, 0.1))
-        return
-
-    import ctypes
-    kernel32 = ctypes.windll.kernel32
-    timer = kernel32.CreateWaitableTimerW(None, False, None)
-    if not timer:
-        time.sleep(seconds)
-        return
-
-    try:
-        duetime = ctypes.c_longlong(int(-seconds * 10_000_000))
-        success = kernel32.SetWaitableTimer(
-            timer,
-            ctypes.byref(duetime),
-            0,
-            None,
-            None,
-            True  # fResume = True forces CPU to wake up from S0 standby!
-        )
-        if success:
-            kernel32.SetThreadExecutionState(0x80000000 | 0x00000001 | 0x00000040)
-            kernel32.WaitForSingleObject(timer, 0xFFFFFFFF)
-        else:
-            time.sleep(seconds)
-    finally:
-        kernel32.CloseHandle(timer)
-
-
+        # Sleep until next 15-minute scheduled bar
         next_run = get_next_run_time(now_ist, interval_minutes=settings.INTERVAL_MINUTES)
         sleep_seconds = max((next_run - datetime.now(IST)).total_seconds(), 5.0)
         logger.info(f"Next cycle at {next_run.strftime('%H:%M:%S IST')} (sleeping {sleep_seconds:.0f}s via Hardware Wake Timer)")
