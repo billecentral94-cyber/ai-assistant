@@ -7,31 +7,31 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 22674.2,
+      "entry_price": 22674.4,
       "stop_loss": 22600.0,
       "initial_stop_loss": 22600.0,
       "target_1": 22750.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:29:49.552036+05:30",
+      "entry_time": "2026-10-06T11:29:51.991096+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 62.0,
-        "sell_premium": 146.9,
-        "net_debit": -84.9,
+        "buy_premium": 61.8,
+        "sell_premium": 147.05,
+        "net_debit": -85.25,
         "leg_details": [
           {
             "strike": 22650.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "40704",
-            "ltp": 62.0
+            "ltp": 61.8
           },
           {
             "strike": 22750.0,
             "option_type": "CE",
             "action": "SELL",
             "token": "44622",
-            "ltp": 146.9
+            "ltp": 147.05
           }
         ]
       }
@@ -39,24 +39,24 @@
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 54979.5,
-      "stop_loss": 54779.5,
-      "initial_stop_loss": 54779.5,
+      "entry_price": 54977.05,
+      "stop_loss": 54777.05,
+      "initial_stop_loss": 54777.05,
       "target_1": 55500.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:29:49.552036+05:30",
+      "entry_time": "2026-10-06T11:29:51.991096+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 916.3,
+        "buy_premium": 915.55,
         "sell_premium": 802.0,
-        "net_debit": 114.3,
+        "net_debit": 113.55,
         "leg_details": [
           {
             "strike": 55000.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "49441",
-            "ltp": 916.3
+            "ltp": 915.55
           },
           {
             "strike": 55200.0,
@@ -94,5 +94,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-06T11:29:50.995440+05:30"
+  "last_updated": "2026-10-06T11:29:53.474137+05:30"
 }
