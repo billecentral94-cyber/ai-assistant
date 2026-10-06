@@ -7,17 +7,17 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 22681.0,
-      "stop_loss": 22606.0,
-      "initial_stop_loss": 22606.0,
+      "entry_price": 22680.75,
+      "stop_loss": 22605.75,
+      "initial_stop_loss": 22605.75,
       "target_1": 22750.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:38:15.490456+05:30",
+      "entry_time": "2026-10-06T11:38:19.263301+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
         "buy_premium": 175.3,
-        "sell_premium": 125.0,
-        "net_debit": 50.3,
+        "sell_premium": 125.1,
+        "net_debit": 50.2,
         "leg_details": [
           {
             "strike": 22700.0,
@@ -31,7 +31,7 @@
             "option_type": "CE",
             "action": "SELL",
             "token": "44624",
-            "ltp": 125.0
+            "ltp": 125.1
           }
         ]
       }
@@ -39,24 +39,24 @@
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 54992.45,
-      "stop_loss": 54792.45,
-      "initial_stop_loss": 54792.45,
+      "entry_price": 54993.55,
+      "stop_loss": 54793.55,
+      "initial_stop_loss": 54793.55,
       "target_1": 55500.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:38:15.490456+05:30",
+      "entry_time": "2026-10-06T11:38:19.263301+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 920.35,
+        "buy_premium": 923.0,
         "sell_premium": 808.3,
-        "net_debit": 112.05,
+        "net_debit": 114.7,
         "leg_details": [
           {
             "strike": 55000.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "49441",
-            "ltp": 920.35
+            "ltp": 923.0
           },
           {
             "strike": 55200.0,
@@ -94,5 +94,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-06T11:38:18.243461+05:30"
+  "last_updated": "2026-10-06T11:38:21.200360+05:30"
 }
