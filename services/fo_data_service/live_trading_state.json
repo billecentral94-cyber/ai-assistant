@@ -7,24 +7,24 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 22678.55,
-      "stop_loss": 22603.55,
-      "initial_stop_loss": 22603.55,
+      "entry_price": 22678.45,
+      "stop_loss": 22603.45,
+      "initial_stop_loss": 22603.45,
       "target_1": 22750.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:34:52.640329+05:30",
+      "entry_time": "2026-10-06T11:34:54.992723+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 175.35,
+        "buy_premium": 175.0,
         "sell_premium": 124.9,
-        "net_debit": 50.45,
+        "net_debit": 50.1,
         "leg_details": [
           {
             "strike": 22700.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "44620",
-            "ltp": 175.35
+            "ltp": 175.0
           },
           {
             "strike": 22800.0,
@@ -39,24 +39,24 @@
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 54997.85,
-      "stop_loss": 54797.85,
-      "initial_stop_loss": 54797.85,
+      "entry_price": 54994.0,
+      "stop_loss": 54794.0,
+      "initial_stop_loss": 54794.0,
       "target_1": 55500.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:34:52.640329+05:30",
+      "entry_time": "2026-10-06T11:34:54.992723+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 925.0,
+        "buy_premium": 924.95,
         "sell_premium": 810.65,
-        "net_debit": 114.35,
+        "net_debit": 114.3,
         "leg_details": [
           {
             "strike": 55000.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "49441",
-            "ltp": 925.0
+            "ltp": 924.95
           },
           {
             "strike": 55200.0,
@@ -94,5 +94,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-06T11:34:54.061464+05:30"
+  "last_updated": "2026-10-06T11:34:56.765525+05:30"
 }
