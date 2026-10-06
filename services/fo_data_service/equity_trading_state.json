@@ -1,38 +1,36 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2609.43,
-  "daily_pnl": 0.0,
+  "current_capital": 2664.38,
+  "daily_pnl": 54.95,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 13047.15,
-  "open_positions": [
+  "purchasing_power": 13321.9,
+  "open_positions": [],
+  "closed_trades": [
     {
       "symbol": "COALINDIA",
       "direction": "SHORT",
       "entry_price": 417.0,
-      "stop_loss": 415.54,
-      "target": 409.7,
-      "risk_points": 2.92,
+      "exit_price": 411.2,
       "quantity": 14,
       "entry_time": "2026-10-06T11:53:12.835545+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 116.2
+      "exit_time": "2026-10-06T15:15:00.002020+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "net_pnl": 75.22,
+      "charges": 5.98
     },
     {
       "symbol": "INFY",
       "direction": "SHORT",
       "entry_price": 1006.15,
-      "stop_loss": 1013.19,
-      "target": 988.55,
-      "risk_points": 7.04,
+      "exit_price": 1009.1,
       "quantity": 5,
       "entry_time": "2026-10-06T12:15:00.013901+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 110.7
+      "exit_time": "2026-10-06T15:15:00.002020+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "net_pnl": -20.27,
+      "charges": 5.52
     }
   ],
-  "closed_trades": [],
-  "last_updated": "2026-10-06T15:00:03.728903+05:30"
+  "last_updated": "2026-10-06T15:15:02.770298+05:30"
 }
