@@ -7,31 +7,31 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 22674.15,
-      "stop_loss": 22600.0,
-      "initial_stop_loss": 22600.0,
+      "entry_price": 22675.45,
+      "stop_loss": 22600.45,
+      "initial_stop_loss": 22600.45,
       "target_1": 22750.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:33:25.632700+05:30",
+      "entry_time": "2026-10-06T11:33:28.979499+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 60.6,
-        "sell_premium": 145.55,
-        "net_debit": -84.95,
+        "buy_premium": 171.3,
+        "sell_premium": 121.45,
+        "net_debit": 49.85,
         "leg_details": [
           {
-            "strike": 22650.0,
+            "strike": 22700.0,
             "option_type": "CE",
             "action": "BUY",
-            "token": "40704",
-            "ltp": 60.6
+            "token": "44620",
+            "ltp": 171.3
           },
           {
-            "strike": 22750.0,
+            "strike": 22800.0,
             "option_type": "CE",
             "action": "SELL",
-            "token": "44622",
-            "ltp": 145.55
+            "token": "44624",
+            "ltp": 121.45
           }
         ]
       }
@@ -39,24 +39,24 @@
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 54976.8,
-      "stop_loss": 54776.8,
-      "initial_stop_loss": 54776.8,
+      "entry_price": 54977.55,
+      "stop_loss": 54777.55,
+      "initial_stop_loss": 54777.55,
       "target_1": 55500.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:33:25.632700+05:30",
+      "entry_time": "2026-10-06T11:33:28.979499+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 915.1,
+        "buy_premium": 915.2,
         "sell_premium": 800.95,
-        "net_debit": 114.15,
+        "net_debit": 114.25,
         "leg_details": [
           {
             "strike": 55000.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "49441",
-            "ltp": 915.1
+            "ltp": 915.2
           },
           {
             "strike": 55200.0,
@@ -94,5 +94,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-06T11:33:28.006671+05:30"
+  "last_updated": "2026-10-06T11:33:30.256298+05:30"
 }
