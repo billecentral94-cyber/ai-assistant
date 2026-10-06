@@ -3,40 +3,7 @@
   "initial_capital": 5000.0,
   "current_capital": 11785.4,
   "daily_pnl": 18.15,
-  "open_positions": [
-    {
-      "symbol": "BANKNIFTY",
-      "direction": "BULLISH",
-      "entry_price": 55143.75,
-      "stop_loss": 55000.0,
-      "initial_stop_loss": 55000.0,
-      "target_1": 55500.0,
-      "lots": 1,
-      "entry_time": "2026-10-06T13:15:00.012579+05:30",
-      "strategy_name": "Bull Call Spread",
-      "entry_premium_info": {
-        "buy_premium": 1358.05,
-        "sell_premium": 1560.5,
-        "net_debit": -202.45,
-        "leg_details": [
-          {
-            "strike": 55100.0,
-            "option_type": "CE",
-            "action": "BUY",
-            "token": "62157",
-            "ltp": 1358.05
-          },
-          {
-            "strike": 55300.0,
-            "option_type": "CE",
-            "action": "SELL",
-            "token": "59559",
-            "ltp": 1560.5
-          }
-        ]
-      }
-    }
-  ],
+  "open_positions": [],
   "closed_trades": [
     {
       "symbol": "NIFTY",
@@ -76,5 +43,5 @@
     },
     "all_gates_passed": true
   },
-  "last_updated": "2026-10-06T13:15:02.808093+05:30"
+  "last_updated": "2026-10-06T13:30:01.408103+05:30"
 }
