@@ -7,31 +7,31 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 22678.7,
-      "stop_loss": 22603.7,
-      "initial_stop_loss": 22603.7,
+      "entry_price": 22680.0,
+      "stop_loss": 22605.0,
+      "initial_stop_loss": 22605.0,
       "target_1": 22750.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:38:02.824646+05:30",
+      "entry_time": "2026-10-06T11:38:05.317048+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 175.4,
-        "sell_premium": 124.9,
-        "net_debit": 50.5,
+        "buy_premium": 175.85,
+        "sell_premium": 125.6,
+        "net_debit": 50.25,
         "leg_details": [
           {
             "strike": 22700.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "44620",
-            "ltp": 175.4
+            "ltp": 175.85
           },
           {
             "strike": 22800.0,
             "option_type": "CE",
             "action": "SELL",
             "token": "44624",
-            "ltp": 124.9
+            "ltp": 125.6
           }
         ]
       }
@@ -39,24 +39,24 @@
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 54984.25,
-      "stop_loss": 54784.25,
-      "initial_stop_loss": 54784.25,
+      "entry_price": 54989.4,
+      "stop_loss": 54789.4,
+      "initial_stop_loss": 54789.4,
       "target_1": 55500.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:38:02.824646+05:30",
+      "entry_time": "2026-10-06T11:38:05.317048+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 918.95,
+        "buy_premium": 920.0,
         "sell_premium": 808.0,
-        "net_debit": 110.95,
+        "net_debit": 112.0,
         "leg_details": [
           {
             "strike": 55000.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "49441",
-            "ltp": 918.95
+            "ltp": 920.0
           },
           {
             "strike": 55200.0,
@@ -94,5 +94,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-06T11:38:04.356317+05:30"
+  "last_updated": "2026-10-06T11:38:06.813790+05:30"
 }
