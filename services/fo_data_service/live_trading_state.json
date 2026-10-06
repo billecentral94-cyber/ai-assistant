@@ -7,31 +7,31 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 22671.85,
+      "entry_price": 22674.4,
       "stop_loss": 22600.0,
       "initial_stop_loss": 22600.0,
       "target_1": 22750.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:32:48.032139+05:30",
+      "entry_time": "2026-10-06T11:33:07.138651+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 59.25,
-        "sell_premium": 144.4,
-        "net_debit": -85.15,
+        "buy_premium": 60.75,
+        "sell_premium": 146.4,
+        "net_debit": -85.65,
         "leg_details": [
           {
             "strike": 22650.0,
             "option_type": "CE",
             "action": "BUY",
             "token": "40704",
-            "ltp": 59.25
+            "ltp": 60.75
           },
           {
             "strike": 22750.0,
             "option_type": "CE",
             "action": "SELL",
             "token": "44622",
-            "ltp": 144.4
+            "ltp": 146.4
           }
         ]
       }
@@ -39,12 +39,12 @@
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 54983.6,
-      "stop_loss": 54783.6,
-      "initial_stop_loss": 54783.6,
+      "entry_price": 54983.85,
+      "stop_loss": 54783.85,
+      "initial_stop_loss": 54783.85,
       "target_1": 55500.0,
       "lots": 1,
-      "entry_time": "2026-10-06T11:32:48.032139+05:30",
+      "entry_time": "2026-10-06T11:33:07.138651+05:30",
       "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
         "buy_premium": 917.55,
@@ -94,5 +94,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-06T11:33:06.169286+05:30"
+  "last_updated": "2026-10-06T11:33:10.120341+05:30"
 }
