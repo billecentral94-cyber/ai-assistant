@@ -3,7 +3,40 @@
   "initial_capital": 5000.0,
   "current_capital": 11464.02,
   "daily_pnl": 0.0,
-  "open_positions": [],
+  "open_positions": [
+    {
+      "symbol": "NIFTY",
+      "direction": "BEARISH",
+      "entry_price": 22578.85,
+      "stop_loss": 22653.85,
+      "initial_stop_loss": 22653.85,
+      "target_1": 22500.0,
+      "lots": 1,
+      "entry_time": "2026-10-07T13:15:00.013845+05:30",
+      "strategy_name": "Bear Put Spread",
+      "entry_premium_info": {
+        "buy_premium": 160.5,
+        "sell_premium": 169.6,
+        "net_debit": -9.1,
+        "leg_details": [
+          {
+            "strike": 22600.0,
+            "option_type": "PE",
+            "action": "BUY",
+            "token": "44617",
+            "ltp": 160.5
+          },
+          {
+            "strike": 22500.0,
+            "option_type": "PE",
+            "action": "SELL",
+            "token": "47136",
+            "ltp": 169.6
+          }
+        ]
+      }
+    }
+  ],
   "closed_trades": [],
   "readiness_gates": {
     "total_trades": 0,
@@ -29,5 +62,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-07T13:00:02.417143+05:30"
+  "last_updated": "2026-10-07T13:15:19.302802+05:30"
 }
