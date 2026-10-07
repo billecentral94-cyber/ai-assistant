@@ -615,5 +615,112 @@
       },
       "all_gates_passed": false
     }
+  },
+  {
+    "date": "2026-10-07",
+    "total_pnl": 1397.76,
+    "fo_pnl": 1496.25,
+    "equity_pnl": -98.49,
+    "trades_count": 6,
+    "capital": 15526.16,
+    "trades": [
+      {
+        "symbol": "BANKNIFTY",
+        "direction": "BULLISH",
+        "entry_price": 54917.7,
+        "exit_price": 55200.0,
+        "lots": 1,
+        "quantity": 25,
+        "entry_time": "2026-10-07T14:15:09.375270+05:30",
+        "exit_time": "2026-10-07T14:29:59.992624+05:30",
+        "exit_reason": "TARGET_1",
+        "net_pnl": 1496.25,
+        "strategy": "Bull Call Spread"
+      },
+      {
+        "symbol": "ITC",
+        "direction": "SHORT",
+        "entry_price": 263.8,
+        "exit_price": 265.65,
+        "quantity": 22,
+        "entry_time": "2026-10-07T09:46:48.722763+05:30",
+        "exit_time": "2026-10-07T10:30:00.002116+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": -46.69,
+        "charges": 5.99
+      },
+      {
+        "symbol": "AXISBANK",
+        "direction": "BUY",
+        "entry_price": 1255.0,
+        "exit_price": 1246.21,
+        "quantity": 4,
+        "entry_time": "2026-10-07T10:30:00.002116+05:30",
+        "exit_time": "2026-10-07T13:15:00.013845+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": -40.66,
+        "charges": 5.5
+      },
+      {
+        "symbol": "TATASTEEL",
+        "direction": "SHORT",
+        "entry_price": 174.78,
+        "exit_price": 176.0,
+        "quantity": 33,
+        "entry_time": "2026-10-07T13:15:00.013845+05:30",
+        "exit_time": "2026-10-07T14:29:59.992624+05:30",
+        "exit_reason": "STOP_LOSS",
+        "net_pnl": -46.23,
+        "charges": 5.97
+      },
+      {
+        "symbol": "INFY",
+        "direction": "SHORT",
+        "entry_price": 1002.95,
+        "exit_price": 991.9,
+        "quantity": 5,
+        "entry_time": "2026-10-07T10:00:00.016636+05:30",
+        "exit_time": "2026-10-07T15:15:00.001165+05:30",
+        "exit_reason": "EOD_SQUARE_OFF",
+        "net_pnl": 49.76,
+        "charges": 5.49
+      },
+      {
+        "symbol": "KOTAKBANK",
+        "direction": "BUY",
+        "entry_price": 440.75,
+        "exit_price": 440.0,
+        "quantity": 12,
+        "entry_time": "2026-10-07T14:29:59.992624+05:30",
+        "exit_time": "2026-10-07T15:15:00.001165+05:30",
+        "exit_reason": "EOD_SQUARE_OFF",
+        "net_pnl": -14.67,
+        "charges": 5.67
+      }
+    ],
+    "gates": {
+      "total_trades": 1,
+      "wins": 1,
+      "losses": 0,
+      "win_rate_pct": 100.0,
+      "profit_factor": 999.0,
+      "max_drawdown_pct": 0.0,
+      "gate_1_win_rate": {
+        "value": 100.0,
+        "threshold": 55.0,
+        "passed": true
+      },
+      "gate_2_profit_factor": {
+        "value": 999.0,
+        "threshold": 1.5,
+        "passed": true
+      },
+      "gate_3_max_drawdown": {
+        "value": 0.0,
+        "threshold": 4.0,
+        "passed": true
+      },
+      "all_gates_passed": true
+    }
   }
 ]

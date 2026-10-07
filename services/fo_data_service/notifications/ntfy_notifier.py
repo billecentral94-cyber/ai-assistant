@@ -82,7 +82,7 @@ class NtfyNotifier:
         title = "Artha Trading Bot Started"
         body = (
             f"Status: Online & Operational\n"
-            f"F&O Vault: ₹{fo_cap:,.0f} | Equity: ₹{eq_cap:,.0f} (5x Power: ₹{eq_power:,.0f})\n"
+            f"F&O Vault: Rs. {fo_cap:,.0f} | Equity: Rs. {eq_cap:,.0f} (5x Power: Rs. {eq_power:,.0f})\n"
             f"Scanning 14 stocks + NIFTY/BANKNIFTY every 15m."
         )
         return self.send_notification(title, body, priority="default", tags=["rocket", "green_circle"])
@@ -102,7 +102,7 @@ class NtfyNotifier:
         body = (
             f"NIFTY: {nifty_sig} | BANKNIFTY: {banknifty_sig}\n"
             f"Equity: {equity_scan_summary}\n"
-            f"Active: {open_positions_count} | Today P&L: {sign}₹{daily_pnl:,.2f}"
+            f"Active: {open_positions_count} | Today P&L: {sign}Rs. {daily_pnl:,.2f}"
         )
         # Low priority so heartbeat updates stay in lockscreen feed without buzzing loudly every 15m
         return self.send_notification(title, body, priority="low", tags=["timer_clock"])
@@ -117,8 +117,8 @@ class NtfyNotifier:
 
         title = f"Order Executed — {sym} ({dir_})"
         body = (
-            f"Entry: ₹{entry:,.2f} | Strategy: {strat}\n"
-            f"Stop Loss: ₹{sl:,.2f} | Target: ₹{target:,.2f}"
+            f"Entry: Rs. {entry:,.2f} | Strategy: {strat}\n"
+            f"Stop Loss: Rs. {sl:,.2f} | Target: Rs. {target:,.2f}"
         )
         return self.send_notification(title, body, priority="high", tags=["chart_with_upwards_trend", "bell"])
 
@@ -131,10 +131,10 @@ class NtfyNotifier:
         pnl = trade.get("net_pnl") if trade.get("net_pnl") is not None else trade.get("pnl", 0.0)
         sign = "+" if pnl >= 0 else ""
 
-        title = f"Trade Closed — {sym} ({sign}₹{pnl:,.2f})"
+        title = f"Trade Closed — {sym} ({sign}Rs. {pnl:,.2f})"
         body = (
-            f"Direction: {dir_} | Exit: ₹{exit_:,.2f} (Entry: ₹{entry:,.2f})\n"
-            f"Reason: {reason} | Net Realized: {sign}₹{pnl:,.2f}"
+            f"Direction: {dir_} | Exit: Rs. {exit_:,.2f} (Entry: Rs. {entry:,.2f})\n"
+            f"Reason: {reason} | Net Realized: {sign}Rs. {pnl:,.2f}"
         )
         tags = ["moneybag", "white_check_mark"] if pnl >= 0 else ["x", "chart_with_downwards_trend"]
         return self.send_notification(title, body, priority="high", tags=tags)
@@ -162,8 +162,8 @@ class NtfyNotifier:
 
         title = f"Daily Session Summary ({date_str})"
         body = (
-            f"Total P&L: {sign}₹{pnl:,.2f}\n"
-            f"Closed Trades: {trades} | Ending Portfolio: ₹{cap:,.2f}\n"
-            f"F&O: ₹{summary.get('fo_pnl', 0):,.2f} | EQ: ₹{summary.get('equity_pnl', 0):,.2f}"
+            f"Total P&L: {sign}Rs. {pnl:,.2f}\n"
+            f"Closed Trades: {trades} | Ending Portfolio: Rs. {cap:,.2f}\n"
+            f"F&O: Rs. {summary.get('fo_pnl', 0):,.2f} | EQ: Rs. {summary.get('equity_pnl', 0):,.2f}"
         )
         return self.send_notification(title, body, priority="high", tags=["bar_chart", "trophy"])

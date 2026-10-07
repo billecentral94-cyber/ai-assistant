@@ -167,10 +167,10 @@ class TelegramNotifier:
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
             f"• *Product:* {product}\n"
             f"• *Quantity:* {qty} Shares/Lots\n"
-            f"• *Entry Price:* ₹{entry:,.2f}\n"
-            f"• *Stop Loss:* ₹{sl:,.2f}\n"
-            f"• *Target:* ₹{tp:,.2f}\n"
-            f"• *Risk Capped At:* ₹{risk:,.2f}\n"
+            f"• *Entry Price:* Rs. {entry:,.2f}\n"
+            f"• *Stop Loss:* Rs. {sl:,.2f}\n"
+            f"• *Target:* Rs. {tp:,.2f}\n"
+            f"• *Risk Capped At:* Rs. {risk:,.2f}\n"
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
             f"_Trailing stop-loss enabled._"
         )
@@ -204,9 +204,9 @@ class TelegramNotifier:
             f"{pnl_icon} *TRADE CLOSED — {sym} ({icon})*\n"
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
             f"• *Direction:* {direction}\n"
-            f"• *Entry:* ₹{entry:,.2f} ➔ *Exit:* ₹{exit_p:,.2f}\n"
-            f"• *Brokerage & Taxes:* ₹{charges:,.2f}\n"
-            f"• *Net Realized P&L:* *{sign}₹{pnl:,.2f}*\n"
+            f"• *Entry:* Rs. {entry:,.2f} ➔ *Exit:* Rs. {exit_p:,.2f}\n"
+            f"• *Brokerage & Taxes:* Rs. {charges:,.2f}\n"
+            f"• *Net Realized P&L:* *{sign}Rs. {pnl:,.2f}*\n"
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
         )
         if self.ntfy:

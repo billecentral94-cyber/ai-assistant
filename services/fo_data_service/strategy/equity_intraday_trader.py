@@ -13,6 +13,8 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime, time
 import pytz
 
+from .tax_calculator import calculate_equity_mis_charges
+
 logger = logging.getLogger("equity_intraday_trader")
 IST = pytz.timezone("Asia/Kolkata")
 
@@ -141,10 +143,23 @@ class EquityIntradayTrader:
                     exit_price = tp
 
             if should_close:
-                gross_pnl = round((exit_price - entry) * qty if direction == "BUY" else (entry - exit_price) * qty, 2)
-                # Brokerage (0.03% or ₹20) + turnover tax ≈ ₹5.00
-                brokerage_and_tax = round(min(20.0, (entry + exit_price) * qty * 0.0003) + 2.50, 2)
-                net_pnl = round(gross_pnl - brokerage_and_tax, 2)
+                # Real market fill: BUY exit sells at Best Bid; SHORT exit buys at Best Ask
+                depth = quote.get("depth", {}) or {}
+                buys = depth.get("buy", [])
+                sells = depth.get("sell", [])
+                if direction == "BUY":
+                    fill_exit = float(buys[0].get("price", 0.0)) if buys and float(buys[0].get("price", 0.0)) > 0 else round(exit_price * (1.0 - 0.0005), 2)
+                else:
+                    fill_exit = float(sells[0].get("price", 0.0)) if sells and float(sells[0].get("price", 0.0)) > 0 else round(exit_price * (1.0 + 0.0005), 2)
+
+                gross_pnl = round((fill_exit - entry) * qty if direction == "BUY" else (entry - fill_exit) * qty, 2)
+
+                # 100% compliant statutory charges (STT + Exchange + SEBI + Stamp Duty + GST + Brokerage)
+                buy_val = (entry if direction == "BUY" else fill_exit) * qty
+                sell_val = (fill_exit if direction == "BUY" else entry) * qty
+                charges_info = calculate_equity_mis_charges(buy_value=buy_val, sell_value=sell_val)
+                total_charges = charges_info["total_charges"]
+                net_pnl = round(gross_pnl - total_charges, 2)
 
                 self.current_capital = round(self.current_capital + net_pnl, 2)
                 self.daily_pnl = round(self.daily_pnl + net_pnl, 2)
@@ -153,17 +168,19 @@ class EquityIntradayTrader:
                     "symbol": sym,
                     "direction": direction,
                     "entry_price": entry,
-                    "exit_price": exit_price,
+                    "exit_price": fill_exit,
                     "quantity": qty,
                     "entry_time": pos["entry_time"],
                     "exit_time": now.isoformat(),
                     "exit_reason": exit_reason,
+                    "gross_pnl": gross_pnl,
                     "net_pnl": net_pnl,
-                    "charges": brokerage_and_tax
+                    "charges": total_charges,
+                    "charges_breakdown": charges_info
                 }
                 self.closed_trades.append(closed_trade)
                 events.append({"event": "EQUITY_POSITION_CLOSED", "trade": closed_trade})
-                logger.info(f"[EQUITY] CLOSED {direction} {sym} @ {exit_price} | Reason: {exit_reason} | PnL: ₹{net_pnl:+.2f}")
+                logger.info(f"[EQUITY] CLOSED {direction} {sym} @ Rs {fill_exit} | Reason: {exit_reason} | Net PnL: Rs {net_pnl:+.2f}")
             else:
                 active_positions.append(pos)
 
@@ -239,13 +256,24 @@ class EquityIntradayTrader:
                 qty = min(raw_qty, max_affordable_qty)
 
                 if qty >= 1:
-                    sl = round(ltp - risk_points if signal_dir == "BUY" else ltp + risk_points, 2)
-                    tp = round(ltp + (risk_points * self.target_rr) if signal_dir == "BUY" else ltp - (risk_points * self.target_rr), 2)
+                    # Real market fill: BUY executes at Best Ask, SHORT executes at Best Bid
+                    quote_cand = quotes.get(sym, {})
+                    depth_cand = quote_cand.get("depth", {}) or {}
+                    cand_buys = depth_cand.get("buy", [])
+                    cand_sells = depth_cand.get("sell", [])
+
+                    if signal_dir == "BUY":
+                        fill_entry = float(cand_sells[0].get("price", 0.0)) if cand_sells and float(cand_sells[0].get("price", 0.0)) > 0 else round(ltp * (1.0 + 0.0005), 2)
+                    else:
+                        fill_entry = float(cand_buys[0].get("price", 0.0)) if cand_buys and float(cand_buys[0].get("price", 0.0)) > 0 else round(ltp * (1.0 - 0.0005), 2)
+
+                    sl = round(fill_entry - risk_points if signal_dir == "BUY" else fill_entry + risk_points, 2)
+                    tp = round(fill_entry + (risk_points * self.target_rr) if signal_dir == "BUY" else fill_entry - (risk_points * self.target_rr), 2)
 
                     new_pos = {
                         "symbol": sym,
                         "direction": signal_dir,
-                        "entry_price": ltp,
+                        "entry_price": fill_entry,
                         "stop_loss": sl,
                         "target": tp,
                         "risk_points": risk_points,
@@ -258,8 +286,8 @@ class EquityIntradayTrader:
                     self.open_positions.append(new_pos)
                     events.append({"event": "EQUITY_POSITION_OPENED", "position": new_pos})
                     logger.info(
-                        f"[EQUITY] OPENED {signal_dir} {qty}x {sym} ({stock['sector']}) @ ₹{ltp} "
-                        f"(Score: {best['score']:.1f}) | SL: ₹{sl} | Target: ₹{tp}"
+                        f"[EQUITY] OPENED {signal_dir} {qty}x {sym} ({stock['sector']}) @ Rs {fill_entry} "
+                        f"(Score: {best['score']:.1f}) | SL: Rs {sl} | Target: Rs {tp}"
                     )
                     break  # Enter the single best candidate per cycle
 

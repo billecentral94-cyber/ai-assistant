@@ -644,89 +644,37 @@ export async function getFoPaperTrades() {
   const fallback = {
     engine_status: 'ACTIVE',
     initial_capital: 5000.0,
-    current_capital: 11767.25,
-    daily_pnl: 6767.25,
+    current_capital: 12960.27,
+    daily_pnl: 1496.25,
     open_positions: [],
     closed_trades: [
       {
         symbol: 'BANKNIFTY',
-        direction: 'BEARISH',
-        entry_price: 54477.35,
-        exit_price: 54000.0,
-        lots: 1,
-        quantity: 25,
-        entry_time: '2026-10-05T11:52:02.602298+05:30',
-        exit_time: '2026-10-05T11:52:13.491461+05:30',
-        exit_reason: 'TARGET_1',
-        net_pnl: 5945.51,
-        strategy: 'Bear Put Spread'
-      },
-      {
-        symbol: 'BANKNIFTY',
-        direction: 'BEARISH',
-        entry_price: 54000.0,
-        exit_price: 54200.0,
-        lots: 1,
-        quantity: 25,
-        entry_time: '2026-10-05T11:52:13.491461+05:30',
-        exit_time: '2026-10-05T11:52:18.713791+05:30',
-        exit_reason: 'STOP_LOSS',
-        net_pnl: -321.35,
-        strategy: 'Bear Put Spread'
-      },
-      {
-        symbol: 'NIFTY',
         direction: 'BULLISH',
-        entry_price: 22555.55,
-        exit_price: 22700.0,
+        entry_price: 54917.7,
+        exit_price: 55200.0,
         lots: 1,
         quantity: 25,
-        entry_time: '2026-10-05T14:32:50.745450+05:30',
-        exit_time: '2026-10-05T14:32:57.463089+05:30',
+        entry_time: '2026-10-07T14:15:09.375270+05:30',
+        exit_time: '2026-10-07T14:29:59.992624+05:30',
         exit_reason: 'TARGET_1',
-        net_pnl: 1785.06,
+        net_pnl: 1496.25,
         strategy: 'Bull Call Spread'
-      },
-      {
-        symbol: 'NIFTY',
-        direction: 'BULLISH',
-        entry_price: 24000.0,
-        exit_price: 23925.0,
-        lots: 1,
-        quantity: 25,
-        entry_time: '2026-10-05T14:32:57.463089+05:30',
-        exit_time: '2026-10-05T14:33:03.559317+05:30',
-        exit_reason: 'STOP_LOSS',
-        net_pnl: -320.60,
-        strategy: 'Bull Call Spread'
-      },
-      {
-        symbol: 'BANKNIFTY',
-        direction: 'BEARISH',
-        entry_price: 54698.5,
-        exit_price: 54713.6,
-        lots: 1,
-        quantity: 25,
-        entry_time: '2026-10-05T15:14:46.167201+05:30',
-        exit_time: '2026-10-05T15:15:09.918523+05:30',
-        exit_reason: 'EOD_SQUARE_OFF',
-        net_pnl: -321.37,
-        strategy: 'Bear Put Spread'
       }
     ],
     readiness_gates: {
-      total_trades: 5,
-      wins: 2,
-      losses: 3,
-      win_rate_pct: 40.0,
-      profit_factor: 8.02,
-      max_drawdown_pct: 5.17,
-      gate_1_win_rate: { value: 40.0, threshold: 55.0, passed: false },
-      gate_2_profit_factor: { value: 8.02, threshold: 1.5, passed: true },
-      gate_3_max_drawdown: { value: 5.17, threshold: 4.0, passed: false },
-      all_gates_passed: false
+      total_trades: 1,
+      wins: 1,
+      losses: 0,
+      win_rate_pct: 100.0,
+      profit_factor: 999.0,
+      max_drawdown_pct: 0.0,
+      gate_1_win_rate: { value: 100.0, threshold: 55.0, passed: true },
+      gate_2_profit_factor: { value: 999.0, threshold: 1.5, passed: true },
+      gate_3_max_drawdown: { value: 0.0, threshold: 4.0, passed: true },
+      all_gates_passed: true
     },
-    last_updated: '2026-10-05T15:35:11.523933+05:30'
+    last_updated: '2026-10-07T15:15:01.587987+05:30'
   };
 
   return fetchLiveBotState(`${BASE}/fo/paper-trades`, 'live_trading_state.json', fallback);
@@ -736,50 +684,74 @@ export async function getEquityPaperTrades() {
   const fallback = {
     engine_status: 'ACTIVE',
     initial_capital: 2500.0,
-    current_capital: 2609.43,
-    daily_pnl: 1.82,
+    current_capital: 2565.89,
+    daily_pnl: -98.49,
     leverage_multiplier: 5.0,
-    purchasing_power: 13047.15,
+    purchasing_power: 12829.45,
     open_positions: [],
     closed_trades: [
       {
-        symbol: 'COALINDIA',
-        direction: 'BUY',
-        entry_price: 428.45,
-        exit_price: 425.45,
-        quantity: 13,
-        entry_time: '2026-10-05T09:15:00.000058+05:30',
-        exit_time: '2026-10-05T10:38:30.322755+05:30',
-        exit_reason: 'STOP_LOSS',
-        net_pnl: -44.83,
-        charges: 5.83
-      },
-      {
-        symbol: 'SBIN',
-        direction: 'BUY',
-        entry_price: 960.15,
-        exit_price: 958.30,
-        quantity: 6,
-        entry_time: '2026-10-05T09:15:18.451414+05:30',
-        exit_time: '2026-10-05T15:15:09.918523+05:30',
-        exit_reason: 'EOD_SQUARE_OFF',
-        net_pnl: -17.05,
-        charges: 5.95
-      },
-      {
-        symbol: 'HDFCBANK',
+        symbol: 'ITC',
         direction: 'SHORT',
-        entry_price: 713.25,
-        exit_price: 704.55,
-        quantity: 8,
-        entry_time: '2026-10-05T10:38:53.105411+05:30',
-        exit_time: '2026-10-05T15:15:09.918523+05:30',
+        entry_price: 263.8,
+        exit_price: 265.65,
+        quantity: 22,
+        entry_time: '2026-10-07T09:46:48.722763+05:30',
+        exit_time: '2026-10-07T10:30:00.002116+05:30',
+        exit_reason: 'STOP_LOSS',
+        net_pnl: -46.69,
+        charges: 5.99
+      },
+      {
+        symbol: 'AXISBANK',
+        direction: 'BUY',
+        entry_price: 1255.0,
+        exit_price: 1246.21,
+        quantity: 4,
+        entry_time: '2026-10-07T10:30:00.002116+05:30',
+        exit_time: '2026-10-07T13:15:00.013845+05:30',
+        exit_reason: 'STOP_LOSS',
+        net_pnl: -40.66,
+        charges: 5.5
+      },
+      {
+        symbol: 'TATASTEEL',
+        direction: 'SHORT',
+        entry_price: 174.78,
+        exit_price: 176.0,
+        quantity: 33,
+        entry_time: '2026-10-07T13:15:00.013845+05:30',
+        exit_time: '2026-10-07T14:29:59.992624+05:30',
+        exit_reason: 'STOP_LOSS',
+        net_pnl: -46.23,
+        charges: 5.97
+      },
+      {
+        symbol: 'INFY',
+        direction: 'SHORT',
+        entry_price: 1002.95,
+        exit_price: 991.9,
+        quantity: 5,
+        entry_time: '2026-10-07T10:00:00.016636+05:30',
+        exit_time: '2026-10-07T15:15:00.001165+05:30',
         exit_reason: 'EOD_SQUARE_OFF',
-        net_pnl: 63.70,
-        charges: 5.90
+        net_pnl: 49.76,
+        charges: 5.49
+      },
+      {
+        symbol: 'KOTAKBANK',
+        direction: 'BUY',
+        entry_price: 1870.0,
+        exit_price: 1865.2,
+        quantity: 2,
+        entry_time: '2026-10-07T11:45:00.002116+05:30',
+        exit_time: '2026-10-07T15:15:00.001165+05:30',
+        exit_reason: 'EOD_SQUARE_OFF',
+        net_pnl: -14.67,
+        charges: 5.07
       }
     ],
-    last_updated: '2026-10-05T15:29:52.616368+05:30'
+    last_updated: '2026-10-07T15:15:02.770298+05:30'
   };
 
   return fetchLiveBotState(`${BASE}/fo/equity-trades`, 'equity_trading_state.json', fallback);
@@ -788,6 +760,14 @@ export async function getEquityPaperTrades() {
 export async function getDailyHistory() {
   const fallback = {
     records: [
+      {
+        date: '2026-10-07',
+        total_pnl: 1397.76,
+        fo_pnl: 1496.25,
+        equity_pnl: -98.49,
+        trades_count: 6,
+        capital: 15526.16
+      },
       {
         date: '2026-10-06',
         total_pnl: -248.28,

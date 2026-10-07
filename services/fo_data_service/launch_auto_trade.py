@@ -67,6 +67,24 @@ def main():
     logger.info("  Logging to: " + log_filename)
     logger.info("================================================================")
 
+    # Validate Trading Day & Market Hours before acquiring wake lock
+    try:
+        from orchestrator.scheduler import is_trading_day, IST
+        from datetime import time as dt_time
+        now_ist = datetime.now(IST)
+        today = now_ist.date()
+        curr_time = now_ist.time()
+
+        if not is_trading_day(today):
+            logger.info(f"Today ({now_ist.strftime('%A, %d-%b-%Y')}) is a Weekend or NSE Holiday. Engine will not launch.")
+            return
+
+        if curr_time >= dt_time(15, 40):
+            logger.info(f"Current time ({curr_time.strftime('%H:%M')} IST) is after market hours (15:40 IST). Engine will not launch.")
+            return
+    except Exception as check_err:
+        logger.warning(f"Market hours pre-check warning: {check_err}")
+
     set_wake_lock(True)
     telegram = TelegramNotifier()
 

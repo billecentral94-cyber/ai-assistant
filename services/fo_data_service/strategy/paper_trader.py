@@ -16,6 +16,7 @@ import logging
 from .signal_generator import SignalGenerator, Signal
 from .risk_manager import RiskManager
 from .self_improver import load_adaptive_config
+from .tax_calculator import calculate_options_spread_charges
 
 logger = logging.getLogger(__name__)
 IST = pytz.timezone("Asia/Kolkata")
@@ -26,7 +27,7 @@ QUOTE_URL = "https://apiconnect.angelbroking.com/rest/secure/angelbroking/market
 class PaperTrader:
     """
     Simulates paper execution during market hours (09:15 - 15:30 IST).
-    Uses live Angel One option LTPs for spread P&L when session is available.
+    Uses live Angel One option Bid/Ask depth for 100% realistic spread execution and P&L.
     """
 
     def __init__(
@@ -51,16 +52,19 @@ class PaperTrader:
         self.daily_pnl = 0.0
         self.last_stop_times: Dict[str, datetime] = {}
 
-        # Cache: maps "SYMBOL STRIKE CE/PE" -> Angel One token string
-        self._token_cache: Dict[str, str] = {}
+        # Cache: maps "SYMBOL_STRIKE_TYPE" -> contract info dict
+        self._token_cache: Dict[str, Dict[str, Any]] = {}
         self._scrip_master: Optional[List[Dict[str, Any]]] = None
 
-    def _lookup_option_token(self, underlying: str, strike: float, option_type: str) -> Optional[str]:
-        """Looks up Angel One instrument token for a specific option contract from scrip master."""
+    def _lookup_option_contract(self, underlying: str, strike: float, option_type: str) -> Optional[Dict[str, Any]]:
+        """
+        Looks up Angel One instrument token, tradingSymbol, expiry, and exact exchange lot size
+        for the nearest active expiry contract (>= today).
+        """
         if self.angel_session is None:
             return None
 
-        cache_key = f"{underlying}_{strike}_{option_type}"
+        cache_key = f"{underlying.upper()}_{int(strike)}_{option_type.upper()}"
         if cache_key in self._token_cache:
             return self._token_cache[cache_key]
 
@@ -77,6 +81,7 @@ class PaperTrader:
             from dateutil import parser as date_parser
             today = datetime.now(IST).date()
 
+            candidates = []
             for item in self._scrip_master:
                 if (
                     item.get("exch_seg") == "NFO"
@@ -84,7 +89,7 @@ class PaperTrader:
                     and item.get("instrumenttype") == "OPTIDX"
                 ):
                     symbol = item.get("symbol", "")
-                    if not symbol.endswith(option_type):
+                    if not symbol.endswith(option_type.upper()):
                         continue
 
                     raw_strike = float(item.get("strike", "0"))
@@ -94,65 +99,129 @@ class PaperTrader:
 
                     exp_d = date_parser.parse(item.get("expiry", "")).date()
                     if exp_d >= today:
-                        token = item.get("token")
-                        self._token_cache[cache_key] = token
-                        return token
+                        candidates.append((exp_d, item))
+
+            if candidates:
+                # Sort ascending by expiry date to strictly pick the NEAREST active expiry
+                candidates.sort(key=lambda c: c[0])
+                nearest_exp, best_item = candidates[0]
+                default_lot = 30 if underlying.upper() == "BANKNIFTY" else 65
+                contract_info = {
+                    "token": str(best_item.get("token")),
+                    "symbol": best_item.get("symbol"),
+                    "expiry": str(nearest_exp),
+                    "lotsize": int(best_item.get("lotsize") or default_lot)
+                }
+                self._token_cache[cache_key] = contract_info
+                return contract_info
+
         except Exception as e:
-            logger.warning(f"Token lookup failed for {cache_key}: {e}")
+            logger.warning(f"Contract lookup failed for {cache_key}: {e}")
 
         return None
 
-    def _fetch_option_ltp(self, token: str) -> Optional[float]:
-        """Fetches live LTP for a single option token from Angel One SmartAPI."""
+    def _lookup_option_token(self, underlying: str, strike: float, option_type: str) -> Optional[str]:
+        """Backwards compatible token lookup helper."""
+        info = self._lookup_option_contract(underlying, strike, option_type)
+        return info.get("token") if info else None
+
+    def _fetch_option_quote(self, token: str) -> Optional[Dict[str, Any]]:
+        """
+        Fetches live FULL quote including best Bid/Ask market depth from Angel One SmartAPI.
+        Mirrors real broker execution: buyers buy at Ask, sellers sell at Bid.
+        """
         if self.angel_session is None or not token:
             return None
         try:
             headers = self.angel_session._get_headers(with_auth=True)
-            payload = {"mode": "LTP", "exchangeTokens": {"NFO": [str(token)]}}
+            payload = {"mode": "FULL", "exchangeTokens": {"NFO": [str(token)]}}
             resp = self.angel_session.session.post(QUOTE_URL, json=payload, headers=headers, timeout=10)
             data = resp.json()
             fetched = data.get("data", {}).get("fetched", [])
             if fetched:
-                return float(fetched[0].get("ltp", 0.0))
+                item = fetched[0]
+                ltp = float(item.get("ltp", 0.0))
+                depth = item.get("depth", {}) or {}
+                buys = depth.get("buy", [])
+                sells = depth.get("sell", [])
+
+                best_bid = float(buys[0].get("price", 0.0)) if buys and float(buys[0].get("price", 0.0)) > 0 else round(ltp * (1.0 - self.slippage_pct / 100.0), 2)
+                best_ask = float(sells[0].get("price", 0.0)) if sells and float(sells[0].get("price", 0.0)) > 0 else round(ltp * (1.0 + self.slippage_pct / 100.0), 2)
+
+                return {
+                    "ltp": ltp,
+                    "best_bid": best_bid,
+                    "best_ask": best_ask,
+                    "tradingSymbol": item.get("tradingSymbol", "")
+                }
         except Exception as e:
-            logger.warning(f"Option LTP fetch failed for token {token}: {e}")
+            logger.warning(f"Option quote fetch failed for token {token}: {e}")
         return None
 
-    def _get_spread_premium(self, legs: List[Dict[str, Any]], underlying: str) -> Optional[Dict[str, Any]]:
+    def _fetch_option_ltp(self, token: str) -> Optional[float]:
+        """Fetches LTP helper."""
+        q = self._fetch_option_quote(token)
+        return q.get("ltp") if q else None
+
+    def _get_spread_premium(self, legs: List[Dict[str, Any]], underlying: str, is_closing: bool = False) -> Optional[Dict[str, Any]]:
         """
-        Fetches real LTPs for all legs of a spread and returns premium details.
-        Returns dict with buy_premium, sell_premium, net_debit, leg_details or None if fetch fails.
+        Fetches real market quotes for spread legs with realistic Bid/Ask execution fills.
+        - Entry (is_closing=False): Buy at best Ask, Sell at best Bid.
+        - Exit (is_closing=True): Close Buy by selling at Bid, Close Sell by buying back at Ask.
         """
         if self.angel_session is None or not legs:
             return None
 
         leg_details = []
+        exchange_lot = None
+
         for leg in legs:
             strike = leg.get("strike", 0)
             opt_type = leg.get("option_type", "")
             action = leg.get("action", "")
-            token = self._lookup_option_token(underlying, strike, opt_type)
-            if token is None:
-                return None  # Can't price all legs; fall back to theoretical
-            ltp = self._fetch_option_ltp(token)
-            if ltp is None or ltp <= 0:
+            contract = self._lookup_option_contract(underlying, strike, opt_type)
+            if contract is None:
+                return None  # Missing contract; cannot price accurately
+
+            token = contract["token"]
+            exchange_lot = contract.get("lotsize")
+            quote = self._fetch_option_quote(token)
+            if not quote or quote.get("ltp", 0.0) <= 0:
                 return None
+
+            ltp = quote["ltp"]
+            bid = quote["best_bid"]
+            ask = quote["best_ask"]
+
+            # Real market execution: buyer pays Ask, seller receives Bid
+            if not is_closing:
+                fill_price = ask if action == "BUY" else bid
+            else:
+                # When closing: unwind original position
+                fill_price = bid if action == "BUY" else ask
+
             leg_details.append({
                 "strike": strike,
                 "option_type": opt_type,
                 "action": action,
                 "token": token,
-                "ltp": ltp
+                "symbol": contract.get("symbol") or quote.get("tradingSymbol"),
+                "expiry": contract.get("expiry"),
+                "ltp": ltp,
+                "fill_price": fill_price,
+                "bid": bid,
+                "ask": ask
             })
 
-        buy_premium = sum(d["ltp"] for d in leg_details if d["action"] == "BUY")
-        sell_premium = sum(d["ltp"] for d in leg_details if d["action"] == "SELL")
+        buy_premium = sum(d["fill_price"] for d in leg_details if d["action"] == "BUY")
+        sell_premium = sum(d["fill_price"] for d in leg_details if d["action"] == "SELL")
         net_debit = round(buy_premium - sell_premium, 2)
 
         return {
             "buy_premium": round(buy_premium, 2),
             "sell_premium": round(sell_premium, 2),
             "net_debit": net_debit,
+            "lotsize": exchange_lot or (30 if underlying.upper() == "BANKNIFTY" else 65),
             "leg_details": leg_details
         }
 
@@ -194,7 +263,10 @@ class PaperTrader:
             tp = pos["target_1"]
             direction = pos["direction"]
             lots = pos["lots"]
-            qty = lots * self.lot_size
+            entry_premium = pos.get("entry_premium_info")
+            default_lot = 30 if underlying.upper() == "BANKNIFTY" else 65
+            lotsize = pos.get("lotsize") or (entry_premium.get("lotsize") if entry_premium else None) or default_lot
+            qty = lots * lotsize
             max_defined_risk = pos.get("max_risk", 300.0)
             orig_risk_pts = abs(entry - pos.get("initial_stop_loss", sl))
 
@@ -243,43 +315,80 @@ class PaperTrader:
                     exit_price = tp
 
             if should_close:
-                # --- LIVE LTP SPREAD P&L (replaces theoretical pts * 0.50 proxy) ---
-                entry_premium = pos.get("entry_premium_info")
+                # --- 100% REAL MARKET EXECUTION & STATUTORY CHARGES ---
                 exit_premium = None
 
                 if entry_premium and self.angel_session:
-                    # Fetch current LTPs for spread legs at exit
                     legs = entry_premium.get("leg_details", [])
                     exit_premium = self._get_spread_premium(
                         [{"strike": l["strike"], "option_type": l["option_type"], "action": l["action"]} for l in legs],
-                        underlying
+                        underlying,
+                        is_closing=True
                     )
 
                 if entry_premium and exit_premium:
-                    # Real spread P&L: (exit_sell - exit_buy) - (entry_buy - entry_sell)
-                    # For debit spread: entry paid net_debit, exit receives inverse
-                    entry_debit = entry_premium["net_debit"]  # buy - sell at entry
-                    exit_debit = exit_premium["net_debit"]      # buy - sell at exit (should be negative = credit)
-                    # P&L = -(exit_debit) - entry_debit (i.e., we close the spread)
-                    # Simplified: value at exit - cost at entry
-                    spread_pnl_per_unit = -(exit_debit) - entry_debit
+                    entry_legs = {f"{l['strike']}_{l['option_type']}_{l['action']}": l for l in entry_premium.get("leg_details", [])}
+                    exit_legs = {f"{l['strike']}_{l['option_type']}_{l['action']}": l for l in exit_premium.get("leg_details", [])}
+
+                    leg_gains = []
+                    buy_turnover_entry = 0.0
+                    sell_turnover_entry = 0.0
+                    buy_turnover_exit = 0.0
+                    sell_turnover_exit = 0.0
+
+                    for k, el in entry_legs.items():
+                        xl = exit_legs.get(k)
+                        if not xl:
+                            continue
+                        if el["action"] == "BUY":
+                            # Long Leg: Bought at el['fill_price'] (Ask), Sold at xl['fill_price'] (Bid)
+                            gain = xl["fill_price"] - el["fill_price"]
+                            buy_turnover_entry += el["fill_price"] * qty
+                            sell_turnover_exit += xl["fill_price"] * qty
+                        else:
+                            # Short Leg: Sold at el['fill_price'] (Bid), Bought back at xl['fill_price'] (Ask)
+                            gain = el["fill_price"] - xl["fill_price"]
+                            sell_turnover_entry += el["fill_price"] * qty
+                            buy_turnover_exit += xl["fill_price"] * qty
+                        leg_gains.append(gain)
+
+                    spread_pnl_per_unit = round(sum(leg_gains), 2)
                     gross_pnl = round(spread_pnl_per_unit * qty, 2)
+
+                    charges_dict = calculate_options_spread_charges(
+                        buy_turnover_entry=buy_turnover_entry,
+                        sell_turnover_entry=sell_turnover_entry,
+                        buy_turnover_exit=buy_turnover_exit,
+                        sell_turnover_exit=sell_turnover_exit,
+                        num_legs=len(entry_legs)
+                    )
+                    costs = charges_dict["total_charges"]
+                    charges_breakdown = charges_dict
                     logger.info(
-                        f"[{underlying}] Live LTP P&L: entry_debit={entry_debit}, "
-                        f"exit_debit={exit_debit}, spread_pnl/unit={spread_pnl_per_unit:.2f}"
+                        f"[{underlying}] Real Market Close: Spread PnL/unit={spread_pnl_per_unit:.2f} pts | "
+                        f"Gross=Rs {gross_pnl:.2f} | Statutory Charges=Rs {costs:.2f}"
                     )
                 else:
-                    # Fallback: theoretical delta proxy (0.50)
+                    # Fallback theoretical delta proxy (0.50)
                     pts = (exit_price - entry) if direction == "BULLISH" else (entry - exit_price)
-                    gross_pnl = pts * qty * 0.50
+                    gross_pnl = round(pts * qty * 0.50, 2)
+                    costs = round(40.0 + (entry + exit_price) * (self.slippage_pct / 100.0) * qty * 0.001, 2)
+                    charges_breakdown = {"brokerage": 40.0, "total_charges": costs}
 
-                # Capped defined risk for spreads: losses cannot exceed max defined debit (e.g. Rs 300)
+                # Capped defined risk for spreads: losses cannot exceed max defined debit
                 if gross_pnl < 0 and abs(gross_pnl) > max_defined_risk:
                     gross_pnl = -max_defined_risk
+
+                # Sanity guard for profits: spread profit cannot exceed strike width * qty
+                legs = (entry_premium or {}).get("leg_details", [])
+                if len(legs) >= 2:
+                    strike_width = abs(legs[0].get("strike", 0) - legs[1].get("strike", 0))
+                    if strike_width > 0:
+                        max_possible_profit = strike_width * qty
+                        if gross_pnl > max_possible_profit:
+                            gross_pnl = max_possible_profit
                 gross_pnl = round(gross_pnl, 2)
 
-                # Slippage + brokerage
-                costs = round(20.0 + (entry + exit_price) * (self.slippage_pct / 100.0) * qty * 0.001, 2)
                 net_pnl = round(gross_pnl - costs, 2)
 
                 self.current_capital += net_pnl
@@ -291,15 +400,21 @@ class PaperTrader:
                 closed_trade = {
                     "symbol": pos["symbol"],
                     "direction": direction,
-                    "entry_price": entry,
-                    "exit_price": exit_price,
+                    "underlying_entry_spot": entry,
+                    "underlying_exit_spot": exit_price,
                     "lots": lots,
+                    "lotsize": lotsize,
                     "quantity": qty,
                     "entry_time": pos["entry_time"],
                     "exit_time": now.isoformat(),
                     "exit_reason": exit_reason,
+                    "gross_pnl": gross_pnl,
+                    "charges": costs,
+                    "charges_breakdown": charges_breakdown,
                     "net_pnl": net_pnl,
-                    "strategy": pos["strategy_name"]
+                    "strategy": pos["strategy_name"],
+                    "entry_legs": (entry_premium or {}).get("leg_details", []),
+                    "exit_legs": (exit_premium or {}).get("leg_details", [])
                 }
                 self.closed_trades.append(closed_trade)
                 events.append({"event": "POSITION_CLOSED", "trade": closed_trade})
@@ -338,17 +453,19 @@ class PaperTrader:
                 entry_premium_info = None
                 strategy_legs = signal.recommended_strategy.get("legs", [])
                 if strategy_legs and self.angel_session:
-                    entry_premium_info = self._get_spread_premium(strategy_legs, underlying)
+                    entry_premium_info = self._get_spread_premium(strategy_legs, underlying, is_closing=False)
                     if entry_premium_info:
                         logger.info(
-                            f"[{underlying}] Live entry premiums: "
+                            f"[{underlying}] Live entry fills: "
                             f"Buy={entry_premium_info['buy_premium']}, "
                             f"Sell={entry_premium_info['sell_premium']}, "
-                            f"Net Debit={entry_premium_info['net_debit']}"
+                            f"Net Debit={entry_premium_info['net_debit']} | "
+                            f"Lot Size={entry_premium_info['lotsize']}"
                         )
                     else:
-                        logger.info(f"[{underlying}] Could not fetch live LTPs; will use theoretical P&L proxy.")
+                        logger.info(f"[{underlying}] Could not fetch live quotes; will use theoretical P&L proxy.")
 
+                pos_lotsize = (entry_premium_info.get("lotsize") if entry_premium_info else None) or (30 if underlying.upper() == "BANKNIFTY" else 65)
                 new_pos = {
                     "symbol": underlying,
                     "direction": signal.direction,
@@ -357,8 +474,9 @@ class PaperTrader:
                     "initial_stop_loss": signal.stop_loss,
                     "target_1": signal.target_1,
                     "lots": signal.position_size["lots"],
+                    "lotsize": pos_lotsize,
+                    "quantity": signal.position_size["lots"] * pos_lotsize,
                     "entry_time": now.isoformat(),
-                    "strategy_name": signal.recommended_strategy["strategy_name"],
                     "entry_premium_info": entry_premium_info
                 }
                 self.open_positions.append(new_pos)

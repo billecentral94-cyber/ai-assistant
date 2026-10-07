@@ -576,9 +576,14 @@ def cmd_auto_trade(args):
 
             paper_trader.save_state()
             eod_audit_done_today = True
+            logger.info("EOD reconciliation complete. Exiting autonomous engine for the day.")
+            break
 
         else:
             logger.info(f"Market CLOSED ({reason}). Standing by...")
+            if reason in ("post_market", "weekend", "trading_holiday"):
+                logger.info(f"Market closed ({reason}). Daily session finished.")
+                break
 
         # Sleep until next 15-minute scheduled bar
         next_run = get_next_run_time(now_ist, interval_minutes=settings.INTERVAL_MINUTES)
