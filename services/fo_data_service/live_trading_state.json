@@ -5,33 +5,33 @@
   "daily_pnl": 0.0,
   "open_positions": [
     {
-      "symbol": "NIFTY",
-      "direction": "BEARISH",
-      "entry_price": 22578.85,
-      "stop_loss": 22653.85,
-      "initial_stop_loss": 22653.85,
-      "target_1": 22500.0,
+      "symbol": "BANKNIFTY",
+      "direction": "BULLISH",
+      "entry_price": 54946.8,
+      "stop_loss": 54746.8,
+      "initial_stop_loss": 54746.8,
+      "target_1": 55200.0,
       "lots": 1,
-      "entry_time": "2026-10-07T13:15:00.013845+05:30",
-      "strategy_name": "Bear Put Spread",
+      "entry_time": "2026-10-07T13:30:00.009901+05:30",
+      "strategy_name": "Bull Call Spread",
       "entry_premium_info": {
-        "buy_premium": 160.5,
-        "sell_premium": 169.6,
-        "net_debit": -9.1,
+        "buy_premium": 903.25,
+        "sell_premium": 1357.05,
+        "net_debit": -453.8,
         "leg_details": [
           {
-            "strike": 22600.0,
-            "option_type": "PE",
+            "strike": 54900.0,
+            "option_type": "CE",
             "action": "BUY",
-            "token": "44617",
-            "ltp": 160.5
+            "token": "49435",
+            "ltp": 903.25
           },
           {
-            "strike": 22500.0,
-            "option_type": "PE",
+            "strike": 55100.0,
+            "option_type": "CE",
             "action": "SELL",
-            "token": "47136",
-            "ltp": 169.6
+            "token": "62157",
+            "ltp": 1357.05
           }
         ]
       }
@@ -62,5 +62,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-07T13:15:19.302802+05:30"
+  "last_updated": "2026-10-07T13:30:03.444611+05:30"
 }
