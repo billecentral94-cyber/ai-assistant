@@ -1,38 +1,11 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2530.8,
-  "daily_pnl": -133.58,
+  "current_capital": 2565.89,
+  "daily_pnl": -98.49,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 12654.0,
-  "open_positions": [
-    {
-      "symbol": "INFY",
-      "direction": "SHORT",
-      "entry_price": 1002.95,
-      "stop_loss": 999.44,
-      "target": 985.4,
-      "risk_points": 7.02,
-      "quantity": 5,
-      "entry_time": "2026-10-07T10:00:00.016636+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 97.9
-    },
-    {
-      "symbol": "KOTAKBANK",
-      "direction": "BUY",
-      "entry_price": 440.75,
-      "stop_loss": 437.66,
-      "target": 448.48,
-      "risk_points": 3.09,
-      "quantity": 12,
-      "entry_time": "2026-10-07T14:29:59.992624+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 115.6
-    }
-  ],
+  "purchasing_power": 12829.45,
+  "open_positions": [],
   "closed_trades": [
     {
       "symbol": "ITC",
@@ -69,7 +42,31 @@
       "exit_reason": "STOP_LOSS",
       "net_pnl": -46.23,
       "charges": 5.97
+    },
+    {
+      "symbol": "INFY",
+      "direction": "SHORT",
+      "entry_price": 1002.95,
+      "exit_price": 991.9,
+      "quantity": 5,
+      "entry_time": "2026-10-07T10:00:00.016636+05:30",
+      "exit_time": "2026-10-07T15:15:00.001165+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "net_pnl": 49.76,
+      "charges": 5.49
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "direction": "BUY",
+      "entry_price": 440.75,
+      "exit_price": 440.0,
+      "quantity": 12,
+      "entry_time": "2026-10-07T14:29:59.992624+05:30",
+      "exit_time": "2026-10-07T15:15:00.001165+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "net_pnl": -14.67,
+      "charges": 5.67
     }
   ],
-  "last_updated": "2026-10-07T15:00:18.479605+05:30"
+  "last_updated": "2026-10-07T15:15:01.665802+05:30"
 }
