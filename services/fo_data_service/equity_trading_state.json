@@ -18,8 +18,21 @@
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
       "momentum_score": 108.5
+    },
+    {
+      "symbol": "INFY",
+      "direction": "SHORT",
+      "entry_price": 1002.95,
+      "stop_loss": 1009.97,
+      "target": 985.4,
+      "risk_points": 7.02,
+      "quantity": 5,
+      "entry_time": "2026-10-07T10:00:00.016636+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 97.9
     }
   ],
   "closed_trades": [],
-  "last_updated": "2026-10-07T09:46:57.495410+05:30"
+  "last_updated": "2026-10-07T10:00:02.382224+05:30"
 }
