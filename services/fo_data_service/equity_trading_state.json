@@ -1,10 +1,10 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2577.03,
-  "daily_pnl": -87.35,
+  "current_capital": 2530.8,
+  "daily_pnl": -133.58,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 12885.15,
+  "purchasing_power": 12654.0,
   "open_positions": [
     {
       "symbol": "INFY",
@@ -20,17 +20,17 @@
       "momentum_score": 97.9
     },
     {
-      "symbol": "TATASTEEL",
-      "direction": "SHORT",
-      "entry_price": 174.78,
-      "stop_loss": 176.0,
-      "target": 171.73,
-      "risk_points": 1.22,
-      "quantity": 33,
-      "entry_time": "2026-10-07T13:15:00.013845+05:30",
+      "symbol": "KOTAKBANK",
+      "direction": "BUY",
+      "entry_price": 440.75,
+      "stop_loss": 437.66,
+      "target": 448.48,
+      "risk_points": 3.09,
+      "quantity": 12,
+      "entry_time": "2026-10-07T14:29:59.992624+05:30",
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 117.0
+      "momentum_score": 115.6
     }
   ],
   "closed_trades": [
@@ -57,7 +57,19 @@
       "exit_reason": "STOP_LOSS",
       "net_pnl": -40.66,
       "charges": 5.5
+    },
+    {
+      "symbol": "TATASTEEL",
+      "direction": "SHORT",
+      "entry_price": 174.78,
+      "exit_price": 176.0,
+      "quantity": 33,
+      "entry_time": "2026-10-07T13:15:00.013845+05:30",
+      "exit_time": "2026-10-07T14:29:59.992624+05:30",
+      "exit_reason": "STOP_LOSS",
+      "net_pnl": -46.23,
+      "charges": 5.97
     }
   ],
-  "last_updated": "2026-10-07T14:15:12.399764+05:30"
+  "last_updated": "2026-10-07T14:30:06.069972+05:30"
 }
