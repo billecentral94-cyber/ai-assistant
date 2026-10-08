@@ -1,24 +1,11 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2513.69,
-  "daily_pnl": -52.2,
+  "current_capital": 2601.5,
+  "daily_pnl": 35.61,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 12568.45,
+  "purchasing_power": 13007.5,
   "open_positions": [
-    {
-      "symbol": "ITC",
-      "direction": "SHORT",
-      "entry_price": 258.8,
-      "stop_loss": 257.9,
-      "target": 254.28,
-      "risk_points": 1.81,
-      "quantity": 21,
-      "entry_time": "2026-10-08T09:30:00.013815+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 117.4
-    },
     {
       "symbol": "BHARTIARTL",
       "direction": "SHORT",
@@ -31,6 +18,19 @@
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
       "momentum_score": 105.4
+    },
+    {
+      "symbol": "ITC",
+      "direction": "SHORT",
+      "entry_price": 254.3,
+      "stop_loss": 256.08,
+      "target": 249.85,
+      "risk_points": 1.78,
+      "quantity": 23,
+      "entry_time": "2026-10-08T12:59:59.993885+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 141.7
     }
   ],
   "closed_trades": [
@@ -55,7 +55,29 @@
         "gst": 0.68,
         "total_charges": 6.0
       }
+    },
+    {
+      "symbol": "ITC",
+      "direction": "SHORT",
+      "entry_price": 258.8,
+      "exit_price": 254.35,
+      "quantity": 21,
+      "entry_time": "2026-10-08T09:30:00.013815+05:30",
+      "exit_time": "2026-10-08T12:59:59.993885+05:30",
+      "exit_reason": "TARGET",
+      "gross_pnl": 93.45,
+      "net_pnl": 87.81,
+      "charges": 5.64,
+      "charges_breakdown": {
+        "brokerage": 3.23,
+        "stt": 1.36,
+        "exchange_charges": 0.32,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.08,
+        "gst": 0.64,
+        "total_charges": 5.64
+      }
     }
   ],
-  "last_updated": "2026-10-08T12:45:02.016941+05:30"
+  "last_updated": "2026-10-08T13:00:02.972467+05:30"
 }
