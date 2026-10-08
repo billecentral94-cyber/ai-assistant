@@ -18,6 +18,19 @@
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
       "momentum_score": 117.4
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "direction": "SHORT",
+      "entry_price": 1817.0,
+      "stop_loss": 1829.72,
+      "target": 1785.2,
+      "risk_points": 12.72,
+      "quantity": 3,
+      "entry_time": "2026-10-08T09:45:00.002741+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 105.4
     }
   ],
   "closed_trades": [
@@ -44,5 +57,5 @@
       }
     }
   ],
-  "last_updated": "2026-10-08T09:30:24.354184+05:30"
+  "last_updated": "2026-10-08T09:45:02.528885+05:30"
 }
