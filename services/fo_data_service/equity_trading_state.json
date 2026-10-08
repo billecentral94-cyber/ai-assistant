@@ -10,7 +10,7 @@
       "symbol": "ITC",
       "direction": "SHORT",
       "entry_price": 258.8,
-      "stop_loss": 260.61,
+      "stop_loss": 257.9,
       "target": 254.28,
       "risk_points": 1.81,
       "quantity": 21,
@@ -57,5 +57,5 @@
       }
     }
   ],
-  "last_updated": "2026-10-08T11:15:12.260642+05:30"
+  "last_updated": "2026-10-08T11:30:09.211831+05:30"
 }
