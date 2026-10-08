@@ -2,71 +2,24 @@
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
   "current_capital": 2565.89,
-  "daily_pnl": -98.49,
+  "daily_pnl": 0.0,
   "leverage_multiplier": 5.0,
   "purchasing_power": 12829.45,
-  "open_positions": [],
-  "closed_trades": [
-    {
-      "symbol": "ITC",
-      "direction": "SHORT",
-      "entry_price": 263.8,
-      "exit_price": 265.65,
-      "quantity": 22,
-      "entry_time": "2026-10-07T09:46:48.722763+05:30",
-      "exit_time": "2026-10-07T10:30:00.002116+05:30",
-      "exit_reason": "STOP_LOSS",
-      "net_pnl": -46.69,
-      "charges": 5.99
-    },
-    {
-      "symbol": "AXISBANK",
-      "direction": "BUY",
-      "entry_price": 1255.0,
-      "exit_price": 1246.21,
-      "quantity": 4,
-      "entry_time": "2026-10-07T10:30:00.002116+05:30",
-      "exit_time": "2026-10-07T13:15:00.013845+05:30",
-      "exit_reason": "STOP_LOSS",
-      "net_pnl": -40.66,
-      "charges": 5.5
-    },
+  "open_positions": [
     {
       "symbol": "TATASTEEL",
       "direction": "SHORT",
-      "entry_price": 174.78,
-      "exit_price": 176.0,
+      "entry_price": 173.6,
+      "stop_loss": 174.82,
+      "target": 170.55,
+      "risk_points": 1.22,
       "quantity": 33,
-      "entry_time": "2026-10-07T13:15:00.013845+05:30",
-      "exit_time": "2026-10-07T14:29:59.992624+05:30",
-      "exit_reason": "STOP_LOSS",
-      "net_pnl": -46.23,
-      "charges": 5.97
-    },
-    {
-      "symbol": "INFY",
-      "direction": "SHORT",
-      "entry_price": 1002.95,
-      "exit_price": 991.9,
-      "quantity": 5,
-      "entry_time": "2026-10-07T10:00:00.016636+05:30",
-      "exit_time": "2026-10-07T15:15:00.001165+05:30",
-      "exit_reason": "EOD_SQUARE_OFF",
-      "net_pnl": 49.76,
-      "charges": 5.49
-    },
-    {
-      "symbol": "KOTAKBANK",
-      "direction": "BUY",
-      "entry_price": 440.75,
-      "exit_price": 440.0,
-      "quantity": 12,
-      "entry_time": "2026-10-07T14:29:59.992624+05:30",
-      "exit_time": "2026-10-07T15:15:00.001165+05:30",
-      "exit_reason": "EOD_SQUARE_OFF",
-      "net_pnl": -14.67,
-      "charges": 5.67
+      "entry_time": "2026-10-08T09:20:46.320619+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 111.6
     }
   ],
-  "last_updated": "2026-10-07T15:15:01.665802+05:30"
+  "closed_trades": [],
+  "last_updated": "2026-10-08T09:21:16.045314+05:30"
 }

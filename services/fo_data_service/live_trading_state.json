@@ -2,46 +2,32 @@
   "engine_status": "ACTIVE",
   "initial_capital": 5000.0,
   "current_capital": 12960.27,
-  "daily_pnl": 1496.25,
+  "daily_pnl": 0.0,
   "open_positions": [],
-  "closed_trades": [
-    {
-      "symbol": "BANKNIFTY",
-      "direction": "BULLISH",
-      "entry_price": 54917.7,
-      "exit_price": 55200.0,
-      "lots": 1,
-      "quantity": 25,
-      "entry_time": "2026-10-07T14:15:09.375270+05:30",
-      "exit_time": "2026-10-07T14:29:59.992624+05:30",
-      "exit_reason": "TARGET_1",
-      "net_pnl": 1496.25,
-      "strategy": "Bull Call Spread"
-    }
-  ],
+  "closed_trades": [],
   "readiness_gates": {
-    "total_trades": 1,
-    "wins": 1,
+    "total_trades": 0,
+    "wins": 0,
     "losses": 0,
-    "win_rate_pct": 100.0,
-    "profit_factor": 999.0,
+    "win_rate_pct": 0.0,
+    "profit_factor": 0.0,
     "max_drawdown_pct": 0.0,
     "gate_1_win_rate": {
-      "value": 100.0,
+      "value": 0.0,
       "threshold": 55.0,
-      "passed": true
+      "passed": false
     },
     "gate_2_profit_factor": {
-      "value": 999.0,
+      "value": 0.0,
       "threshold": 1.5,
-      "passed": true
+      "passed": false
     },
     "gate_3_max_drawdown": {
       "value": 0.0,
       "threshold": 4.0,
-      "passed": true
+      "passed": false
     },
-    "all_gates_passed": true
+    "all_gates_passed": false
   },
-  "last_updated": "2026-10-07T15:15:01.587987+05:30"
+  "last_updated": "2026-10-08T09:21:14.878362+05:30"
 }
