@@ -2,99 +2,24 @@
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
   "current_capital": 2614.11,
-  "daily_pnl": 48.22,
+  "daily_pnl": 0.0,
   "leverage_multiplier": 5.0,
   "purchasing_power": 13070.55,
-  "open_positions": [],
-  "closed_trades": [
+  "open_positions": [
     {
-      "symbol": "TATASTEEL",
+      "symbol": "COALINDIA",
       "direction": "SHORT",
-      "entry_price": 173.6,
-      "exit_price": 175.0,
-      "quantity": 33,
-      "entry_time": "2026-10-08T09:20:46.320619+05:30",
-      "exit_time": "2026-10-08T09:30:00.013815+05:30",
-      "exit_reason": "STOP_LOSS",
-      "gross_pnl": -46.2,
-      "net_pnl": -52.2,
-      "charges": 6.0,
-      "charges_breakdown": {
-        "brokerage": 3.45,
-        "stt": 1.43,
-        "exchange_charges": 0.34,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.09,
-        "gst": 0.68,
-        "total_charges": 6.0
-      }
-    },
-    {
-      "symbol": "ITC",
-      "direction": "SHORT",
-      "entry_price": 258.8,
-      "exit_price": 254.35,
-      "quantity": 21,
-      "entry_time": "2026-10-08T09:30:00.013815+05:30",
-      "exit_time": "2026-10-08T12:59:59.993885+05:30",
-      "exit_reason": "TARGET",
-      "gross_pnl": 93.45,
-      "net_pnl": 87.81,
-      "charges": 5.64,
-      "charges_breakdown": {
-        "brokerage": 3.23,
-        "stt": 1.36,
-        "exchange_charges": 0.32,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.08,
-        "gst": 0.64,
-        "total_charges": 5.64
-      }
-    },
-    {
-      "symbol": "BHARTIARTL",
-      "direction": "SHORT",
-      "entry_price": 1817.0,
-      "exit_price": 1798.9,
-      "quantity": 3,
-      "entry_time": "2026-10-08T09:45:00.002741+05:30",
-      "exit_time": "2026-10-08T15:15:00.011599+05:30",
-      "exit_reason": "EOD_SQUARE_OFF",
-      "gross_pnl": 54.3,
-      "net_pnl": 48.64,
-      "charges": 5.66,
-      "charges_breakdown": {
-        "brokerage": 3.25,
-        "stt": 1.36,
-        "exchange_charges": 0.32,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.08,
-        "gst": 0.64,
-        "total_charges": 5.66
-      }
-    },
-    {
-      "symbol": "ITC",
-      "direction": "SHORT",
-      "entry_price": 254.3,
-      "exit_price": 255.6,
-      "quantity": 23,
-      "entry_time": "2026-10-08T12:59:59.993885+05:30",
-      "exit_time": "2026-10-08T15:15:00.011599+05:30",
-      "exit_reason": "EOD_SQUARE_OFF",
-      "gross_pnl": -29.9,
-      "net_pnl": -36.03,
-      "charges": 6.13,
-      "charges_breakdown": {
-        "brokerage": 3.52,
-        "stt": 1.46,
-        "exchange_charges": 0.35,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.09,
-        "gst": 0.7,
-        "total_charges": 6.13
-      }
+      "entry_price": 405.7,
+      "stop_loss": 408.54,
+      "target": 398.6,
+      "risk_points": 2.84,
+      "quantity": 14,
+      "entry_time": "2026-10-09T09:20:55.693560+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 108.8
     }
   ],
-  "last_updated": "2026-10-08T15:15:03.159728+05:30"
+  "closed_trades": [],
+  "last_updated": "2026-10-09T09:23:45.232597+05:30"
 }
