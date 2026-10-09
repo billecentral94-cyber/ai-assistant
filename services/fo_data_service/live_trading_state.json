@@ -7,18 +7,18 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 22561.35,
+      "entry_price": 22564.0,
       "stop_loss": 22500.0,
       "initial_stop_loss": 22500.0,
       "target_1": 22700.0,
       "lots": 1,
       "lotsize": 65,
       "quantity": 65,
-      "entry_time": "2026-10-09T14:45:00.019824+05:30",
+      "entry_time": "2026-10-09T15:00:00.012308+05:30",
       "entry_premium_info": {
-        "buy_premium": 127.4,
-        "sell_premium": 75.8,
-        "net_debit": 51.6,
+        "buy_premium": 120.35,
+        "sell_premium": 70.25,
+        "net_debit": 50.1,
         "lotsize": 65,
         "leg_details": [
           {
@@ -28,10 +28,10 @@
             "token": "44614",
             "symbol": "NIFTY13OCT2622550CE",
             "expiry": "2026-10-13",
-            "ltp": 127.4,
-            "fill_price": 127.4,
-            "bid": 127.35,
-            "ask": 127.4
+            "ltp": 120.05,
+            "fill_price": 120.35,
+            "bid": 120.05,
+            "ask": 120.35
           },
           {
             "strike": 22650.0,
@@ -40,10 +40,10 @@
             "token": "44618",
             "symbol": "NIFTY13OCT2622650CE",
             "expiry": "2026-10-13",
-            "ltp": 75.95,
-            "fill_price": 75.8,
-            "bid": 75.8,
-            "ask": 76.0
+            "ltp": 70.2,
+            "fill_price": 70.25,
+            "bid": 70.25,
+            "ask": 70.45
           }
         ]
       }
@@ -51,43 +51,43 @@
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 55367.25,
+      "entry_price": 55339.0,
       "stop_loss": 55200.0,
       "initial_stop_loss": 55200.0,
       "target_1": 55500.0,
       "lots": 1,
       "lotsize": 30,
       "quantity": 30,
-      "entry_time": "2026-10-09T14:45:00.019824+05:30",
+      "entry_time": "2026-10-09T15:00:00.012308+05:30",
       "entry_premium_info": {
-        "buy_premium": 793.6,
-        "sell_premium": 681.75,
-        "net_debit": 111.85,
+        "buy_premium": 829.75,
+        "sell_premium": 712.7,
+        "net_debit": 117.05,
         "lotsize": 30,
         "leg_details": [
           {
-            "strike": 55400.0,
+            "strike": 55300.0,
             "option_type": "CE",
             "action": "BUY",
-            "token": "49451",
-            "symbol": "BANKNIFTY27OCT2655400CE",
+            "token": "49448",
+            "symbol": "BANKNIFTY27OCT2655300CE",
             "expiry": "2026-10-27",
-            "ltp": 793.6,
-            "fill_price": 793.6,
-            "bid": 791.45,
-            "ask": 793.6
+            "ltp": 828.0,
+            "fill_price": 829.75,
+            "bid": 828.0,
+            "ask": 829.75
           },
           {
-            "strike": 55600.0,
+            "strike": 55500.0,
             "option_type": "CE",
             "action": "SELL",
-            "token": "49459",
-            "symbol": "BANKNIFTY27OCT2655600CE",
+            "token": "49457",
+            "symbol": "BANKNIFTY27OCT2655500CE",
             "expiry": "2026-10-27",
-            "ltp": 681.75,
-            "fill_price": 681.75,
-            "bid": 681.75,
-            "ask": 683.1
+            "ltp": 712.7,
+            "fill_price": 712.7,
+            "bid": 712.7,
+            "ask": 714.0
           }
         ]
       }
@@ -118,5 +118,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-09T14:45:04.786052+05:30"
+  "last_updated": "2026-10-09T15:00:39.348082+05:30"
 }
