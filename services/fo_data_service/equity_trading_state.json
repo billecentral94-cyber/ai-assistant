@@ -1,25 +1,34 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2614.11,
-  "daily_pnl": 0.0,
+  "current_capital": 2545.14,
+  "daily_pnl": -68.97,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 13070.55,
-  "open_positions": [
+  "purchasing_power": 12725.7,
+  "open_positions": [],
+  "closed_trades": [
     {
       "symbol": "COALINDIA",
       "direction": "SHORT",
       "entry_price": 405.7,
-      "stop_loss": 408.54,
-      "target": 398.6,
-      "risk_points": 2.84,
+      "exit_price": 410.2,
       "quantity": 14,
       "entry_time": "2026-10-09T09:20:55.693560+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 108.8
+      "exit_time": "2026-10-09T11:22:01.366468+05:30",
+      "exit_reason": "STOP_LOSS",
+      "gross_pnl": -63.0,
+      "net_pnl": -68.97,
+      "charges": 5.97,
+      "charges_breakdown": {
+        "brokerage": 3.43,
+        "stt": 1.42,
+        "exchange_charges": 0.34,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.09,
+        "gst": 0.68,
+        "total_charges": 5.97
+      }
     }
   ],
-  "closed_trades": [],
-  "last_updated": "2026-10-09T09:30:37.316775+05:30"
+  "last_updated": "2026-10-09T11:24:17.434536+05:30"
 }
