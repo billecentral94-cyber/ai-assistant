@@ -1,8 +1,8 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 5000.0,
-  "current_capital": 10827.81,
-  "daily_pnl": -402.96,
+  "current_capital": 10425.62,
+  "daily_pnl": -805.15,
   "open_positions": [
     {
       "symbol": "NIFTY",
@@ -74,5 +74,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-13T10:30:04.008188+05:30"
+  "last_updated": "2026-10-13T10:45:01.913943+05:30"
 }
