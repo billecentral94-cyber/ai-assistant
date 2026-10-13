@@ -1,25 +1,34 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2545.14,
-  "daily_pnl": 0.0,
+  "current_capital": 2470.49,
+  "daily_pnl": -74.65,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 12725.7,
-  "open_positions": [
+  "purchasing_power": 12352.45,
+  "open_positions": [],
+  "closed_trades": [
     {
       "symbol": "M&M",
       "direction": "SHORT",
       "entry_price": 2789.0,
-      "stop_loss": 2808.54,
-      "target": 2740.15,
-      "risk_points": 19.54,
+      "exit_price": 2823.4,
       "quantity": 2,
       "entry_time": "2026-10-13T09:15:00.027251+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 90.5
+      "exit_time": "2026-10-13T09:30:00.041239+05:30",
+      "exit_reason": "STOP_LOSS",
+      "gross_pnl": -68.8,
+      "net_pnl": -74.65,
+      "charges": 5.85,
+      "charges_breakdown": {
+        "brokerage": 3.37,
+        "stt": 1.39,
+        "exchange_charges": 0.33,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.08,
+        "gst": 0.67,
+        "total_charges": 5.85
+      }
     }
   ],
-  "closed_trades": [],
-  "last_updated": "2026-10-13T09:15:09.694039+05:30"
+  "last_updated": "2026-10-13T09:33:18.194095+05:30"
 }
