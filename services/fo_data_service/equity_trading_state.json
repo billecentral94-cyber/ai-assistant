@@ -1,38 +1,11 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2470.49,
-  "daily_pnl": -74.65,
+  "current_capital": 2449.66,
+  "daily_pnl": -95.48,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 12352.45,
-  "open_positions": [
-    {
-      "symbol": "TCS",
-      "direction": "BUY",
-      "entry_price": 2254.0,
-      "stop_loss": 2238.22,
-      "target": 2293.45,
-      "risk_points": 15.78,
-      "quantity": 2,
-      "entry_time": "2026-10-13T13:15:00.014253+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 153.2
-    },
-    {
-      "symbol": "KOTAKBANK",
-      "direction": "SHORT",
-      "entry_price": 437.95,
-      "stop_loss": 441.02,
-      "target": 430.27,
-      "risk_points": 3.07,
-      "quantity": 12,
-      "entry_time": "2026-10-13T13:30:00.000929+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 112.3
-    }
-  ],
+  "purchasing_power": 12248.3,
+  "open_positions": [],
   "closed_trades": [
     {
       "symbol": "M&M",
@@ -55,7 +28,51 @@
         "gst": 0.67,
         "total_charges": 5.85
       }
+    },
+    {
+      "symbol": "TCS",
+      "direction": "BUY",
+      "entry_price": 2254.0,
+      "exit_price": 2261.0,
+      "quantity": 2,
+      "entry_time": "2026-10-13T13:15:00.014253+05:30",
+      "exit_time": "2026-10-13T15:15:00.013607+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "gross_pnl": 14.0,
+      "net_pnl": 9.27,
+      "charges": 4.73,
+      "charges_breakdown": {
+        "brokerage": 2.71,
+        "stt": 1.13,
+        "exchange_charges": 0.27,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.07,
+        "gst": 0.54,
+        "total_charges": 4.73
+      }
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "direction": "SHORT",
+      "entry_price": 437.95,
+      "exit_price": 440.0,
+      "quantity": 12,
+      "entry_time": "2026-10-13T13:30:00.000929+05:30",
+      "exit_time": "2026-10-13T15:15:00.013607+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "gross_pnl": -24.6,
+      "net_pnl": -30.1,
+      "charges": 5.5,
+      "charges_breakdown": {
+        "brokerage": 3.16,
+        "stt": 1.31,
+        "exchange_charges": 0.31,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.08,
+        "gst": 0.63,
+        "total_charges": 5.5
+      }
     }
   ],
-  "last_updated": "2026-10-13T15:00:02.341196+05:30"
+  "last_updated": "2026-10-13T15:15:01.619668+05:30"
 }
