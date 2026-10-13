@@ -18,6 +18,19 @@
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
       "momentum_score": 153.2
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "direction": "SHORT",
+      "entry_price": 437.95,
+      "stop_loss": 441.02,
+      "target": 430.27,
+      "risk_points": 3.07,
+      "quantity": 12,
+      "entry_time": "2026-10-13T13:30:00.000929+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 112.3
     }
   ],
   "closed_trades": [
@@ -44,5 +57,5 @@
       }
     }
   ],
-  "last_updated": "2026-10-13T13:15:04.079220+05:30"
+  "last_updated": "2026-10-13T13:30:02.226738+05:30"
 }
