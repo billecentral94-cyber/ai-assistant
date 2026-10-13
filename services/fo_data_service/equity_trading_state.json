@@ -5,7 +5,21 @@
   "daily_pnl": -74.65,
   "leverage_multiplier": 5.0,
   "purchasing_power": 12352.45,
-  "open_positions": [],
+  "open_positions": [
+    {
+      "symbol": "TCS",
+      "direction": "BUY",
+      "entry_price": 2254.0,
+      "stop_loss": 2238.22,
+      "target": 2293.45,
+      "risk_points": 15.78,
+      "quantity": 2,
+      "entry_time": "2026-10-13T13:15:00.014253+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 153.2
+    }
+  ],
   "closed_trades": [
     {
       "symbol": "M&M",
@@ -30,5 +44,5 @@
       }
     }
   ],
-  "last_updated": "2026-10-13T13:00:25.077055+05:30"
+  "last_updated": "2026-10-13T13:15:04.079220+05:30"
 }
