@@ -7,43 +7,43 @@
     {
       "symbol": "NIFTY",
       "direction": "BEARISH",
-      "entry_price": 22731.15,
-      "stop_loss": 22800.0,
-      "initial_stop_loss": 22800.0,
+      "entry_price": 22687.75,
+      "stop_loss": 22762.75,
+      "initial_stop_loss": 22762.75,
       "target_1": 22600.0,
       "lots": 1,
       "lotsize": 65,
       "quantity": 65,
-      "entry_time": "2026-10-14T09:17:12.385588+05:30",
+      "entry_time": "2026-10-14T09:30:00.037282+05:30",
       "entry_premium_info": {
-        "buy_premium": 163.85,
-        "sell_premium": 120.8,
-        "net_debit": 43.05,
+        "buy_premium": 152.5,
+        "sell_premium": 111.2,
+        "net_debit": 41.3,
         "lotsize": 65,
         "leg_details": [
           {
-            "strike": 22750.0,
+            "strike": 22700.0,
             "option_type": "PE",
             "action": "BUY",
-            "token": "47152",
-            "symbol": "NIFTY19OCT2622750PE",
+            "token": "47144",
+            "symbol": "NIFTY19OCT2622700PE",
             "expiry": "2026-10-19",
-            "ltp": 163.35,
-            "fill_price": 163.85,
-            "bid": 163.45,
-            "ask": 163.85
+            "ltp": 152.35,
+            "fill_price": 152.5,
+            "bid": 152.1,
+            "ask": 152.5
           },
           {
-            "strike": 22650.0,
+            "strike": 22600.0,
             "option_type": "PE",
             "action": "SELL",
-            "token": "47142",
-            "symbol": "NIFTY19OCT2622650PE",
+            "token": "47140",
+            "symbol": "NIFTY19OCT2622600PE",
             "expiry": "2026-10-19",
-            "ltp": 121.0,
-            "fill_price": 120.8,
-            "bid": 120.8,
-            "ask": 121.15
+            "ltp": 110.9,
+            "fill_price": 111.2,
+            "bid": 111.2,
+            "ask": 111.45
           }
         ]
       }
@@ -74,5 +74,5 @@
     },
     "all_gates_passed": false
   },
-  "last_updated": "2026-10-14T09:18:35.860802+05:30"
+  "last_updated": "2026-10-14T09:30:14.364890+05:30"
 }
