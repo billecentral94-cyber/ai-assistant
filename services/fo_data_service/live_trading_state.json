@@ -1,62 +1,140 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 5000.0,
-  "current_capital": 6536.84,
-  "daily_pnl": 0.0,
+  "current_capital": 6408.8,
+  "daily_pnl": -128.04,
   "open_positions": [
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 54000.0,
-      "stop_loss": 53800.0,
-      "initial_stop_loss": 53800.0,
-      "target_1": 54400.0,
+      "entry_price": 54539.0,
+      "stop_loss": 54339.0,
+      "initial_stop_loss": 54339.0,
+      "target_1": 54800.0,
       "lots": 1,
       "lotsize": 30,
       "quantity": 30,
-      "entry_time": "2026-10-27T09:27:36.178039+05:30",
+      "entry_time": "2026-10-27T09:37:03.139382+05:30",
       "entry_premium_info": {
-        "buy_premium": 575.65,
-        "sell_premium": 416.5,
-        "net_debit": 159.15,
+        "buy_premium": 233.75,
+        "sell_premium": 143.2,
+        "net_debit": 90.55,
         "lotsize": 30,
         "leg_details": [
           {
-            "strike": 54000.0,
+            "strike": 54500.0,
             "option_type": "CE",
             "action": "BUY",
-            "token": "49415",
-            "symbol": "BANKNIFTY27OCT2654000CE",
+            "token": "49425",
+            "symbol": "BANKNIFTY27OCT2654500CE",
             "expiry": "2026-10-27",
-            "ltp": 584.6,
-            "fill_price": 575.65,
-            "bid": 573.1,
-            "ask": 575.65
+            "ltp": 232.95,
+            "fill_price": 233.75,
+            "bid": 232.65,
+            "ask": 233.75
           },
           {
-            "strike": 54200.0,
+            "strike": 54700.0,
             "option_type": "CE",
             "action": "SELL",
-            "token": "49419",
-            "symbol": "BANKNIFTY27OCT2654200CE",
+            "token": "49431",
+            "symbol": "BANKNIFTY27OCT2654700CE",
             "expiry": "2026-10-27",
-            "ltp": 421.35,
-            "fill_price": 416.5,
-            "bid": 416.5,
-            "ask": 417.95
+            "ltp": 143.5,
+            "fill_price": 143.2,
+            "bid": 143.2,
+            "ask": 143.55
           }
         ]
       }
     }
   ],
-  "closed_trades": [],
+  "closed_trades": [
+    {
+      "symbol": "BANKNIFTY",
+      "direction": "BULLISH",
+      "underlying_entry_spot": 54000.0,
+      "underlying_exit_spot": 54400.0,
+      "lots": 1,
+      "lotsize": 30,
+      "quantity": 30,
+      "entry_time": "2026-10-27T09:27:36.178039+05:30",
+      "exit_time": "2026-10-27T09:37:03.139382+05:30",
+      "exit_reason": "TARGET_1",
+      "gross_pnl": 22.5,
+      "charges": 150.54,
+      "charges_breakdown": {
+        "brokerage": 80.0,
+        "stt": 30.2,
+        "exchange_charges": 21.15,
+        "sebi_charges": 0.06,
+        "stamp_duty": 0.91,
+        "gst": 18.22,
+        "total_charges": 150.54
+      },
+      "net_pnl": -128.04,
+      "strategy": "Defined Spread",
+      "entry_legs": [
+        {
+          "strike": 54000.0,
+          "option_type": "CE",
+          "action": "BUY",
+          "token": "49415",
+          "symbol": "BANKNIFTY27OCT2654000CE",
+          "expiry": "2026-10-27",
+          "ltp": 584.6,
+          "fill_price": 575.65,
+          "bid": 573.1,
+          "ask": 575.65
+        },
+        {
+          "strike": 54200.0,
+          "option_type": "CE",
+          "action": "SELL",
+          "token": "49419",
+          "symbol": "BANKNIFTY27OCT2654200CE",
+          "expiry": "2026-10-27",
+          "ltp": 421.35,
+          "fill_price": 416.5,
+          "bid": 416.5,
+          "ask": 417.95
+        }
+      ],
+      "exit_legs": [
+        {
+          "strike": 54000.0,
+          "option_type": "CE",
+          "action": "BUY",
+          "token": "49415",
+          "symbol": "BANKNIFTY27OCT2654000CE",
+          "expiry": "2026-10-27",
+          "ltp": 589.6,
+          "fill_price": 590.3,
+          "bid": 590.3,
+          "ask": 592.8
+        },
+        {
+          "strike": 54200.0,
+          "option_type": "CE",
+          "action": "SELL",
+          "token": "49419",
+          "symbol": "BANKNIFTY27OCT2654200CE",
+          "expiry": "2026-10-27",
+          "ltp": 429.85,
+          "fill_price": 430.4,
+          "bid": 428.75,
+          "ask": 430.4
+        }
+      ]
+    }
+  ],
   "readiness_gates": {
-    "total_trades": 0,
+    "total_trades": 1,
     "wins": 0,
-    "losses": 0,
+    "losses": 1,
     "win_rate_pct": 0.0,
     "profit_factor": 0.0,
-    "max_drawdown_pct": 0.0,
+    "max_drawdown_pct": 2.56,
     "gate_1_win_rate": {
       "value": 0.0,
       "threshold": 55.0,
@@ -68,33 +146,33 @@
       "passed": false
     },
     "gate_3_max_drawdown": {
-      "value": 0.0,
+      "value": 2.56,
       "threshold": 4.0,
-      "passed": false
+      "passed": true
     },
     "all_gates_passed": false
   },
   "ml_regime_status": {
     "NIFTY": {
       "regime": "CHOP",
-      "confidence": 0.7789,
+      "confidence": 0.8621,
       "probabilities": {
-        "p_chop": 0.7789,
-        "p_bull": 0.0637,
-        "p_bear": 0.1575
+        "p_chop": 0.8621,
+        "p_bull": 0.1003,
+        "p_bear": 0.0376
       },
       "recommendation": "CASH"
     },
     "BANKNIFTY": {
       "regime": "UNCERTAIN",
-      "confidence": 0.4965,
+      "confidence": 0.3873,
       "probabilities": {
-        "p_chop": 0.2969,
-        "p_bull": 0.2066,
-        "p_bear": 0.4965
+        "p_chop": 0.3873,
+        "p_bull": 0.3324,
+        "p_bear": 0.2803
       },
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-10-27T09:36:45.117534+05:30"
+  "last_updated": "2026-10-27T09:37:27.056772+05:30"
 }
