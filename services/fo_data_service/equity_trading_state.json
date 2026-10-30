@@ -10,7 +10,7 @@
       "symbol": "WIPRO",
       "direction": "BUY",
       "entry_price": 193.92,
-      "stop_loss": 192.56,
+      "stop_loss": 194.6,
       "target": 197.32,
       "risk_points": 1.36,
       "quantity": 27,
@@ -34,5 +34,5 @@
     }
   ],
   "closed_trades": [],
-  "last_updated": "2026-10-30T11:00:06.649460+05:30"
+  "last_updated": "2026-10-30T13:00:03.839089+05:30"
 }
