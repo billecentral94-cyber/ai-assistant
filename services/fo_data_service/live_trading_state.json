@@ -1,62 +1,65 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 5000.0,
-  "current_capital": 6001.14,
-  "daily_pnl": 0.0,
-  "open_positions": [
+  "current_capital": 5659.5,
+  "daily_pnl": -341.64,
+  "open_positions": [],
+  "closed_trades": [
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 54926.6,
-      "stop_loss": 54726.6,
-      "initial_stop_loss": 54726.6,
-      "target_1": 55500.0,
+      "underlying_entry_spot": 54926.6,
+      "underlying_exit_spot": 54726.6,
       "lots": 1,
       "lotsize": 30,
       "quantity": 30,
       "entry_time": "2026-10-30T13:15:00.005126+05:30",
-      "entry_premium_info": {
-        "buy_premium": 901.25,
-        "sell_premium": 788.3,
-        "net_debit": 112.95,
-        "lotsize": 30,
-        "leg_details": [
-          {
-            "strike": 54900.0,
-            "option_type": "CE",
-            "action": "BUY",
-            "token": "62153",
-            "symbol": "BANKNIFTY23NOV2654900CE",
-            "expiry": "2026-11-23",
-            "ltp": 902.0,
-            "fill_price": 901.25,
-            "bid": 898.6,
-            "ask": 901.25
-          },
-          {
-            "strike": 55100.0,
-            "option_type": "CE",
-            "action": "SELL",
-            "token": "62157",
-            "symbol": "BANKNIFTY23NOV2655100CE",
-            "expiry": "2026-11-23",
-            "ltp": 785.55,
-            "fill_price": 788.3,
-            "bid": 788.3,
-            "ask": 791.0
-          }
-        ]
-      }
+      "exit_time": "2026-10-30T13:30:03.062488+05:30",
+      "exit_reason": "STOP_LOSS",
+      "gross_pnl": -300.0,
+      "charges": 41.64,
+      "charges_breakdown": {
+        "brokerage": 40.0,
+        "total_charges": 41.64
+      },
+      "net_pnl": -341.64,
+      "strategy": "Defined Spread",
+      "entry_legs": [
+        {
+          "strike": 54900.0,
+          "option_type": "CE",
+          "action": "BUY",
+          "token": "62153",
+          "symbol": "BANKNIFTY23NOV2654900CE",
+          "expiry": "2026-11-23",
+          "ltp": 902.0,
+          "fill_price": 901.25,
+          "bid": 898.6,
+          "ask": 901.25
+        },
+        {
+          "strike": 55100.0,
+          "option_type": "CE",
+          "action": "SELL",
+          "token": "62157",
+          "symbol": "BANKNIFTY23NOV2655100CE",
+          "expiry": "2026-11-23",
+          "ltp": 785.55,
+          "fill_price": 788.3,
+          "bid": 788.3,
+          "ask": 791.0
+        }
+      ],
+      "exit_legs": []
     }
   ],
-  "closed_trades": [],
   "readiness_gates": {
-    "total_trades": 0,
+    "total_trades": 1,
     "wins": 0,
-    "losses": 0,
+    "losses": 1,
     "win_rate_pct": 0.0,
     "profit_factor": 0.0,
-    "max_drawdown_pct": 0.0,
+    "max_drawdown_pct": 6.83,
     "gate_1_win_rate": {
       "value": 0.0,
       "threshold": 55.0,
@@ -68,7 +71,7 @@
       "passed": false
     },
     "gate_3_max_drawdown": {
-      "value": 0.0,
+      "value": 6.83,
       "threshold": 4.0,
       "passed": false
     },
@@ -87,14 +90,14 @@
     },
     "BANKNIFTY": {
       "regime": "UNCERTAIN",
-      "confidence": 0.5659,
+      "confidence": 0.5691,
       "probabilities": {
-        "p_chop": 0.1705,
-        "p_bull": 0.5659,
-        "p_bear": 0.2636
+        "p_chop": 0.1879,
+        "p_bull": 0.5691,
+        "p_bear": 0.2429
       },
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-10-30T13:15:05.199762+05:30"
+  "last_updated": "2026-10-30T14:38:50.123339+05:30"
 }
