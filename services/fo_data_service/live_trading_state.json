@@ -5,89 +5,45 @@
   "daily_pnl": 0.0,
   "open_positions": [
     {
-      "symbol": "NIFTY",
-      "direction": "BULLISH",
-      "entry_price": 22840.95,
-      "stop_loss": 22800.0,
-      "initial_stop_loss": 22800.0,
-      "target_1": 22900.0,
-      "lots": 1,
-      "lotsize": 65,
-      "quantity": 65,
-      "entry_time": "2026-10-29T12:45:00.059974+05:30",
-      "entry_premium_info": {
-        "buy_premium": 147.4,
-        "sell_premium": 99.15,
-        "net_debit": 48.25,
-        "lotsize": 65,
-        "leg_details": [
-          {
-            "strike": 22850.0,
-            "option_type": "CE",
-            "action": "BUY",
-            "token": "53796",
-            "symbol": "NIFTY03NOV2622850CE",
-            "expiry": "2026-11-03",
-            "ltp": 147.4,
-            "fill_price": 147.4,
-            "bid": 147.0,
-            "ask": 147.4
-          },
-          {
-            "strike": 22950.0,
-            "option_type": "CE",
-            "action": "SELL",
-            "token": "53860",
-            "symbol": "NIFTY03NOV2622950CE",
-            "expiry": "2026-11-03",
-            "ltp": 99.3,
-            "fill_price": 99.15,
-            "bid": 99.15,
-            "ask": 99.4
-          }
-        ]
-      }
-    },
-    {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 54575.55,
-      "stop_loss": 54375.55,
-      "initial_stop_loss": 54375.55,
+      "entry_price": 54806.1,
+      "stop_loss": 54700.0,
+      "initial_stop_loss": 54700.0,
       "target_1": 55000.0,
       "lots": 1,
       "lotsize": 30,
       "quantity": 30,
-      "entry_time": "2026-10-29T12:45:00.059974+05:30",
+      "entry_time": "2026-10-30T09:32:14.698914+05:30",
       "entry_premium_info": {
-        "buy_premium": 971.9,
-        "sell_premium": 857.7,
-        "net_debit": 114.2,
+        "buy_premium": 934.4,
+        "sell_premium": 820.6,
+        "net_debit": 113.8,
         "lotsize": 30,
         "leg_details": [
           {
-            "strike": 54600.0,
-            "option_type": "CE",
-            "action": "BUY",
-            "token": "62147",
-            "symbol": "BANKNIFTY23NOV2654600CE",
-            "expiry": "2026-11-23",
-            "ltp": 971.15,
-            "fill_price": 971.9,
-            "bid": 969.4,
-            "ask": 971.9
-          },
-          {
             "strike": 54800.0,
             "option_type": "CE",
-            "action": "SELL",
+            "action": "BUY",
             "token": "62151",
             "symbol": "BANKNIFTY23NOV2654800CE",
             "expiry": "2026-11-23",
-            "ltp": 856.2,
-            "fill_price": 857.7,
-            "bid": 857.7,
-            "ask": 860.25
+            "ltp": 934.6,
+            "fill_price": 934.4,
+            "bid": 931.85,
+            "ask": 934.4
+          },
+          {
+            "strike": 55000.0,
+            "option_type": "CE",
+            "action": "SELL",
+            "token": "62155",
+            "symbol": "BANKNIFTY23NOV2655000CE",
+            "expiry": "2026-11-23",
+            "ltp": 820.4,
+            "fill_price": 820.6,
+            "bid": 820.6,
+            "ask": 823.05
           }
         ]
       }
@@ -120,25 +76,25 @@
   },
   "ml_regime_status": {
     "NIFTY": {
-      "regime": "UNCERTAIN",
-      "confidence": 0.4624,
+      "regime": "CHOP",
+      "confidence": 0.5971,
       "probabilities": {
-        "p_chop": 0.4624,
-        "p_bull": 0.2288,
-        "p_bear": 0.3088
+        "p_chop": 0.5971,
+        "p_bull": 0.3667,
+        "p_bear": 0.0362
       },
       "recommendation": "CASH"
     },
     "BANKNIFTY": {
       "regime": "UNCERTAIN",
-      "confidence": 0.4409,
+      "confidence": 0.4204,
       "probabilities": {
-        "p_chop": 0.168,
-        "p_bull": 0.4409,
-        "p_bear": 0.3911
+        "p_chop": 0.4204,
+        "p_bull": 0.4152,
+        "p_bear": 0.1644
       },
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-10-29T12:45:04.503656+05:30"
+  "last_updated": "2026-10-30T09:32:28.031596+05:30"
 }

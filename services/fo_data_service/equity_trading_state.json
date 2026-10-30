@@ -7,32 +7,19 @@
   "purchasing_power": 11703.3,
   "open_positions": [
     {
-      "symbol": "AXISBANK",
+      "symbol": "WIPRO",
       "direction": "BUY",
-      "entry_price": 1221.6,
-      "stop_loss": 1213.05,
-      "target": 1242.97,
-      "risk_points": 8.55,
-      "quantity": 4,
-      "entry_time": "2026-10-29T09:30:00.028565+05:30",
+      "entry_price": 193.92,
+      "stop_loss": 192.56,
+      "target": 197.32,
+      "risk_points": 1.36,
+      "quantity": 27,
+      "entry_time": "2026-10-30T09:32:14.698914+05:30",
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 97.8
-    },
-    {
-      "symbol": "RELIANCE",
-      "direction": "BUY",
-      "entry_price": 1175.0,
-      "stop_loss": 1166.78,
-      "target": 1195.55,
-      "risk_points": 8.22,
-      "quantity": 4,
-      "entry_time": "2026-10-29T09:45:00.023120+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 109.0
+      "momentum_score": 114.6
     }
   ],
   "closed_trades": [],
-  "last_updated": "2026-10-29T12:45:06.416931+05:30"
+  "last_updated": "2026-10-30T09:32:29.081049+05:30"
 }
