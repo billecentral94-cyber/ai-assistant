@@ -18,8 +18,21 @@
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
       "momentum_score": 114.6
+    },
+    {
+      "symbol": "AXISBANK",
+      "direction": "BUY",
+      "entry_price": 1224.0,
+      "stop_loss": 1215.43,
+      "target": 1245.42,
+      "risk_points": 8.57,
+      "quantity": 4,
+      "entry_time": "2026-10-30T09:45:00.012418+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 88.2
     }
   ],
   "closed_trades": [],
-  "last_updated": "2026-10-30T09:32:29.081049+05:30"
+  "last_updated": "2026-10-30T09:45:02.871375+05:30"
 }
