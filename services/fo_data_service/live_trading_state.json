@@ -110,24 +110,24 @@
   "ml_regime_status": {
     "NIFTY": {
       "regime": "CHOP",
-      "confidence": 0.5771,
+      "confidence": 0.6265,
       "probabilities": {
-        "p_chop": 0.5771,
-        "p_bull": 0.3668,
-        "p_bear": 0.0561
+        "p_chop": 0.6265,
+        "p_bull": 0.324,
+        "p_bear": 0.0495
       },
       "recommendation": "CASH"
     },
     "BANKNIFTY": {
-      "regime": "UNCERTAIN",
-      "confidence": 0.4921,
+      "regime": "BULLISH_EXPANSION",
+      "confidence": 0.6021,
       "probabilities": {
-        "p_chop": 0.276,
-        "p_bull": 0.4921,
-        "p_bear": 0.2319
+        "p_chop": 0.1759,
+        "p_bull": 0.6021,
+        "p_bear": 0.222
       },
-      "recommendation": "CASH"
+      "recommendation": "BULL_CALL_SPREAD"
     }
   },
-  "last_updated": "2026-11-04T11:15:23.643927+05:30"
+  "last_updated": "2026-11-04T11:34:13.403943+05:30"
 }
