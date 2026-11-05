@@ -7,18 +7,18 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 24555.3,
+      "entry_price": 24551.2,
       "stop_loss": 24500.0,
       "initial_stop_loss": 24500.0,
       "target_1": 24700.0,
       "lots": 1,
       "lotsize": 65,
       "quantity": 65,
-      "entry_time": "2026-11-05T14:00:00.016597+05:30",
+      "entry_time": "2026-11-05T14:15:00.022138+05:30",
       "entry_premium_info": {
-        "buy_premium": 163.2,
-        "sell_premium": 117.2,
-        "net_debit": 46.0,
+        "buy_premium": 166.25,
+        "sell_premium": 119.8,
+        "net_debit": 46.45,
         "lotsize": 65,
         "leg_details": [
           {
@@ -28,10 +28,10 @@
             "token": "40005",
             "symbol": "NIFTY09NOV2624550CE",
             "expiry": "2026-11-09",
-            "ltp": 163.15,
-            "fill_price": 163.2,
-            "bid": 163.0,
-            "ask": 163.2
+            "ltp": 166.05,
+            "fill_price": 166.25,
+            "bid": 166.05,
+            "ask": 166.25
           },
           {
             "strike": 24650.0,
@@ -40,10 +40,10 @@
             "token": "40009",
             "symbol": "NIFTY09NOV2624650CE",
             "expiry": "2026-11-09",
-            "ltp": 117.55,
-            "fill_price": 117.2,
-            "bid": 117.2,
-            "ask": 117.4
+            "ltp": 119.6,
+            "fill_price": 119.8,
+            "bid": 119.8,
+            "ask": 120.1
           }
         ]
       }
@@ -77,24 +77,24 @@
   "ml_regime_status": {
     "NIFTY": {
       "regime": "UNCERTAIN",
-      "confidence": 0.4714,
+      "confidence": 0.4507,
       "probabilities": {
-        "p_chop": 0.2479,
-        "p_bull": 0.2807,
-        "p_bear": 0.4714
+        "p_chop": 0.2538,
+        "p_bull": 0.2954,
+        "p_bear": 0.4507
       },
       "recommendation": "CASH"
     },
     "BANKNIFTY": {
       "regime": "BEARISH_EXPANSION",
-      "confidence": 0.6126,
+      "confidence": 0.6061,
       "probabilities": {
-        "p_chop": 0.1511,
-        "p_bull": 0.2363,
-        "p_bear": 0.6126
+        "p_chop": 0.1536,
+        "p_bull": 0.2403,
+        "p_bear": 0.6061
       },
       "recommendation": "BEAR_PUT_SPREAD"
     }
   },
-  "last_updated": "2026-11-05T14:00:05.997130+05:30"
+  "last_updated": "2026-11-05T14:15:02.372000+05:30"
 }
