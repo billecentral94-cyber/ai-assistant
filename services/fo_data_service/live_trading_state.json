@@ -7,18 +7,18 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 24540.5,
+      "entry_price": 24555.3,
       "stop_loss": 24500.0,
       "initial_stop_loss": 24500.0,
-      "target_1": 24600.0,
+      "target_1": 24700.0,
       "lots": 1,
       "lotsize": 65,
       "quantity": 65,
-      "entry_time": "2026-11-05T13:45:00.026030+05:30",
+      "entry_time": "2026-11-05T14:00:00.016597+05:30",
       "entry_premium_info": {
-        "buy_premium": 149.3,
-        "sell_premium": 102.95,
-        "net_debit": 46.35,
+        "buy_premium": 163.2,
+        "sell_premium": 117.2,
+        "net_debit": 46.0,
         "lotsize": 65,
         "leg_details": [
           {
@@ -28,10 +28,10 @@
             "token": "40005",
             "symbol": "NIFTY09NOV2624550CE",
             "expiry": "2026-11-09",
-            "ltp": 148.9,
-            "fill_price": 149.3,
-            "bid": 148.9,
-            "ask": 149.3
+            "ltp": 163.15,
+            "fill_price": 163.2,
+            "bid": 163.0,
+            "ask": 163.2
           },
           {
             "strike": 24650.0,
@@ -40,10 +40,10 @@
             "token": "40009",
             "symbol": "NIFTY09NOV2624650CE",
             "expiry": "2026-11-09",
-            "ltp": 103.2,
-            "fill_price": 102.95,
-            "bid": 102.95,
-            "ask": 103.2
+            "ltp": 117.55,
+            "fill_price": 117.2,
+            "bid": 117.2,
+            "ask": 117.4
           }
         ]
       }
@@ -77,11 +77,11 @@
   "ml_regime_status": {
     "NIFTY": {
       "regime": "UNCERTAIN",
-      "confidence": 0.4944,
+      "confidence": 0.4714,
       "probabilities": {
-        "p_chop": 0.2303,
-        "p_bull": 0.2753,
-        "p_bear": 0.4944
+        "p_chop": 0.2479,
+        "p_bull": 0.2807,
+        "p_bear": 0.4714
       },
       "recommendation": "CASH"
     },
@@ -96,5 +96,5 @@
       "recommendation": "BEAR_PUT_SPREAD"
     }
   },
-  "last_updated": "2026-11-05T13:45:04.435819+05:30"
+  "last_updated": "2026-11-05T14:00:05.997130+05:30"
 }
