@@ -7,18 +7,18 @@
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 61393.25,
+      "entry_price": 61412.5,
       "stop_loss": 61300.0,
       "initial_stop_loss": 61300.0,
       "target_1": 62000.0,
       "lots": 1,
       "lotsize": 30,
       "quantity": 30,
-      "entry_time": "2026-11-16T11:00:00.018875+05:30",
+      "entry_time": "2026-11-16T11:15:00.010055+05:30",
       "entry_premium_info": {
-        "buy_premium": 536.55,
-        "sell_premium": 444.85,
-        "net_debit": 91.7,
+        "buy_premium": 537.1,
+        "sell_premium": 443.65,
+        "net_debit": 93.45,
         "lotsize": 30,
         "leg_details": [
           {
@@ -28,10 +28,10 @@
             "token": "62350",
             "symbol": "BANKNIFTY23NOV2661400CE",
             "expiry": "2026-11-23",
-            "ltp": 536.7,
-            "fill_price": 536.55,
-            "bid": 535.0,
-            "ask": 536.55
+            "ltp": 534.6,
+            "fill_price": 537.1,
+            "bid": 535.2,
+            "ask": 537.1
           },
           {
             "strike": 61600.0,
@@ -40,10 +40,10 @@
             "token": "62388",
             "symbol": "BANKNIFTY23NOV2661600CE",
             "expiry": "2026-11-23",
-            "ltp": 446.0,
-            "fill_price": 444.85,
-            "bid": 444.85,
-            "ask": 446.2
+            "ltp": 446.4,
+            "fill_price": 443.65,
+            "bid": 443.65,
+            "ask": 445.15
           }
         ]
       }
@@ -76,25 +76,25 @@
   },
   "ml_regime_status": {
     "NIFTY": {
-      "regime": "CHOP",
-      "confidence": 0.6675,
+      "regime": "UNCERTAIN",
+      "confidence": 0.3969,
       "probabilities": {
-        "p_chop": 0.6675,
-        "p_bull": 0.2999,
-        "p_bear": 0.0327
+        "p_chop": 0.3541,
+        "p_bull": 0.3969,
+        "p_bear": 0.249
       },
       "recommendation": "CASH"
     },
     "BANKNIFTY": {
       "regime": "UNCERTAIN",
-      "confidence": 0.3924,
+      "confidence": 0.4106,
       "probabilities": {
-        "p_chop": 0.2942,
-        "p_bull": 0.3924,
-        "p_bear": 0.3134
+        "p_chop": 0.3079,
+        "p_bull": 0.4106,
+        "p_bear": 0.2814
       },
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-11-16T11:00:04.045663+05:30"
+  "last_updated": "2026-11-16T11:15:03.088665+05:30"
 }
