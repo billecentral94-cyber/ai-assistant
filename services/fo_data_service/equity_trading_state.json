@@ -2,33 +2,10 @@
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
   "current_capital": 2287.12,
-  "daily_pnl": -1.66,
+  "daily_pnl": 0.0,
   "leverage_multiplier": 5.0,
   "purchasing_power": 11435.6,
   "open_positions": [],
-  "closed_trades": [
-    {
-      "symbol": "ITC",
-      "direction": "SHORT",
-      "entry_price": 279.0,
-      "exit_price": 278.8,
-      "quantity": 18,
-      "entry_time": "2026-11-05T14:30:00.036999+05:30",
-      "exit_time": "2026-11-05T15:15:00.072391+05:30",
-      "exit_reason": "EOD_SQUARE_OFF",
-      "gross_pnl": 3.6,
-      "net_pnl": -1.66,
-      "charges": 5.26,
-      "charges_breakdown": {
-        "brokerage": 3.01,
-        "stt": 1.26,
-        "exchange_charges": 0.3,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.08,
-        "gst": 0.6,
-        "total_charges": 5.26
-      }
-    }
-  ],
-  "last_updated": "2026-11-05T15:15:07.203874+05:30"
+  "closed_trades": [],
+  "last_updated": "2026-11-16T09:15:17.180081+05:30"
 }
