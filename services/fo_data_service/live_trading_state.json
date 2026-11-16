@@ -3,52 +3,7 @@
   "initial_capital": 5000.0,
   "current_capital": 5075.2,
   "daily_pnl": 0.0,
-  "open_positions": [
-    {
-      "symbol": "NIFTY",
-      "direction": "BULLISH",
-      "entry_price": 25320.9,
-      "stop_loss": 25250.0,
-      "initial_stop_loss": 25250.0,
-      "target_1": 25400.0,
-      "lots": 1,
-      "lotsize": 65,
-      "quantity": 65,
-      "entry_time": "2026-11-16T10:00:00.012203+05:30",
-      "entry_premium_info": {
-        "buy_premium": 122.2,
-        "sell_premium": 75.15,
-        "net_debit": 47.05,
-        "lotsize": 65,
-        "leg_details": [
-          {
-            "strike": 25300.0,
-            "option_type": "CE",
-            "action": "BUY",
-            "token": "45402",
-            "symbol": "NIFTY17NOV2625300CE",
-            "expiry": "2026-11-17",
-            "ltp": 122.2,
-            "fill_price": 122.2,
-            "bid": 121.95,
-            "ask": 122.2
-          },
-          {
-            "strike": 25400.0,
-            "option_type": "CE",
-            "action": "SELL",
-            "token": "45406",
-            "symbol": "NIFTY17NOV2625400CE",
-            "expiry": "2026-11-17",
-            "ltp": 75.15,
-            "fill_price": 75.15,
-            "bid": 75.15,
-            "ask": 75.3
-          }
-        ]
-      }
-    }
-  ],
+  "open_positions": [],
   "closed_trades": [],
   "readiness_gates": {
     "total_trades": 0,
@@ -77,11 +32,11 @@
   "ml_regime_status": {
     "NIFTY": {
       "regime": "CHOP",
-      "confidence": 0.5123,
+      "confidence": 0.5152,
       "probabilities": {
-        "p_chop": 0.5123,
-        "p_bull": 0.2579,
-        "p_bear": 0.2298
+        "p_chop": 0.5152,
+        "p_bull": 0.2178,
+        "p_bear": 0.267
       },
       "recommendation": "CASH"
     },
@@ -96,5 +51,5 @@
       "recommendation": "BEAR_PUT_SPREAD"
     }
   },
-  "last_updated": "2026-11-16T10:00:04.413822+05:30"
+  "last_updated": "2026-11-16T10:15:02.879638+05:30"
 }
