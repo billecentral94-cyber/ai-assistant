@@ -18,8 +18,21 @@
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
       "momentum_score": 111.0
+    },
+    {
+      "symbol": "TCS",
+      "direction": "BUY",
+      "entry_price": 2441.2,
+      "stop_loss": 2424.11,
+      "target": 2483.92,
+      "risk_points": 17.09,
+      "quantity": 2,
+      "entry_time": "2026-11-17T11:00:00.016526+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 107.4
     }
   ],
   "closed_trades": [],
-  "last_updated": "2026-11-17T10:45:28.486804+05:30"
+  "last_updated": "2026-11-17T11:00:20.184748+05:30"
 }
