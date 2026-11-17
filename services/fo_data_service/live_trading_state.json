@@ -109,14 +109,14 @@
   },
   "ml_regime_status": {
     "NIFTY": {
-      "regime": "BEARISH_EXPANSION",
-      "confidence": 0.807,
+      "regime": "CHOP",
+      "confidence": 0.5166,
       "probabilities": {
-        "p_chop": 0.1698,
-        "p_bull": 0.0231,
-        "p_bear": 0.807
+        "p_chop": 0.5166,
+        "p_bull": 0.2332,
+        "p_bear": 0.2501
       },
-      "recommendation": "BEAR_PUT_SPREAD"
+      "recommendation": "CASH"
     },
     "BANKNIFTY": {
       "regime": "UNCERTAIN",
@@ -129,5 +129,5 @@
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-11-17T11:45:04.147644+05:30"
+  "last_updated": "2026-11-17T12:00:03.135644+05:30"
 }
