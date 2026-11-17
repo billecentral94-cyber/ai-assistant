@@ -1,38 +1,11 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2192.33,
-  "daily_pnl": -57.87,
+  "current_capital": 2201.08,
+  "daily_pnl": -49.12,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 10961.65,
-  "open_positions": [
-    {
-      "symbol": "COALINDIA",
-      "direction": "SHORT",
-      "entry_price": 391.9,
-      "stop_loss": 394.64,
-      "target": 385.05,
-      "risk_points": 2.74,
-      "quantity": 12,
-      "entry_time": "2026-11-17T10:45:00.037911+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 111.0
-    },
-    {
-      "symbol": "WIPRO",
-      "direction": "SHORT",
-      "entry_price": 190.45,
-      "stop_loss": 191.78,
-      "target": 187.12,
-      "risk_points": 1.33,
-      "quantity": 25,
-      "entry_time": "2026-11-17T13:15:00.013877+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 103.0
-    }
-  ],
+  "purchasing_power": 11005.4,
+  "open_positions": [],
   "closed_trades": [
     {
       "symbol": "TCS",
@@ -55,7 +28,51 @@
         "gst": 0.58,
         "total_charges": 5.07
       }
+    },
+    {
+      "symbol": "COALINDIA",
+      "direction": "SHORT",
+      "entry_price": 391.9,
+      "exit_price": 390.45,
+      "quantity": 12,
+      "entry_time": "2026-11-17T10:45:00.037911+05:30",
+      "exit_time": "2026-11-17T15:15:00.033007+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "gross_pnl": 17.4,
+      "net_pnl": 12.48,
+      "charges": 4.92,
+      "charges_breakdown": {
+        "brokerage": 2.82,
+        "stt": 1.18,
+        "exchange_charges": 0.28,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.07,
+        "gst": 0.56,
+        "total_charges": 4.92
+      }
+    },
+    {
+      "symbol": "WIPRO",
+      "direction": "SHORT",
+      "entry_price": 190.45,
+      "exit_price": 190.4,
+      "quantity": 25,
+      "entry_time": "2026-11-17T13:15:00.013877+05:30",
+      "exit_time": "2026-11-17T15:15:00.033007+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "gross_pnl": 1.25,
+      "net_pnl": -3.73,
+      "charges": 4.98,
+      "charges_breakdown": {
+        "brokerage": 2.86,
+        "stt": 1.19,
+        "exchange_charges": 0.28,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.07,
+        "gst": 0.57,
+        "total_charges": 4.98
+      }
     }
   ],
-  "last_updated": "2026-11-17T15:00:03.287955+05:30"
+  "last_updated": "2026-11-17T15:15:23.835684+05:30"
 }
