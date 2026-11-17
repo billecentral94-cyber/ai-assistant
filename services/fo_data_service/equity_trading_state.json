@@ -2,60 +2,10 @@
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
   "current_capital": 2250.2,
-  "daily_pnl": -36.92,
+  "daily_pnl": 0.0,
   "leverage_multiplier": 5.0,
   "purchasing_power": 11251.0,
-  "open_positions": [
-    {
-      "symbol": "COALINDIA",
-      "direction": "SHORT",
-      "entry_price": 398.1,
-      "stop_loss": 400.89,
-      "target": 391.12,
-      "risk_points": 2.79,
-      "quantity": 12,
-      "entry_time": "2026-11-16T09:30:00.015394+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 106.6
-    },
-    {
-      "symbol": "ITC",
-      "direction": "BUY",
-      "entry_price": 294.2,
-      "stop_loss": 292.14,
-      "target": 299.35,
-      "risk_points": 2.06,
-      "quantity": 17,
-      "entry_time": "2026-11-16T12:30:00.013233+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 117.5
-    }
-  ],
-  "closed_trades": [
-    {
-      "symbol": "BHARTIARTL",
-      "direction": "BUY",
-      "entry_price": 2167.2,
-      "exit_price": 2151.0,
-      "quantity": 2,
-      "entry_time": "2026-11-16T09:45:00.004204+05:30",
-      "exit_time": "2026-11-16T12:30:00.013233+05:30",
-      "exit_reason": "STOP_LOSS",
-      "gross_pnl": -32.4,
-      "net_pnl": -36.92,
-      "charges": 4.52,
-      "charges_breakdown": {
-        "brokerage": 2.59,
-        "stt": 1.08,
-        "exchange_charges": 0.26,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.07,
-        "gst": 0.51,
-        "total_charges": 4.52
-      }
-    }
-  ],
-  "last_updated": "2026-11-16T12:45:05.177268+05:30"
+  "open_positions": [],
+  "closed_trades": [],
+  "last_updated": "2026-11-17T10:12:03.902384+05:30"
 }
