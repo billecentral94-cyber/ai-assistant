@@ -110,11 +110,11 @@
   "ml_regime_status": {
     "NIFTY": {
       "regime": "UNCERTAIN",
-      "confidence": 0.4483,
+      "confidence": 0.3792,
       "probabilities": {
-        "p_chop": 0.2132,
-        "p_bull": 0.3385,
-        "p_bear": 0.4483
+        "p_chop": 0.2418,
+        "p_bull": 0.3792,
+        "p_bear": 0.379
       },
       "recommendation": "CASH"
     },
@@ -129,5 +129,5 @@
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-11-18T11:45:02.819986+05:30"
+  "last_updated": "2026-11-18T12:00:04.842082+05:30"
 }
