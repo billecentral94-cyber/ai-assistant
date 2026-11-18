@@ -1,62 +1,95 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 5000.0,
-  "current_capital": 4689.42,
-  "daily_pnl": 0.0,
-  "open_positions": [
+  "current_capital": 4248.25,
+  "daily_pnl": -441.17,
+  "open_positions": [],
+  "closed_trades": [
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 62222.85,
-      "stop_loss": 62022.85,
-      "initial_stop_loss": 62022.85,
-      "target_1": 62500.0,
+      "underlying_entry_spot": 62222.85,
+      "underlying_exit_spot": 62085.3,
       "lots": 1,
       "lotsize": 30,
       "quantity": 30,
       "entry_time": "2026-11-18T09:15:00.015394+05:30",
-      "entry_premium_info": {
-        "buy_premium": 523.85,
-        "sell_premium": 413.5,
-        "net_debit": 110.35,
-        "lotsize": 30,
-        "leg_details": [
-          {
-            "strike": 62200.0,
-            "option_type": "CE",
-            "action": "BUY",
-            "token": "62481",
-            "symbol": "BANKNIFTY23NOV2662200CE",
-            "expiry": "2026-11-23",
-            "ltp": 523.9,
-            "fill_price": 523.85,
-            "bid": 520.55,
-            "ask": 523.85
-          },
-          {
-            "strike": 62400.0,
-            "option_type": "CE",
-            "action": "SELL",
-            "token": "62485",
-            "symbol": "BANKNIFTY23NOV2662400CE",
-            "expiry": "2026-11-23",
-            "ltp": 419.0,
-            "fill_price": 413.5,
-            "bid": 413.5,
-            "ask": 417.15
-          }
-        ]
-      }
+      "exit_time": "2026-11-18T09:30:00.016103+05:30",
+      "exit_reason": "HARD_RUPEE_STOP_LOSS",
+      "gross_pnl": -300.0,
+      "charges": 141.17,
+      "charges_breakdown": {
+        "brokerage": 80.0,
+        "stt": 24.96,
+        "exchange_charges": 17.78,
+        "sebi_charges": 0.05,
+        "stamp_duty": 0.77,
+        "gst": 17.61,
+        "total_charges": 141.17
+      },
+      "net_pnl": -441.17,
+      "strategy": "Defined Spread",
+      "entry_legs": [
+        {
+          "strike": 62200.0,
+          "option_type": "CE",
+          "action": "BUY",
+          "token": "62481",
+          "symbol": "BANKNIFTY23NOV2662200CE",
+          "expiry": "2026-11-23",
+          "ltp": 523.9,
+          "fill_price": 523.85,
+          "bid": 520.55,
+          "ask": 523.85
+        },
+        {
+          "strike": 62400.0,
+          "option_type": "CE",
+          "action": "SELL",
+          "token": "62485",
+          "symbol": "BANKNIFTY23NOV2662400CE",
+          "expiry": "2026-11-23",
+          "ltp": 419.0,
+          "fill_price": 413.5,
+          "bid": 413.5,
+          "ask": 417.15
+        }
+      ],
+      "exit_legs": [
+        {
+          "strike": 62200.0,
+          "option_type": "CE",
+          "action": "BUY",
+          "token": "62481",
+          "symbol": "BANKNIFTY23NOV2662200CE",
+          "expiry": "2026-11-23",
+          "ltp": 420.3,
+          "fill_price": 418.65,
+          "bid": 418.65,
+          "ask": 420.4
+        },
+        {
+          "strike": 62400.0,
+          "option_type": "CE",
+          "action": "SELL",
+          "token": "62485",
+          "symbol": "BANKNIFTY23NOV2662400CE",
+          "expiry": "2026-11-23",
+          "ltp": 336.4,
+          "fill_price": 335.55,
+          "bid": 333.95,
+          "ask": 335.55
+        }
+      ]
     }
   ],
-  "closed_trades": [],
   "readiness_gates": {
-    "total_trades": 0,
+    "total_trades": 1,
     "wins": 0,
-    "losses": 0,
+    "losses": 1,
     "win_rate_pct": 0.0,
     "profit_factor": 0.0,
-    "max_drawdown_pct": 0.0,
+    "max_drawdown_pct": 8.82,
     "gate_1_win_rate": {
       "value": 0.0,
       "threshold": 55.0,
@@ -68,7 +101,7 @@
       "passed": false
     },
     "gate_3_max_drawdown": {
-      "value": 0.0,
+      "value": 8.82,
       "threshold": 4.0,
       "passed": false
     },
@@ -76,25 +109,25 @@
   },
   "ml_regime_status": {
     "NIFTY": {
-      "regime": "BEARISH_EXPANSION",
-      "confidence": 0.7348,
+      "regime": "UNCERTAIN",
+      "confidence": 0.4954,
       "probabilities": {
-        "p_chop": 0.1121,
-        "p_bull": 0.1531,
-        "p_bear": 0.7348
+        "p_chop": 0.4954,
+        "p_bull": 0.0796,
+        "p_bear": 0.4249
       },
-      "recommendation": "BEAR_PUT_SPREAD"
+      "recommendation": "CASH"
     },
     "BANKNIFTY": {
       "regime": "BULLISH_EXPANSION",
-      "confidence": 0.9447,
+      "confidence": 0.6328,
       "probabilities": {
-        "p_chop": 0.0139,
-        "p_bull": 0.9447,
-        "p_bear": 0.0414
+        "p_chop": 0.1195,
+        "p_bull": 0.6328,
+        "p_bear": 0.2477
       },
       "recommendation": "BULL_CALL_SPREAD"
     }
   },
-  "last_updated": "2026-11-18T09:15:16.338196+05:30"
+  "last_updated": "2026-11-18T09:30:03.424251+05:30"
 }

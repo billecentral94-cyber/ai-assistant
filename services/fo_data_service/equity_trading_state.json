@@ -18,8 +18,21 @@
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
       "momentum_score": 112.1
+    },
+    {
+      "symbol": "HDFCBANK",
+      "direction": "SHORT",
+      "entry_price": 810.6,
+      "stop_loss": 816.27,
+      "target": 796.43,
+      "risk_points": 5.67,
+      "quantity": 6,
+      "entry_time": "2026-11-18T09:30:00.016103+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 102.8
     }
   ],
   "closed_trades": [],
-  "last_updated": "2026-11-18T09:15:17.334758+05:30"
+  "last_updated": "2026-11-18T09:30:04.732778+05:30"
 }
