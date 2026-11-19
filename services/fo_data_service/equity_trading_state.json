@@ -7,32 +7,19 @@
   "purchasing_power": 11005.4,
   "open_positions": [
     {
-      "symbol": "TATASTEEL",
-      "direction": "SHORT",
-      "entry_price": 179.77,
-      "stop_loss": 181.03,
-      "target": 176.62,
-      "risk_points": 1.26,
-      "quantity": 27,
-      "entry_time": "2026-11-18T09:15:00.015394+05:30",
+      "symbol": "M&M",
+      "direction": "BUY",
+      "entry_price": 3494.0,
+      "stop_loss": 3469.54,
+      "target": 3555.15,
+      "risk_points": 24.46,
+      "quantity": 1,
+      "entry_time": "2026-11-19T11:20:54.542841+05:30",
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 112.1
-    },
-    {
-      "symbol": "HDFCBANK",
-      "direction": "SHORT",
-      "entry_price": 810.6,
-      "stop_loss": 816.27,
-      "target": 796.43,
-      "risk_points": 5.67,
-      "quantity": 6,
-      "entry_time": "2026-11-18T09:30:00.016103+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 102.8
+      "momentum_score": 132.2
     }
   ],
   "closed_trades": [],
-  "last_updated": "2026-11-18T12:45:03.795656+05:30"
+  "last_updated": "2026-11-19T11:21:17.936513+05:30"
 }
