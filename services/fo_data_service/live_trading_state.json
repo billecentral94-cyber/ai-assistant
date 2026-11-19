@@ -7,18 +7,18 @@
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 62929.05,
-      "stop_loss": 62729.05,
-      "initial_stop_loss": 62729.05,
+      "entry_price": 62891.55,
+      "stop_loss": 62691.55,
+      "initial_stop_loss": 62691.55,
       "target_1": 63500.0,
       "lots": 1,
       "lotsize": 30,
       "quantity": 30,
-      "entry_time": "2026-11-19T14:45:00.016999+05:30",
+      "entry_time": "2026-11-19T15:00:00.008768+05:30",
       "entry_premium_info": {
-        "buy_premium": 405.85,
-        "sell_premium": 311.4,
-        "net_debit": 94.45,
+        "buy_premium": 383.1,
+        "sell_premium": 292.8,
+        "net_debit": 90.3,
         "lotsize": 30,
         "leg_details": [
           {
@@ -28,10 +28,10 @@
             "token": "62517",
             "symbol": "BANKNIFTY23NOV2662900CE",
             "expiry": "2026-11-23",
-            "ltp": 405.6,
-            "fill_price": 405.85,
-            "bid": 404.7,
-            "ask": 405.85
+            "ltp": 382.7,
+            "fill_price": 383.1,
+            "bid": 382.05,
+            "ask": 383.1
           },
           {
             "strike": 63100.0,
@@ -40,10 +40,10 @@
             "token": "62525",
             "symbol": "BANKNIFTY23NOV2663100CE",
             "expiry": "2026-11-23",
-            "ltp": 312.55,
-            "fill_price": 311.4,
-            "bid": 311.4,
-            "ask": 312.5
+            "ltp": 292.05,
+            "fill_price": 292.8,
+            "bid": 292.8,
+            "ask": 293.5
           }
         ]
       }
@@ -77,11 +77,11 @@
   "ml_regime_status": {
     "NIFTY": {
       "regime": "BEARISH_EXPANSION",
-      "confidence": 0.739,
+      "confidence": 0.6935,
       "probabilities": {
-        "p_chop": 0.1828,
-        "p_bull": 0.0782,
-        "p_bear": 0.739
+        "p_chop": 0.1707,
+        "p_bull": 0.1358,
+        "p_bear": 0.6935
       },
       "recommendation": "BEAR_PUT_SPREAD"
     },
@@ -96,5 +96,5 @@
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-11-19T14:45:02.342025+05:30"
+  "last_updated": "2026-11-19T15:00:02.984759+05:30"
 }
