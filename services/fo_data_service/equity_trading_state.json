@@ -18,8 +18,21 @@
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
       "momentum_score": 132.2
+    },
+    {
+      "symbol": "COALINDIA",
+      "direction": "BUY",
+      "entry_price": 390.25,
+      "stop_loss": 387.52,
+      "target": 397.07,
+      "risk_points": 2.73,
+      "quantity": 12,
+      "entry_time": "2026-11-19T11:30:00.034012+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 99.5
     }
   ],
   "closed_trades": [],
-  "last_updated": "2026-11-19T11:21:17.936513+05:30"
+  "last_updated": "2026-11-19T11:30:04.363825+05:30"
 }
