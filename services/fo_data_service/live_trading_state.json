@@ -5,45 +5,89 @@
   "daily_pnl": 0.0,
   "open_positions": [
     {
+      "symbol": "NIFTY",
+      "direction": "BULLISH",
+      "entry_price": 25389.15,
+      "stop_loss": 25314.15,
+      "initial_stop_loss": 25314.15,
+      "target_1": 25500.0,
+      "lots": 1,
+      "lotsize": 65,
+      "quantity": 65,
+      "entry_time": "2026-11-19T13:45:00.009252+05:30",
+      "entry_premium_info": {
+        "buy_premium": 142.35,
+        "sell_premium": 94.7,
+        "net_debit": 47.65,
+        "lotsize": 65,
+        "leg_details": [
+          {
+            "strike": 25400.0,
+            "option_type": "CE",
+            "action": "BUY",
+            "token": "64462",
+            "symbol": "NIFTY23NOV2625400CE",
+            "expiry": "2026-11-23",
+            "ltp": 142.4,
+            "fill_price": 142.35,
+            "bid": 142.0,
+            "ask": 142.35
+          },
+          {
+            "strike": 25500.0,
+            "option_type": "CE",
+            "action": "SELL",
+            "token": "64473",
+            "symbol": "NIFTY23NOV2625500CE",
+            "expiry": "2026-11-23",
+            "ltp": 94.9,
+            "fill_price": 94.7,
+            "bid": 94.7,
+            "ask": 94.95
+          }
+        ]
+      }
+    },
+    {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 62651.4,
-      "stop_loss": 62500.0,
-      "initial_stop_loss": 62500.0,
+      "entry_price": 62792.95,
+      "stop_loss": 62592.95,
+      "initial_stop_loss": 62592.95,
       "target_1": 63000.0,
       "lots": 1,
       "lotsize": 30,
       "quantity": 30,
-      "entry_time": "2026-11-19T13:30:00.027176+05:30",
+      "entry_time": "2026-11-19T13:45:00.009252+05:30",
       "entry_premium_info": {
-        "buy_premium": 372.4,
-        "sell_premium": 281.4,
-        "net_debit": 91.0,
+        "buy_premium": 407.7,
+        "sell_premium": 312.05,
+        "net_debit": 95.65,
         "lotsize": 30,
         "leg_details": [
           {
-            "strike": 62700.0,
+            "strike": 62800.0,
             "option_type": "CE",
             "action": "BUY",
-            "token": "62507",
-            "symbol": "BANKNIFTY23NOV2662700CE",
+            "token": "62513",
+            "symbol": "BANKNIFTY23NOV2662800CE",
             "expiry": "2026-11-23",
-            "ltp": 372.4,
-            "fill_price": 372.4,
-            "bid": 371.7,
-            "ask": 372.4
+            "ltp": 406.25,
+            "fill_price": 407.7,
+            "bid": 406.35,
+            "ask": 407.7
           },
           {
-            "strike": 62900.0,
+            "strike": 63000.0,
             "option_type": "CE",
             "action": "SELL",
-            "token": "62517",
-            "symbol": "BANKNIFTY23NOV2662900CE",
+            "token": "62523",
+            "symbol": "BANKNIFTY23NOV2663000CE",
             "expiry": "2026-11-23",
-            "ltp": 280.55,
-            "fill_price": 281.4,
-            "bid": 281.4,
-            "ask": 282.35
+            "ltp": 313.0,
+            "fill_price": 312.05,
+            "bid": 312.05,
+            "ask": 313.05
           }
         ]
       }
@@ -76,25 +120,25 @@
   },
   "ml_regime_status": {
     "NIFTY": {
-      "regime": "BEARISH_EXPANSION",
-      "confidence": 0.7974,
+      "regime": "UNCERTAIN",
+      "confidence": 0.4734,
       "probabilities": {
-        "p_chop": 0.1348,
-        "p_bull": 0.0678,
-        "p_bear": 0.7974
+        "p_chop": 0.3298,
+        "p_bull": 0.4734,
+        "p_bear": 0.1969
       },
-      "recommendation": "BEAR_PUT_SPREAD"
+      "recommendation": "CASH"
     },
     "BANKNIFTY": {
       "regime": "UNCERTAIN",
-      "confidence": 0.4341,
+      "confidence": 0.4772,
       "probabilities": {
-        "p_chop": 0.1935,
-        "p_bull": 0.3724,
-        "p_bear": 0.4341
+        "p_chop": 0.1691,
+        "p_bull": 0.3537,
+        "p_bear": 0.4772
       },
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-11-19T13:30:03.887427+05:30"
+  "last_updated": "2026-11-19T13:45:03.844213+05:30"
 }
