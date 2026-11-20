@@ -23,7 +23,7 @@
       "symbol": "AXISBANK",
       "direction": "BUY",
       "entry_price": 1405.6,
-      "stop_loss": 1395.76,
+      "stop_loss": 1410.52,
       "target": 1430.2,
       "risk_points": 9.84,
       "quantity": 3,
@@ -79,5 +79,5 @@
       }
     }
   ],
-  "last_updated": "2026-11-20T11:45:04.923584+05:30"
+  "last_updated": "2026-11-20T12:00:03.160596+05:30"
 }

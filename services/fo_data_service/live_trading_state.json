@@ -7,43 +7,43 @@
     {
       "symbol": "BANKNIFTY",
       "direction": "BULLISH",
-      "entry_price": 63481.35,
-      "stop_loss": 63281.35,
-      "initial_stop_loss": 63281.35,
+      "entry_price": 63808.85,
+      "stop_loss": 63608.85,
+      "initial_stop_loss": 63608.85,
       "target_1": 64000.0,
       "lots": 1,
       "lotsize": 30,
       "quantity": 30,
-      "entry_time": "2026-11-20T11:45:00.011834+05:30",
+      "entry_time": "2026-11-20T12:00:00.009143+05:30",
       "entry_premium_info": {
-        "buy_premium": 345.65,
-        "sell_premium": 259.8,
-        "net_debit": 85.85,
+        "buy_premium": 378.3,
+        "sell_premium": 286.55,
+        "net_debit": 91.75,
         "lotsize": 30,
         "leg_details": [
           {
-            "strike": 63500.0,
+            "strike": 63800.0,
             "option_type": "CE",
             "action": "BUY",
-            "token": "62551",
-            "symbol": "BANKNIFTY23NOV2663500CE",
+            "token": "62638",
+            "symbol": "BANKNIFTY23NOV2663800CE",
             "expiry": "2026-11-23",
-            "ltp": 344.6,
-            "fill_price": 345.65,
-            "bid": 344.45,
-            "ask": 345.65
+            "ltp": 376.9,
+            "fill_price": 378.3,
+            "bid": 376.05,
+            "ask": 378.3
           },
           {
-            "strike": 63700.0,
+            "strike": 64000.0,
             "option_type": "CE",
             "action": "SELL",
-            "token": "62636",
-            "symbol": "BANKNIFTY23NOV2663700CE",
+            "token": "62650",
+            "symbol": "BANKNIFTY23NOV2664000CE",
             "expiry": "2026-11-23",
-            "ltp": 261.2,
-            "fill_price": 259.8,
-            "bid": 259.8,
-            "ask": 260.6
+            "ltp": 287.8,
+            "fill_price": 286.55,
+            "bid": 286.55,
+            "ask": 287.9
           }
         ]
       }
@@ -154,14 +154,14 @@
   },
   "ml_regime_status": {
     "NIFTY": {
-      "regime": "BEARISH_EXPANSION",
-      "confidence": 0.7214,
+      "regime": "CHOP",
+      "confidence": 0.5973,
       "probabilities": {
-        "p_chop": 0.195,
-        "p_bull": 0.0837,
-        "p_bear": 0.7214
+        "p_chop": 0.5973,
+        "p_bull": 0.0741,
+        "p_bear": 0.3286
       },
-      "recommendation": "BEAR_PUT_SPREAD"
+      "recommendation": "CASH"
     },
     "BANKNIFTY": {
       "regime": "UNCERTAIN",
@@ -174,5 +174,5 @@
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-11-20T11:45:04.871169+05:30"
+  "last_updated": "2026-11-20T12:00:03.056962+05:30"
 }
