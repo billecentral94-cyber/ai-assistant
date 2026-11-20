@@ -10,7 +10,7 @@
       "symbol": "TATASTEEL",
       "direction": "SHORT",
       "entry_price": 176.99,
-      "stop_loss": 178.23,
+      "stop_loss": 176.37,
       "target": 173.89,
       "risk_points": 1.24,
       "quantity": 28,
@@ -18,8 +18,21 @@
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
       "momentum_score": 95.1
+    },
+    {
+      "symbol": "WIPRO",
+      "direction": "BUY",
+      "entry_price": 186.99,
+      "stop_loss": 185.68,
+      "target": 190.27,
+      "risk_points": 1.31,
+      "quantity": 26,
+      "entry_time": "2026-11-20T09:30:00.017164+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 113.2
     }
   ],
   "closed_trades": [],
-  "last_updated": "2026-11-20T09:15:18.685364+05:30"
+  "last_updated": "2026-11-20T09:30:04.748988+05:30"
 }
