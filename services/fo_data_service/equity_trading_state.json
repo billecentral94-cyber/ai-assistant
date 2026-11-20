@@ -1,10 +1,10 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2207.02,
-  "daily_pnl": -34.57,
+  "current_capital": 2290.45,
+  "daily_pnl": 48.86,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 11035.1,
+  "purchasing_power": 11452.25,
   "open_positions": [
     {
       "symbol": "TCS",
@@ -22,15 +22,15 @@
     {
       "symbol": "AXISBANK",
       "direction": "BUY",
-      "entry_price": 1405.6,
-      "stop_loss": 1410.52,
-      "target": 1430.2,
-      "risk_points": 9.84,
+      "entry_price": 1435.0,
+      "stop_loss": 1424.96,
+      "target": 1460.1,
+      "risk_points": 10.04,
       "quantity": 3,
-      "entry_time": "2026-11-20T11:45:00.011834+05:30",
+      "entry_time": "2026-11-20T12:30:00.014203+05:30",
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 116.1
+      "momentum_score": 137.6
     }
   ],
   "closed_trades": [
@@ -77,7 +77,29 @@
         "gst": 0.59,
         "total_charges": 5.17
       }
+    },
+    {
+      "symbol": "AXISBANK",
+      "direction": "BUY",
+      "entry_price": 1405.6,
+      "exit_price": 1434.9,
+      "quantity": 3,
+      "entry_time": "2026-11-20T11:45:00.011834+05:30",
+      "exit_time": "2026-11-20T12:30:00.014203+05:30",
+      "exit_reason": "TARGET",
+      "gross_pnl": 87.9,
+      "net_pnl": 83.43,
+      "charges": 4.47,
+      "charges_breakdown": {
+        "brokerage": 2.56,
+        "stt": 1.08,
+        "exchange_charges": 0.25,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.06,
+        "gst": 0.51,
+        "total_charges": 4.47
+      }
     }
   ],
-  "last_updated": "2026-11-20T12:15:02.394397+05:30"
+  "last_updated": "2026-11-20T12:30:03.883530+05:30"
 }
