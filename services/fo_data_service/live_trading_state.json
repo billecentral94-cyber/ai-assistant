@@ -7,43 +7,87 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 25516.05,
-      "stop_loss": 25441.05,
-      "initial_stop_loss": 25441.05,
+      "entry_price": 25528.5,
+      "stop_loss": 25453.5,
+      "initial_stop_loss": 25453.5,
       "target_1": 25600.0,
       "lots": 1,
       "lotsize": 65,
       "quantity": 65,
-      "entry_time": "2026-11-20T10:15:00.017623+05:30",
+      "entry_time": "2026-11-20T10:30:00.010381+05:30",
       "entry_premium_info": {
-        "buy_premium": 124.0,
-        "sell_premium": 82.55,
-        "net_debit": 41.45,
+        "buy_premium": 103.1,
+        "sell_premium": 66.1,
+        "net_debit": 37.0,
         "lotsize": 65,
         "leg_details": [
           {
-            "strike": 25500.0,
+            "strike": 25550.0,
             "option_type": "CE",
             "action": "BUY",
-            "token": "64473",
-            "symbol": "NIFTY23NOV2625500CE",
+            "token": "64475",
+            "symbol": "NIFTY23NOV2625550CE",
             "expiry": "2026-11-23",
-            "ltp": 123.6,
-            "fill_price": 124.0,
-            "bid": 123.75,
-            "ask": 124.0
+            "ltp": 103.25,
+            "fill_price": 103.1,
+            "bid": 102.85,
+            "ask": 103.1
           },
           {
-            "strike": 25600.0,
+            "strike": 25650.0,
             "option_type": "CE",
             "action": "SELL",
-            "token": "64477",
-            "symbol": "NIFTY23NOV2625600CE",
+            "token": "64479",
+            "symbol": "NIFTY23NOV2625650CE",
             "expiry": "2026-11-23",
-            "ltp": 82.65,
-            "fill_price": 82.55,
-            "bid": 82.55,
-            "ask": 82.75
+            "ltp": 66.7,
+            "fill_price": 66.1,
+            "bid": 66.1,
+            "ask": 66.25
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "BANKNIFTY",
+      "direction": "BULLISH",
+      "entry_price": 63172.6,
+      "stop_loss": 63000.0,
+      "initial_stop_loss": 63000.0,
+      "target_1": 63500.0,
+      "lots": 1,
+      "lotsize": 30,
+      "quantity": 30,
+      "entry_time": "2026-11-20T10:30:00.010381+05:30",
+      "entry_premium_info": {
+        "buy_premium": 352.2,
+        "sell_premium": 270.1,
+        "net_debit": 82.1,
+        "lotsize": 30,
+        "leg_details": [
+          {
+            "strike": 63200.0,
+            "option_type": "CE",
+            "action": "BUY",
+            "token": "62531",
+            "symbol": "BANKNIFTY23NOV2663200CE",
+            "expiry": "2026-11-23",
+            "ltp": 352.9,
+            "fill_price": 352.2,
+            "bid": 351.15,
+            "ask": 352.2
+          },
+          {
+            "strike": 63400.0,
+            "option_type": "CE",
+            "action": "SELL",
+            "token": "62539",
+            "symbol": "BANKNIFTY23NOV2663400CE",
+            "expiry": "2026-11-23",
+            "ltp": 270.45,
+            "fill_price": 270.1,
+            "bid": 270.1,
+            "ask": 270.95
           }
         ]
       }
@@ -154,25 +198,25 @@
   },
   "ml_regime_status": {
     "NIFTY": {
-      "regime": "CHOP",
-      "confidence": 0.5012,
+      "regime": "UNCERTAIN",
+      "confidence": 0.4964,
       "probabilities": {
-        "p_chop": 0.5012,
-        "p_bull": 0.0871,
-        "p_bear": 0.4117
+        "p_chop": 0.3843,
+        "p_bull": 0.1193,
+        "p_bear": 0.4964
       },
       "recommendation": "CASH"
     },
     "BANKNIFTY": {
-      "regime": "BEARISH_EXPANSION",
-      "confidence": 0.609,
+      "regime": "UNCERTAIN",
+      "confidence": 0.4675,
       "probabilities": {
-        "p_chop": 0.1528,
-        "p_bull": 0.2383,
-        "p_bear": 0.609
+        "p_chop": 0.1671,
+        "p_bull": 0.4675,
+        "p_bear": 0.3654
       },
-      "recommendation": "BEAR_PUT_SPREAD"
+      "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-11-20T10:15:03.024569+05:30"
+  "last_updated": "2026-11-20T10:30:02.502692+05:30"
 }
