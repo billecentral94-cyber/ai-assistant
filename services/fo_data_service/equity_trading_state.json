@@ -2,104 +2,24 @@
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
   "current_capital": 2290.45,
-  "daily_pnl": 48.86,
+  "daily_pnl": 0.0,
   "leverage_multiplier": 5.0,
   "purchasing_power": 11452.25,
   "open_positions": [
     {
-      "symbol": "TCS",
-      "direction": "BUY",
-      "entry_price": 2411.0,
-      "stop_loss": 2394.12,
-      "target": 2453.2,
-      "risk_points": 16.88,
-      "quantity": 2,
-      "entry_time": "2026-11-20T10:45:00.010573+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 125.9
-    },
-    {
-      "symbol": "AXISBANK",
-      "direction": "BUY",
-      "entry_price": 1435.0,
-      "stop_loss": 1424.96,
-      "target": 1460.1,
-      "risk_points": 10.04,
-      "quantity": 3,
-      "entry_time": "2026-11-20T12:30:00.014203+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 137.6
-    }
-  ],
-  "closed_trades": [
-    {
-      "symbol": "WIPRO",
-      "direction": "BUY",
-      "entry_price": 186.99,
-      "exit_price": 185.44,
-      "quantity": 26,
-      "entry_time": "2026-11-20T09:30:00.017164+05:30",
-      "exit_time": "2026-11-20T09:45:00.032909+05:30",
-      "exit_reason": "STOP_LOSS",
-      "gross_pnl": -40.3,
-      "net_pnl": -45.36,
-      "charges": 5.06,
-      "charges_breakdown": {
-        "brokerage": 2.9,
-        "stt": 1.21,
-        "exchange_charges": 0.29,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.07,
-        "gst": 0.58,
-        "total_charges": 5.06
-      }
-    },
-    {
       "symbol": "TATASTEEL",
       "direction": "SHORT",
-      "entry_price": 176.99,
-      "exit_price": 176.42,
-      "quantity": 28,
-      "entry_time": "2026-11-20T09:15:00.046651+05:30",
-      "exit_time": "2026-11-20T10:45:00.010573+05:30",
-      "exit_reason": "STOP_LOSS",
-      "gross_pnl": 15.96,
-      "net_pnl": 10.79,
-      "charges": 5.17,
-      "charges_breakdown": {
-        "brokerage": 2.97,
-        "stt": 1.24,
-        "exchange_charges": 0.29,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.07,
-        "gst": 0.59,
-        "total_charges": 5.17
-      }
-    },
-    {
-      "symbol": "AXISBANK",
-      "direction": "BUY",
-      "entry_price": 1405.6,
-      "exit_price": 1434.9,
-      "quantity": 3,
-      "entry_time": "2026-11-20T11:45:00.011834+05:30",
-      "exit_time": "2026-11-20T12:30:00.014203+05:30",
-      "exit_reason": "TARGET",
-      "gross_pnl": 87.9,
-      "net_pnl": 83.43,
-      "charges": 4.47,
-      "charges_breakdown": {
-        "brokerage": 2.56,
-        "stt": 1.08,
-        "exchange_charges": 0.25,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.06,
-        "gst": 0.51,
-        "total_charges": 4.47
-      }
+      "entry_price": 164.42,
+      "stop_loss": 165.57,
+      "target": 161.54,
+      "risk_points": 1.15,
+      "quantity": 31,
+      "entry_time": "2026-11-23T11:36:30.785028+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 168.3
     }
   ],
-  "last_updated": "2026-11-20T13:00:02.768657+05:30"
+  "closed_trades": [],
+  "last_updated": "2026-11-23T11:36:43.124876+05:30"
 }
