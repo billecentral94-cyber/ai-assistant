@@ -1,25 +1,34 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2290.45,
-  "daily_pnl": 0.0,
+  "current_capital": 2384.99,
+  "daily_pnl": 94.54,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 11452.25,
-  "open_positions": [
+  "purchasing_power": 11924.95,
+  "open_positions": [],
+  "closed_trades": [
     {
       "symbol": "TATASTEEL",
       "direction": "SHORT",
       "entry_price": 164.42,
-      "stop_loss": 163.84,
-      "target": 161.54,
-      "risk_points": 1.15,
+      "exit_price": 161.2,
       "quantity": 31,
       "entry_time": "2026-11-23T11:36:30.785028+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 168.3
+      "exit_time": "2026-11-23T13:00:00.002042+05:30",
+      "exit_reason": "TARGET",
+      "gross_pnl": 99.82,
+      "net_pnl": 94.54,
+      "charges": 5.28,
+      "charges_breakdown": {
+        "brokerage": 3.03,
+        "stt": 1.27,
+        "exchange_charges": 0.3,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.07,
+        "gst": 0.6,
+        "total_charges": 5.28
+      }
     }
   ],
-  "closed_trades": [],
-  "last_updated": "2026-11-23T12:45:01.951463+05:30"
+  "last_updated": "2026-11-23T13:00:03.263854+05:30"
 }
