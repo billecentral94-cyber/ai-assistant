@@ -1,38 +1,11 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2384.99,
-  "daily_pnl": 94.54,
+  "current_capital": 2331.02,
+  "daily_pnl": 40.57,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 11924.95,
-  "open_positions": [
-    {
-      "symbol": "TATASTEEL",
-      "direction": "SHORT",
-      "entry_price": 162.55,
-      "stop_loss": 163.69,
-      "target": 159.7,
-      "risk_points": 1.14,
-      "quantity": 33,
-      "entry_time": "2026-11-23T14:15:00.014663+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 171.4
-    },
-    {
-      "symbol": "ITC",
-      "direction": "BUY",
-      "entry_price": 302.4,
-      "stop_loss": 300.28,
-      "target": 307.7,
-      "risk_points": 2.12,
-      "quantity": 17,
-      "entry_time": "2026-11-23T14:30:00.016514+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 101.2
-    }
-  ],
+  "purchasing_power": 11655.1,
+  "open_positions": [],
   "closed_trades": [
     {
       "symbol": "TATASTEEL",
@@ -55,7 +28,51 @@
         "gst": 0.6,
         "total_charges": 5.28
       }
+    },
+    {
+      "symbol": "TATASTEEL",
+      "direction": "SHORT",
+      "entry_price": 162.55,
+      "exit_price": 162.9,
+      "quantity": 33,
+      "entry_time": "2026-11-23T14:15:00.014663+05:30",
+      "exit_time": "2026-11-23T15:15:00.007278+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "gross_pnl": -11.55,
+      "net_pnl": -17.16,
+      "charges": 5.61,
+      "charges_breakdown": {
+        "brokerage": 3.22,
+        "stt": 1.34,
+        "exchange_charges": 0.32,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.08,
+        "gst": 0.64,
+        "total_charges": 5.61
+      }
+    },
+    {
+      "symbol": "ITC",
+      "direction": "BUY",
+      "entry_price": 302.4,
+      "exit_price": 300.55,
+      "quantity": 17,
+      "entry_time": "2026-11-23T14:30:00.016514+05:30",
+      "exit_time": "2026-11-23T15:15:00.007278+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "gross_pnl": -31.45,
+      "net_pnl": -36.81,
+      "charges": 5.36,
+      "charges_breakdown": {
+        "brokerage": 3.08,
+        "stt": 1.28,
+        "exchange_charges": 0.3,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.08,
+        "gst": 0.61,
+        "total_charges": 5.36
+      }
     }
   ],
-  "last_updated": "2026-11-23T15:00:05.834699+05:30"
+  "last_updated": "2026-11-23T15:15:03.330177+05:30"
 }
