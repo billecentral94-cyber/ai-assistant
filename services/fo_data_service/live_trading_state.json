@@ -186,25 +186,25 @@
   },
   "ml_regime_status": {
     "NIFTY": {
-      "regime": "UNCERTAIN",
-      "confidence": 0.4209,
+      "regime": "CHOP",
+      "confidence": 0.5792,
       "probabilities": {
-        "p_chop": 0.2139,
-        "p_bull": 0.4209,
-        "p_bear": 0.3652
+        "p_chop": 0.5792,
+        "p_bull": 0.3976,
+        "p_bear": 0.0231
       },
       "recommendation": "CASH"
     },
     "BANKNIFTY": {
       "regime": "UNCERTAIN",
-      "confidence": 0.3745,
+      "confidence": 0.4111,
       "probabilities": {
-        "p_chop": 0.2869,
-        "p_bull": 0.3385,
-        "p_bear": 0.3745
+        "p_chop": 0.2595,
+        "p_bull": 0.4111,
+        "p_bear": 0.3295
       },
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-11-23T14:15:03.401799+05:30"
+  "last_updated": "2026-11-23T14:30:03.322192+05:30"
 }

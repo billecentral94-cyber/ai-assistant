@@ -18,6 +18,19 @@
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
       "momentum_score": 171.4
+    },
+    {
+      "symbol": "ITC",
+      "direction": "BUY",
+      "entry_price": 302.4,
+      "stop_loss": 300.28,
+      "target": 307.7,
+      "risk_points": 2.12,
+      "quantity": 17,
+      "entry_time": "2026-11-23T14:30:00.016514+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 101.2
     }
   ],
   "closed_trades": [
@@ -44,5 +57,5 @@
       }
     }
   ],
-  "last_updated": "2026-11-23T14:15:04.352112+05:30"
+  "last_updated": "2026-11-23T14:30:03.401180+05:30"
 }
