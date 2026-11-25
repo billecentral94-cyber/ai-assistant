@@ -1,38 +1,11 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2239.89,
-  "daily_pnl": -91.13,
+  "current_capital": 2223.1,
+  "daily_pnl": -107.92,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 11199.45,
-  "open_positions": [
-    {
-      "symbol": "TATASTEEL",
-      "direction": "SHORT",
-      "entry_price": 159.2,
-      "stop_loss": 158.64,
-      "target": 156.42,
-      "risk_points": 1.11,
-      "quantity": 32,
-      "entry_time": "2026-11-25T12:45:00.013076+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 116.5
-    },
-    {
-      "symbol": "BHARTIARTL",
-      "direction": "SHORT",
-      "entry_price": 2118.3,
-      "stop_loss": 2133.13,
-      "target": 2081.23,
-      "risk_points": 14.83,
-      "quantity": 2,
-      "entry_time": "2026-11-25T13:00:00.017051+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 104.2
-    }
-  ],
+  "purchasing_power": 11115.5,
+  "open_positions": [],
   "closed_trades": [
     {
       "symbol": "HDFCBANK",
@@ -77,7 +50,51 @@
         "gst": 0.58,
         "total_charges": 5.12
       }
+    },
+    {
+      "symbol": "TATASTEEL",
+      "direction": "SHORT",
+      "entry_price": 159.2,
+      "exit_price": 159.02,
+      "quantity": 32,
+      "entry_time": "2026-11-25T12:45:00.013076+05:30",
+      "exit_time": "2026-11-25T15:15:00.035110+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "gross_pnl": 5.76,
+      "net_pnl": 0.45,
+      "charges": 5.31,
+      "charges_breakdown": {
+        "brokerage": 3.05,
+        "stt": 1.27,
+        "exchange_charges": 0.3,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.08,
+        "gst": 0.6,
+        "total_charges": 5.31
+      }
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "direction": "SHORT",
+      "entry_price": 2118.3,
+      "exit_price": 2124.7,
+      "quantity": 2,
+      "entry_time": "2026-11-25T13:00:00.017051+05:30",
+      "exit_time": "2026-11-25T15:15:00.035110+05:30",
+      "exit_reason": "EOD_SQUARE_OFF",
+      "gross_pnl": -12.8,
+      "net_pnl": -17.24,
+      "charges": 4.44,
+      "charges_breakdown": {
+        "brokerage": 2.55,
+        "stt": 1.06,
+        "exchange_charges": 0.25,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.06,
+        "gst": 0.51,
+        "total_charges": 4.44
+      }
     }
   ],
-  "last_updated": "2026-11-25T15:00:08.831656+05:30"
+  "last_updated": "2026-11-25T15:15:05.071159+05:30"
 }
