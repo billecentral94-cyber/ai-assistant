@@ -5,7 +5,21 @@
   "daily_pnl": 0.0,
   "leverage_multiplier": 5.0,
   "purchasing_power": 11655.1,
-  "open_positions": [],
+  "open_positions": [
+    {
+      "symbol": "HDFCBANK",
+      "direction": "BUY",
+      "entry_price": 849.75,
+      "stop_loss": 843.8,
+      "target": 864.62,
+      "risk_points": 5.95,
+      "quantity": 6,
+      "entry_time": "2026-11-25T11:30:00.026162+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 137.0
+    }
+  ],
   "closed_trades": [],
-  "last_updated": "2026-11-25T11:15:07.011176+05:30"
+  "last_updated": "2026-11-25T11:30:31.176469+05:30"
 }
