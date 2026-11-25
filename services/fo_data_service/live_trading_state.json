@@ -5,20 +5,64 @@
   "daily_pnl": 0.0,
   "open_positions": [
     {
+      "symbol": "NIFTY",
+      "direction": "BULLISH",
+      "entry_price": 25702.9,
+      "stop_loss": 25627.9,
+      "initial_stop_loss": 25627.9,
+      "target_1": 25800.0,
+      "lots": 1,
+      "lotsize": 65,
+      "quantity": 65,
+      "entry_time": "2026-11-25T13:40:37.235847+05:30",
+      "entry_premium_info": {
+        "buy_premium": 255.85,
+        "sell_premium": 206.45,
+        "net_debit": 49.4,
+        "lotsize": 65,
+        "leg_details": [
+          {
+            "strike": 25700.0,
+            "option_type": "CE",
+            "action": "BUY",
+            "token": "47835",
+            "symbol": "NIFTY01DEC2625700CE",
+            "expiry": "2026-12-01",
+            "ltp": 255.55,
+            "fill_price": 255.85,
+            "bid": 255.35,
+            "ask": 255.85
+          },
+          {
+            "strike": 25800.0,
+            "option_type": "CE",
+            "action": "SELL",
+            "token": "47839",
+            "symbol": "NIFTY01DEC2625800CE",
+            "expiry": "2026-12-01",
+            "ltp": 206.85,
+            "fill_price": 206.45,
+            "bid": 206.45,
+            "ask": 206.8
+          }
+        ]
+      }
+    },
+    {
       "symbol": "BANKNIFTY",
       "direction": "BEARISH",
-      "entry_price": 63415.85,
-      "stop_loss": 63615.85,
-      "initial_stop_loss": 63615.85,
+      "entry_price": 63419.45,
+      "stop_loss": 63619.45,
+      "initial_stop_loss": 63619.45,
       "target_1": 63000.0,
       "lots": 1,
       "lotsize": 30,
       "quantity": 30,
-      "entry_time": "2026-11-25T13:00:00.017051+05:30",
+      "entry_time": "2026-11-25T13:40:37.235847+05:30",
       "entry_premium_info": {
-        "buy_premium": 1323.1,
-        "sell_premium": 1231.45,
-        "net_debit": 91.65,
+        "buy_premium": 1297.55,
+        "sell_premium": 1207.6,
+        "net_debit": 89.95,
         "lotsize": 30,
         "leg_details": [
           {
@@ -28,10 +72,10 @@
             "token": "59944",
             "symbol": "BANKNIFTY29DEC2663400PE",
             "expiry": "2026-12-29",
-            "ltp": 1324.45,
-            "fill_price": 1323.1,
-            "bid": 1318.5,
-            "ask": 1323.1
+            "ltp": 1295.75,
+            "fill_price": 1297.55,
+            "bid": 1293.05,
+            "ask": 1297.55
           },
           {
             "strike": 63200.0,
@@ -40,10 +84,10 @@
             "token": "59940",
             "symbol": "BANKNIFTY29DEC2663200PE",
             "expiry": "2026-12-29",
-            "ltp": 1229.9,
-            "fill_price": 1231.45,
-            "bid": 1231.45,
-            "ask": 1235.9
+            "ltp": 1209.45,
+            "fill_price": 1207.6,
+            "bid": 1207.6,
+            "ask": 1212.25
           }
         ]
       }
@@ -76,25 +120,25 @@
   },
   "ml_regime_status": {
     "NIFTY": {
-      "regime": "UNCERTAIN",
-      "confidence": 0.4909,
+      "regime": "CHOP",
+      "confidence": 0.5147,
       "probabilities": {
-        "p_chop": 0.4909,
-        "p_bull": 0.3332,
-        "p_bear": 0.1759
+        "p_chop": 0.5147,
+        "p_bull": 0.4485,
+        "p_bear": 0.0368
       },
       "recommendation": "CASH"
     },
     "BANKNIFTY": {
       "regime": "UNCERTAIN",
-      "confidence": 0.4843,
+      "confidence": 0.474,
       "probabilities": {
-        "p_chop": 0.3043,
-        "p_bull": 0.4843,
-        "p_bear": 0.2114
+        "p_chop": 0.1985,
+        "p_bull": 0.3275,
+        "p_bear": 0.474
       },
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-11-25T13:00:20.791086+05:30"
+  "last_updated": "2026-11-25T13:40:50.644587+05:30"
 }
