@@ -7,18 +7,18 @@
     {
       "symbol": "NIFTY",
       "direction": "BULLISH",
-      "entry_price": 25883.6,
-      "stop_loss": 25808.6,
-      "initial_stop_loss": 25808.6,
+      "entry_price": 25913.95,
+      "stop_loss": 25838.95,
+      "initial_stop_loss": 25838.95,
       "target_1": 26000.0,
       "lots": 1,
       "lotsize": 65,
       "quantity": 65,
-      "entry_time": "2026-11-25T11:00:31.687253+05:30",
+      "entry_time": "2026-11-25T11:15:00.047660+05:30",
       "entry_premium_info": {
-        "buy_premium": 260.0,
-        "sell_premium": 208.35,
-        "net_debit": 51.65,
+        "buy_premium": 284.05,
+        "sell_premium": 230.85,
+        "net_debit": 53.2,
         "lotsize": 65,
         "leg_details": [
           {
@@ -28,10 +28,10 @@
             "token": "47855",
             "symbol": "NIFTY01DEC2625900CE",
             "expiry": "2026-12-01",
-            "ltp": 259.35,
-            "fill_price": 260.0,
-            "bid": 259.55,
-            "ask": 260.0
+            "ltp": 283.3,
+            "fill_price": 284.05,
+            "bid": 283.45,
+            "ask": 284.05
           },
           {
             "strike": 26000.0,
@@ -40,10 +40,10 @@
             "token": "47895",
             "symbol": "NIFTY01DEC2626000CE",
             "expiry": "2026-12-01",
-            "ltp": 208.55,
-            "fill_price": 208.35,
-            "bid": 208.35,
-            "ask": 208.85
+            "ltp": 231.35,
+            "fill_price": 230.85,
+            "bid": 230.85,
+            "ask": 231.4
           }
         ]
       }
@@ -77,24 +77,24 @@
   "ml_regime_status": {
     "NIFTY": {
       "regime": "UNCERTAIN",
-      "confidence": 0.4949,
+      "confidence": 0.487,
       "probabilities": {
-        "p_chop": 0.4949,
-        "p_bull": 0.1139,
-        "p_bear": 0.3912
+        "p_chop": 0.487,
+        "p_bull": 0.1815,
+        "p_bear": 0.3315
       },
       "recommendation": "CASH"
     },
     "BANKNIFTY": {
-      "regime": "UNCERTAIN",
-      "confidence": 0.4601,
+      "regime": "CHOP",
+      "confidence": 0.5764,
       "probabilities": {
-        "p_chop": 0.3906,
-        "p_bull": 0.4601,
-        "p_bear": 0.1493
+        "p_chop": 0.5764,
+        "p_bull": 0.2224,
+        "p_bear": 0.2013
       },
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-11-25T11:00:53.783654+05:30"
+  "last_updated": "2026-11-25T11:15:06.913811+05:30"
 }
