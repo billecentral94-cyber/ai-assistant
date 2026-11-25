@@ -18,8 +18,21 @@
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
       "momentum_score": 137.0
+    },
+    {
+      "symbol": "ICICIBANK",
+      "direction": "BUY",
+      "entry_price": 1644.5,
+      "stop_loss": 1632.99,
+      "target": 1673.28,
+      "risk_points": 11.51,
+      "quantity": 3,
+      "entry_time": "2026-11-25T12:00:00.016045+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 119.4
     }
   ],
   "closed_trades": [],
-  "last_updated": "2026-11-25T11:45:26.065524+05:30"
+  "last_updated": "2026-11-25T12:00:05.553715+05:30"
 }
