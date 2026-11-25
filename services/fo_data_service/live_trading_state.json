@@ -31,25 +31,25 @@
   },
   "ml_regime_status": {
     "NIFTY": {
-      "regime": "CHOP",
-      "confidence": 0.5399,
+      "regime": "BEARISH_EXPANSION",
+      "confidence": 0.7024,
       "probabilities": {
-        "p_chop": 0.5399,
-        "p_bull": 0.1606,
-        "p_bear": 0.2995
+        "p_chop": 0.1675,
+        "p_bull": 0.1301,
+        "p_bear": 0.7024
       },
-      "recommendation": "CASH"
+      "recommendation": "BEAR_PUT_SPREAD"
     },
     "BANKNIFTY": {
       "regime": "UNCERTAIN",
-      "confidence": 0.503,
+      "confidence": 0.4763,
       "probabilities": {
-        "p_chop": 0.2328,
-        "p_bull": 0.503,
-        "p_bear": 0.2642
+        "p_chop": 0.2204,
+        "p_bull": 0.4763,
+        "p_bear": 0.3032
       },
       "recommendation": "CASH"
     }
   },
-  "last_updated": "2026-11-25T12:30:04.597651+05:30"
+  "last_updated": "2026-11-25T12:45:07.146009+05:30"
 }
