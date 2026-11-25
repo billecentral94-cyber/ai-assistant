@@ -1,24 +1,11 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2288.51,
-  "daily_pnl": -42.51,
+  "current_capital": 2239.89,
+  "daily_pnl": -91.13,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 11442.55,
+  "purchasing_power": 11199.45,
   "open_positions": [
-    {
-      "symbol": "ICICIBANK",
-      "direction": "BUY",
-      "entry_price": 1644.5,
-      "stop_loss": 1632.99,
-      "target": 1673.28,
-      "risk_points": 11.51,
-      "quantity": 3,
-      "entry_time": "2026-11-25T12:00:00.016045+05:30",
-      "product": "INTRADAY",
-      "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 119.4
-    },
     {
       "symbol": "TATASTEEL",
       "direction": "SHORT",
@@ -31,6 +18,19 @@
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
       "momentum_score": 116.5
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "direction": "SHORT",
+      "entry_price": 2118.3,
+      "stop_loss": 2133.13,
+      "target": 2081.23,
+      "risk_points": 14.83,
+      "quantity": 2,
+      "entry_time": "2026-11-25T13:00:00.017051+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 104.2
     }
   ],
   "closed_trades": [
@@ -55,7 +55,29 @@
         "gst": 0.6,
         "total_charges": 5.31
       }
+    },
+    {
+      "symbol": "ICICIBANK",
+      "direction": "BUY",
+      "entry_price": 1644.5,
+      "exit_price": 1630.0,
+      "quantity": 3,
+      "entry_time": "2026-11-25T12:00:00.016045+05:30",
+      "exit_time": "2026-11-25T13:00:00.017051+05:30",
+      "exit_reason": "STOP_LOSS",
+      "gross_pnl": -43.5,
+      "net_pnl": -48.62,
+      "charges": 5.12,
+      "charges_breakdown": {
+        "brokerage": 2.95,
+        "stt": 1.22,
+        "exchange_charges": 0.29,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.07,
+        "gst": 0.58,
+        "total_charges": 5.12
+      }
     }
   ],
-  "last_updated": "2026-11-25T12:45:07.353380+05:30"
+  "last_updated": "2026-11-25T13:00:23.443956+05:30"
 }
