@@ -10,7 +10,7 @@
       "symbol": "TATASTEEL",
       "direction": "SHORT",
       "entry_price": 159.2,
-      "stop_loss": 160.31,
+      "stop_loss": 158.64,
       "target": 156.42,
       "risk_points": 1.11,
       "quantity": 32,
@@ -79,5 +79,5 @@
       }
     }
   ],
-  "last_updated": "2026-11-25T14:15:04.244803+05:30"
+  "last_updated": "2026-11-25T14:30:04.846426+05:30"
 }
