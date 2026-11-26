@@ -2,99 +2,24 @@
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
   "current_capital": 2223.1,
-  "daily_pnl": -107.92,
+  "daily_pnl": 0.0,
   "leverage_multiplier": 5.0,
   "purchasing_power": 11115.5,
-  "open_positions": [],
-  "closed_trades": [
-    {
-      "symbol": "HDFCBANK",
-      "direction": "BUY",
-      "entry_price": 849.75,
-      "exit_price": 843.55,
-      "quantity": 6,
-      "entry_time": "2026-11-25T11:30:00.026162+05:30",
-      "exit_time": "2026-11-25T12:45:00.013076+05:30",
-      "exit_reason": "STOP_LOSS",
-      "gross_pnl": -37.2,
-      "net_pnl": -42.51,
-      "charges": 5.31,
-      "charges_breakdown": {
-        "brokerage": 3.05,
-        "stt": 1.27,
-        "exchange_charges": 0.3,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.08,
-        "gst": 0.6,
-        "total_charges": 5.31
-      }
-    },
+  "open_positions": [
     {
       "symbol": "ICICIBANK",
-      "direction": "BUY",
-      "entry_price": 1644.5,
-      "exit_price": 1630.0,
+      "direction": "SHORT",
+      "entry_price": 1634.4,
+      "stop_loss": 1645.84,
+      "target": 1605.8,
+      "risk_points": 11.44,
       "quantity": 3,
-      "entry_time": "2026-11-25T12:00:00.016045+05:30",
-      "exit_time": "2026-11-25T13:00:00.017051+05:30",
-      "exit_reason": "STOP_LOSS",
-      "gross_pnl": -43.5,
-      "net_pnl": -48.62,
-      "charges": 5.12,
-      "charges_breakdown": {
-        "brokerage": 2.95,
-        "stt": 1.22,
-        "exchange_charges": 0.29,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.07,
-        "gst": 0.58,
-        "total_charges": 5.12
-      }
-    },
-    {
-      "symbol": "TATASTEEL",
-      "direction": "SHORT",
-      "entry_price": 159.2,
-      "exit_price": 159.02,
-      "quantity": 32,
-      "entry_time": "2026-11-25T12:45:00.013076+05:30",
-      "exit_time": "2026-11-25T15:15:00.035110+05:30",
-      "exit_reason": "EOD_SQUARE_OFF",
-      "gross_pnl": 5.76,
-      "net_pnl": 0.45,
-      "charges": 5.31,
-      "charges_breakdown": {
-        "brokerage": 3.05,
-        "stt": 1.27,
-        "exchange_charges": 0.3,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.08,
-        "gst": 0.6,
-        "total_charges": 5.31
-      }
-    },
-    {
-      "symbol": "BHARTIARTL",
-      "direction": "SHORT",
-      "entry_price": 2118.3,
-      "exit_price": 2124.7,
-      "quantity": 2,
-      "entry_time": "2026-11-25T13:00:00.017051+05:30",
-      "exit_time": "2026-11-25T15:15:00.035110+05:30",
-      "exit_reason": "EOD_SQUARE_OFF",
-      "gross_pnl": -12.8,
-      "net_pnl": -17.24,
-      "charges": 4.44,
-      "charges_breakdown": {
-        "brokerage": 2.55,
-        "stt": 1.06,
-        "exchange_charges": 0.25,
-        "sebi_charges": 0.01,
-        "stamp_duty": 0.06,
-        "gst": 0.51,
-        "total_charges": 4.44
-      }
+      "entry_time": "2026-11-26T09:15:00.030413+05:30",
+      "product": "INTRADAY",
+      "strategy": "MOMENTUM_BREAKOUT",
+      "momentum_score": 101.2
     }
   ],
-  "last_updated": "2026-11-25T15:15:05.071159+05:30"
+  "closed_trades": [],
+  "last_updated": "2026-11-26T09:15:11.353568+05:30"
 }
