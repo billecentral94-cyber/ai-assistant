@@ -1,10 +1,10 @@
 {
   "engine_status": "ACTIVE",
   "initial_capital": 2500.0,
-  "current_capital": 2161.05,
-  "daily_pnl": -62.05,
+  "current_capital": 2119.83,
+  "daily_pnl": -103.27,
   "leverage_multiplier": 5.0,
-  "purchasing_power": 10805.25,
+  "purchasing_power": 10599.15,
   "open_positions": [
     {
       "symbol": "ICICIBANK",
@@ -20,17 +20,17 @@
       "momentum_score": 101.2
     },
     {
-      "symbol": "KOTAKBANK",
-      "direction": "SHORT",
-      "entry_price": 505.45,
-      "stop_loss": 508.99,
-      "target": 496.6,
-      "risk_points": 3.54,
-      "quantity": 9,
-      "entry_time": "2026-11-26T09:45:00.006152+05:30",
+      "symbol": "WIPRO",
+      "direction": "BUY",
+      "entry_price": 196.68,
+      "stop_loss": 195.3,
+      "target": 200.13,
+      "risk_points": 1.38,
+      "quantity": 24,
+      "entry_time": "2026-11-26T10:30:00.013644+05:30",
       "product": "INTRADAY",
       "strategy": "MOMENTUM_BREAKOUT",
-      "momentum_score": 105.2
+      "momentum_score": 129.8
     }
   ],
   "closed_trades": [
@@ -55,7 +55,29 @@
         "gst": 0.58,
         "total_charges": 5.05
       }
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "direction": "SHORT",
+      "entry_price": 505.45,
+      "exit_price": 509.5,
+      "quantity": 9,
+      "entry_time": "2026-11-26T09:45:00.006152+05:30",
+      "exit_time": "2026-11-26T10:30:00.013644+05:30",
+      "exit_reason": "STOP_LOSS",
+      "gross_pnl": -36.45,
+      "net_pnl": -41.22,
+      "charges": 4.77,
+      "charges_breakdown": {
+        "brokerage": 2.74,
+        "stt": 1.14,
+        "exchange_charges": 0.27,
+        "sebi_charges": 0.01,
+        "stamp_duty": 0.07,
+        "gst": 0.54,
+        "total_charges": 4.77
+      }
     }
   ],
-  "last_updated": "2026-11-26T10:15:04.322873+05:30"
+  "last_updated": "2026-11-26T10:30:20.730200+05:30"
 }
